@@ -1,0 +1,46 @@
+# Maintainer: qwerpik <https://github.com/qwerpik>
+pkgname=clipdeck
+pkgver=0.1.0
+pkgrel=1
+pkgdesc="Fast soundboard that plays clips into your microphone (PipeWire virtual mic, Soundpad .spl import)"
+arch=('x86_64' 'aarch64')
+url="https://github.com/qwerpik/clipdeck"
+license=('GPL-3.0-or-later')
+depends=('pipewire' 'alsa-lib' 'fontconfig' 'libxkbcommon' 'wayland' 'gcc-libs' 'glibc')
+optdepends=('xdg-desktop-portal: global hotkeys on Wayland'
+            'pipewire-pulse: Clipdeck Mic visible to PulseAudio apps such as Discord')
+makedepends=('cargo' 'clang' 'pkgconf')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz")
+sha256sums=('SKIP')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  export RUSTUP_TOOLCHAIN=stable
+  cargo fetch --locked --target "$(rustc -vV | sed -n 's/host: //p')"
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  export RUSTUP_TOOLCHAIN=stable
+  export CARGO_TARGET_DIR=target
+  cargo build --frozen --release -p clipdeck
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  export RUSTUP_TOOLCHAIN=stable
+  cargo test --frozen -p clipdeck-core
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm755 target/release/clipdeck "$pkgdir/usr/bin/clipdeck"
+  install -Dm644 packaging/linux/io.github.qwerpik.clipdeck.desktop "$pkgdir/usr/share/applications/io.github.qwerpik.clipdeck.desktop"
+  install -Dm644 packaging/linux/io.github.qwerpik.clipdeck.metainfo.xml "$pkgdir/usr/share/metainfo/io.github.qwerpik.clipdeck.metainfo.xml"
+  for s in 16 24 32 48 64 128 256 512; do
+    install -Dm644 "assets/clipdeck-$s.png" "$pkgdir/usr/share/icons/hicolor/${s}x${s}/apps/io.github.qwerpik.clipdeck.png"
+  done
+  install -Dm644 assets/clipdeck.svg "$pkgdir/usr/share/icons/hicolor/scalable/apps/io.github.qwerpik.clipdeck.svg"
+  install -Dm644 README.md "$pkgdir/usr/share/doc/$pkgname/README.md"
+  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Soundlist>
+  <Sound index="1" url="Z:\home\user\Projects\soundpad\re\wine\media\plain.mp3" artist="Some &amp; Artist" title="Plain title" duration="0:02" addedOn="2026-01-02" lastPlayedOn="" playCount="0" hotkeyKeyModifiers="2" hotkeyKey="112" hotkey="Ctrl+F1" color="FF0000" tag="my tag"/>
+  <Sound index="2" url="Z:\home\user\Projects\soundpad\re\wine\media\notify ding.m4a" artist="" title="" duration="" addedOn="2025-12-31" lastPlayedOn="" playCount="0" tag="notify ding"/>
+  <Sound index="3" url="Z:\home\user\Projects\soundpad\re\wine\media\Zażółć gęślą &amp; &lt;jaźń&gt; &quot;q&quot; 'a'.mp3" artist="Ünïcødé" title="Ⓣitle ✓" duration="" addedOn="2026-11-21" lastPlayedOn="" playCount="0" tag="Ünïcødé - Ⓣitle ✓"/>
+  <Sound index="4" url="Z:\home\user\Projects\soundpad\re\wine\media\does-not-exist.mp3" artist="" title="Missing file" duration="" addedOn="2026-11-21" lastPlayedOn="" playCount="0" tag="Missing file"/>
+</Soundlist>
+

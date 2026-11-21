@@ -1,0 +1,29 @@
+[package]
+name = "clipdeck-ui"
+description = "Slint Material 3 Expressive user interface for Clipdeck"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+clipdeck-audio.workspace = true
+clipdeck-core.workspace = true
+clipdeck-platform.workspace = true
+crossbeam-channel.workspace = true
+image.workspace = true
+material-colors.workspace = true
+notify.workspace = true
+parking_lot.workspace = true
+rfd.workspace = true
+slint.workspace = true
+tracing.workspace = true
+
+[build-dependencies]
+slint-build.workspace = true
+
+[lints]
+workspace = true

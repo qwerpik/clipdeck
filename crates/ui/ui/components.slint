@@ -1,0 +1,720 @@
+import { Theme, Motion, Springs, Icons } from "theme.slint";
+
+export struct SoundItem {
+    id: int,
+    index: int,
+    name: string,
+    hotkey: string,
+    duration: string,
+    category: string,
+    favorite: bool,
+    missing: bool,
+    looped: bool,
+    color: color,
+    has-color: bool,
+    playing: bool,
+    progress: float,
+}
+
+export struct CategoryItem {
+    id: int,
+    name: string,
+    count: int,
+    depth: int,
+    color: color,
+    has-color: bool,
+}
+
+// A circular icon button with a state layer and a spring squish on press.
+export component IconButton inherits Rectangle {
+    in property <image> icon;
+    in property <length> size: 40px;
+    in property <length> icon-size: 22px;
+    in property <color> tint: Theme.on-surface-variant;
+    in property <color> fill: transparent;
+    in property <bool> enabled: true;
+    in property <string> tooltip;
+    callback clicked();
+    width: size;
+    height: size;
+    border-radius: ta.pressed ? size * 0.3 : size / 2;
+    background: fill;
+    animate border-radius { duration: Motion.fast; easing: Springs.spatial; }
+    opacity: enabled ? 1 : 0.38;
+    accessible-role: button;
+    accessible-label: tooltip;
+    accessible-action-default => { clicked(); }
+
+    state := Rectangle {
+        border-radius: parent.border-radius;
+        background: tint;
+        opacity: ta.pressed ? 0.16 : ta.has-hover ? 0.08 : 0;
+        animate opacity { duration: Motion.effect; }
+    }
+    Image {
+        source: icon;
+        width: ta.pressed ? icon-size * 0.86 : icon-size;
+        height: self.width;
+        colorize: tint;
+        animate width { duration: Motion.fast; easing: Springs.spatial; }
+    }
+    ta := TouchArea {
+        enabled: root.enabled;
+        mouse-cursor: pointer;
+        clicked => { root.clicked(); }
+    }
+}
+
+// Expressive toggle button: a pill that morphs to a squircle when on.
+export component ToggleButton inherits Rectangle {
+    in property <image> icon;
+    in property <image> icon-off: icon;
+    in-out property <bool> checked;
+    in property <string> label;
+    in property <string> tooltip;
+    callback toggled(bool);
+    height: 48px;
+    width: label == "" ? 48px : lbl.preferred-width + 64px;
+    border-radius: checked ? 16px : 24px;
+    background: checked ? Theme.primary-container : Theme.surface-container-highest;
+    animate border-radius { duration: Motion.normal; easing: Springs.spatial; }
+    animate background { duration: Motion.effect; }
+    accessible-role: switch;
+    accessible-checked: checked;
+    accessible-label: tooltip != "" ? tooltip : label;
+    accessible-action-default => { ta.clicked(); }
+
+    Rectangle {
+        border-radius: parent.border-radius;
+        background: Theme.on-surface;
+        opacity: ta.pressed ? 0.12 : ta.has-hover ? 0.06 : 0;
+    }
+    HorizontalLayout {
+        padding-left: label == "" ? 12px : 16px;
+        padding-right: label == "" ? 12px : 20px;
+        spacing: 8px;
+        alignment: center;
+        Image {
+            source: checked ? icon : icon-off;
+            width: 24px;
+            height: 24px;
+            y: (parent.height - self.height) / 2;
+            colorize: checked ? Theme.on-primary-container : Theme.on-surface-variant;
+        }
+        lbl := Text {
+            visible: label != "";
+            text: label;
+            vertical-alignment: center;
+            font-size: Theme.label-size;
+            font-weight: 600;
+            color: checked ? Theme.on-primary-container : Theme.on-surface-variant;
+        }
+    }
+    ta := TouchArea {
+        mouse-cursor: pointer;
+        clicked => {
+            root.checked = !root.checked;
+            root.toggled(root.checked);
+        }
+    }
+}
+
+// The big "Stop all" extended FAB. Squishes on press, blooms while sounds play.
+export component StopFab inherits Rectangle {
+    in property <bool> active;
+    in property <string> label: "Stop all";
+    callback clicked();
+    height: 64px;
+    width: active ? 156px : 140px;
+    border-radius: ta.pressed ? 32px : active ? 20px : 18px;
+    background: active ? Theme.tertiary-container : Theme.primary-container;
+    drop-shadow-blur: active ? 16px : 6px;
+    drop-shadow-color: #00000055;
+    drop-shadow-offset-y: 3px;
+    animate width, border-radius, drop-shadow-blur { duration: Motion.normal; easing: Springs.spatial; }
+    animate background { duration: Motion.effect; }
+    accessible-role: button;
+    accessible-label: label;
+    accessible-action-default => { clicked(); }
+
+    Rectangle {
+        border-radius: parent.border-radius;
+        background: Theme.on-surface;
+        opacity: ta.pressed ? 0.12 : ta.has-hover ? 0.08 : 0;
+    }
+    HorizontalLayout {
+        alignment: center;
+        spacing: 10px;
+        Image {
+            source: Icons.stop;
+            width: ta.pressed ? 22px : 26px;
+            height: self.width;
+            y: (parent.height - self.height) / 2;
+            colorize: active ? Theme.on-tertiary-container : Theme.on-primary-container;
+            animate width { duration: Motion.fast; easing: Springs.spatial; }
+        }
+        Text {
+            text: label;
+            vertical-alignment: center;
+            font-size: 16px;
+            font-weight: 700;
+            color: active ? Theme.on-tertiary-container : Theme.on-primary-container;
+        }
+    }
+    ta := TouchArea {
+        mouse-cursor: pointer;
+        clicked => { root.clicked(); }
+    }
+}
+
+// Navigation rail destination with a pill indicator that stretches open when selected.
+export component NavItem inherits Rectangle {
+    in property <image> icon;
+    in property <string> label;
+    in property <bool> selected;
+    in property <int> badge: -1;
+    callback clicked();
+    height: 64px;
+    width: 80px;
+    accessible-role: tab;
+    accessible-label: label;
+    accessible-item-selected: selected;
+    accessible-action-default => { clicked(); }
+
+    indicator := Rectangle {
+        y: 4px;
+        width: selected ? 56px : ta.has-hover ? 40px : 24px;
+        height: 32px;
+        x: (parent.width - self.width) / 2;
+        border-radius: 16px;
+        background: selected ? Theme.secondary-container : Theme.on-surface;
+        opacity: selected ? 1 : ta.has-hover ? 0.08 : 0;
+        animate width { duration: Motion.normal; easing: Springs.spatial; }
+        animate opacity, background { duration: Motion.effect; }
+    }
+    Image {
+        source: icon;
+        width: 24px;
+        height: 24px;
+        x: (parent.width - self.width) / 2;
+        y: 8px;
+        colorize: selected ? Theme.on-secondary-container : Theme.on-surface-variant;
+    }
+    if badge >= 0: Rectangle {
+        x: parent.width / 2 + 6px;
+        y: 4px;
+        height: 16px;
+        width: max(16px, bt.preferred-width + 8px);
+        border-radius: 8px;
+        background: Theme.error;
+        bt := Text { text: badge; font-size: 10px; font-weight: 700; color: Theme.on-error; }
+    }
+    Text {
+        y: 42px;
+        width: parent.width;
+        horizontal-alignment: center;
+        text: label;
+        font-size: 12px;
+        font-weight: selected ? 700 : 500;
+        color: selected ? Theme.on-surface : Theme.on-surface-variant;
+    }
+    ta := TouchArea {
+        mouse-cursor: pointer;
+        clicked => { root.clicked(); }
+    }
+}
+
+// Big search bar (M3 "search bar" with an Expressive full-pill shape).
+export component SearchBar inherits Rectangle {
+    in-out property <string> text <=> input.text;
+    in property <string> placeholder: "Search sounds  (Ctrl+F)";
+    out property <bool> has-focus: input.has-focus;
+    callback edited(string);
+    callback accepted();
+    callback escape();
+    forward-focus: input;
+    height: 56px;
+    border-radius: 28px;
+    background: input.has-focus ? Theme.surface-container-highest : Theme.surface-container-high;
+    border-width: input.has-focus ? 2px : 0px;
+    border-color: Theme.primary;
+    animate background { duration: Motion.effect; }
+    accessible-role: text-input;
+
+    public function focus-input() {
+        input.focus();
+    }
+
+    HorizontalLayout {
+        padding-left: 20px;
+        padding-right: 8px;
+        spacing: 12px;
+        Image {
+            source: Icons.search;
+            width: 24px;
+            height: 24px;
+            y: (parent.height - self.height) / 2;
+            colorize: Theme.on-surface-variant;
+        }
+        Rectangle {
+            horizontal-stretch: 1;
+            input := TextInput {
+                accessible-role: none;
+                width: 100%;
+                height: 100%;
+                vertical-alignment: center;
+                font-size: 16px;
+                color: Theme.on-surface;
+                selection-background-color: Theme.primary-container;
+                selection-foreground-color: Theme.on-primary-container;
+                single-line: true;
+                edited => { root.edited(self.text); }
+                accepted => { root.accepted(); }
+                key-pressed(e) => {
+                    if (e.text == Key.Escape) {
+                        root.escape();
+                        return accept;
+                    }
+                    reject
+                }
+            }
+            if input.text == "": Text {
+                width: 100%;
+                height: 100%;
+                vertical-alignment: center;
+                text: root.placeholder;
+                font-size: 16px;
+                color: Theme.on-surface-variant;
+            }
+        }
+        if input.text != "": IconButton {
+            icon: Icons.close;
+            y: (parent.height - self.height) / 2;
+            tooltip: "Clear search";
+            clicked => {
+                input.text = "";
+                root.edited("");
+            }
+        }
+    }
+}
+
+// Small hotkey label.
+export component HotkeyChip inherits Rectangle {
+    in property <string> text;
+    in property <bool> emphasized;
+    height: 22px;
+    width: t.preferred-width + 14px;
+    border-radius: 7px;
+    background: emphasized ? Theme.primary : Theme.secondary-container;
+    t := Text {
+        text: root.text;
+        font-size: 11px;
+        font-weight: 700;
+        color: emphasized ? Theme.on-primary : Theme.on-secondary-container;
+    }
+}
+
+// Circular progress ring.
+export component ProgressRing inherits Path {
+    in property <float> progress;
+    in property <length> thickness: 4px;
+    viewbox-width: 100;
+    viewbox-height: 100;
+    stroke-width: thickness;
+    stroke-line-cap: round;
+    fill: transparent;
+    property <float> p: clamp(progress, 0.001, 0.999);
+    MoveTo { x: 50; y: 4; }
+    ArcTo {
+        x: 50 + 46 * Math.sin(p * 360deg);
+        y: 50 - 46 * Math.cos(p * 360deg);
+        radius-x: 46;
+        radius-y: 46;
+        large-arc: p > 0.5;
+        sweep: true;
+    }
+}
+
+// A sound card. Corners morph while playing; press squishes the whole card.
+export component SoundCard inherits Rectangle {
+    in property <SoundItem> item;
+    in property <bool> selected;
+    callback play();
+    callback edit();
+    callback toggle-favorite();
+    callback context(Point);
+    property <bool> playing: item.playing;
+    property <color> accent: item.has-color ? item.color : Theme.primary;
+
+    border-radius: playing ? 44px : ta.pressed ? 34px : 22px;
+    background: playing ? Theme.primary-container : selected ? Theme.surface-container-highest : Theme.surface-container;
+    border-width: selected ? 2px : 0px;
+    border-color: Theme.primary;
+    clip: true;
+    animate border-radius { duration: Motion.normal; easing: Springs.spatial; }
+    animate background { duration: Motion.effect; }
+    accessible-role: button;
+    accessible-label: item.name + (item.hotkey != "" ? ", hotkey " + item.hotkey : "") + (item.playing ? ", playing" : "");
+    accessible-action-default => { play(); }
+
+    // Color band (Soundpad colors carry over).
+    Rectangle {
+        x: 0;
+        y: 0;
+        width: 6px;
+        height: parent.height;
+        background: accent;
+        opacity: item.has-color && !playing ? 0.9 : 0;
+        animate opacity { duration: Motion.effect; }
+    }
+    state := Rectangle {
+        border-radius: parent.border-radius;
+        background: Theme.on-surface;
+        opacity: ta.pressed ? 0.10 : ta.has-hover ? 0.05 : 0;
+        animate opacity { duration: Motion.effect; }
+    }
+    ta := TouchArea {
+        mouse-cursor: pointer;
+        clicked => { root.play(); }
+        double-clicked => { root.play(); }
+        pointer-event(e) => {
+            if (e.button == PointerEventButton.right && e.kind == PointerEventKind.up) {
+                root.context({x: self.mouse-x, y: self.mouse-y});
+            }
+        }
+    }
+
+    // Play / progress puck.
+    puck := Rectangle {
+        x: 16px;
+        y: 16px;
+        width: playing ? 52px : 44px;
+        height: self.width;
+        border-radius: playing ? 16px : self.width / 2;
+        background: playing ? Theme.primary : Theme.secondary-container;
+        animate width, border-radius { duration: Motion.normal; easing: Springs.spatial; }
+        Image {
+            source: item.missing ? Icons.warning : playing ? Icons.stop : Icons.play;
+            width: 22px;
+            height: 22px;
+            colorize: item.missing ? Theme.error : playing ? Theme.on-primary : Theme.on-secondary-container;
+        }
+        if playing: ProgressRing {
+            width: parent.width - 10px;
+            height: self.width;
+            x: 5px;
+            y: 5px;
+            progress: item.progress;
+            stroke: Theme.on-primary;
+            thickness: 3px;
+        }
+    }
+    fav := IconButton {
+        x: parent.width - self.width - 8px;
+        y: 8px;
+        size: 36px;
+        icon-size: 20px;
+        icon: Icons.star;
+        tint: item.favorite ? Theme.tertiary : Theme.outline-variant;
+        tooltip: item.favorite ? "Remove from favorites" : "Add to favorites";
+        clicked => { root.toggle-favorite(); }
+    }
+    edit-btn := IconButton {
+        x: parent.width - self.width - 8px;
+        y: parent.height - self.height - 8px;
+        size: 34px;
+        icon-size: 18px;
+        icon: Icons.edit;
+        opacity: (ta.has-hover || root.selected) ? 1 : 0;
+        tooltip: "Edit";
+        clicked => { root.edit(); }
+    }
+    Text {
+        x: 16px;
+        y: 72px;
+        width: parent.width - 32px;
+        height: parent.height - 72px - 36px;
+        text: item.name;
+        wrap: word-wrap;
+        overflow: elide;
+        vertical-alignment: top;
+        font-size: 17px;
+        font-weight: 700;
+        color: item.missing ? Theme.on-surface-variant : playing ? Theme.on-primary-container : Theme.on-surface;
+    }
+    HorizontalLayout {
+        x: 16px;
+        y: parent.height - 32px;
+        height: 22px;
+        width: parent.width - 60px;
+        spacing: 6px;
+        alignment: start;
+        if item.hotkey != "": HotkeyChip { text: item.hotkey; emphasized: playing; }
+        if item.looped: Image { source: Icons.loop; width: 16px; height: 16px; y: 3px; colorize: Theme.on-surface-variant; }
+        Text {
+            text: item.missing ? "file missing" : item.duration;
+            vertical-alignment: center;
+            font-size: 12px;
+            color: item.missing ? Theme.error : Theme.on-surface-variant;
+        }
+    }
+}
+
+// Compact list row.
+export component SoundRow inherits Rectangle {
+    in property <SoundItem> item;
+    in property <bool> selected;
+    callback play();
+    callback edit();
+    callback toggle-favorite();
+    callback context(Point);
+    height: 52px;
+    border-radius: item.playing ? 26px : 12px;
+    background: item.playing ? Theme.primary-container : selected ? Theme.surface-container-highest : ta.has-hover ? Theme.surface-container : transparent;
+    animate border-radius { duration: Motion.normal; easing: Springs.spatial; }
+    animate background { duration: Motion.effect; }
+    accessible-role: button;
+    accessible-label: item.name;
+    accessible-action-default => { play(); }
+    ta := TouchArea {
+        mouse-cursor: pointer;
+        clicked => { root.play(); }
+        pointer-event(e) => {
+            if (e.button == PointerEventButton.right && e.kind == PointerEventKind.up) {
+                root.context({x: self.mouse-x, y: self.mouse-y});
+            }
+        }
+    }
+    HorizontalLayout {
+        padding-left: 12px;
+        padding-right: 8px;
+        spacing: 12px;
+        Rectangle {
+            width: 36px;
+            height: 36px;
+            y: (parent.height - self.height) / 2;
+            border-radius: item.playing ? 12px : 18px;
+            background: item.playing ? Theme.primary : item.has-color ? item.color : Theme.secondary-container;
+            animate border-radius { duration: Motion.normal; easing: Springs.spatial; }
+            Image {
+                source: item.missing ? Icons.warning : item.playing ? Icons.stop : Icons.play;
+                width: 18px;
+                height: 18px;
+                colorize: item.playing ? Theme.on-primary : Theme.on-secondary-container;
+            }
+            if item.playing: ProgressRing {
+                width: parent.width - 6px;
+                height: self.width;
+                x: 3px;
+                y: 3px;
+                progress: item.progress;
+                stroke: Theme.on-primary;
+                thickness: 2.5px;
+            }
+        }
+        Text {
+            text: item.name;
+            vertical-alignment: center;
+            overflow: elide;
+            horizontal-stretch: 1;
+            font-size: 15px;
+            font-weight: 600;
+            color: item.missing ? Theme.on-surface-variant : Theme.on-surface;
+        }
+        Text {
+            text: item.category;
+            vertical-alignment: center;
+            font-size: 12px;
+            color: Theme.on-surface-variant;
+            width: 120px;
+            overflow: elide;
+        }
+        Rectangle {
+            width: 104px;
+            if item.hotkey != "": HotkeyChip { text: item.hotkey; x: parent.width - self.width; }
+        }
+        Text {
+            text: item.missing ? "missing" : item.duration;
+            vertical-alignment: center;
+            width: 56px;
+            horizontal-alignment: right;
+            font-size: 12px;
+            color: item.missing ? Theme.error : Theme.on-surface-variant;
+        }
+        IconButton {
+            y: (parent.height - self.height) / 2;
+            size: 36px;
+            icon-size: 18px;
+            icon: Icons.star;
+            tint: item.favorite ? Theme.tertiary : Theme.outline-variant;
+            tooltip: "Favorite";
+            clicked => { root.toggle-favorite(); }
+        }
+        IconButton {
+            y: (parent.height - self.height) / 2;
+            size: 36px;
+            icon-size: 18px;
+            icon: Icons.edit;
+            tooltip: "Edit";
+            clicked => { root.edit(); }
+        }
+    }
+}
+
+// Snackbar at the bottom.
+export component Snackbar inherits Rectangle {
+    in property <string> text;
+    in property <bool> shown;
+    callback dismiss();
+    height: 48px;
+    width: min(560px, t.preferred-width + 72px);
+    border-radius: 12px;
+    background: Theme.inverse-surface;
+    opacity: shown ? 1 : 0;
+    drop-shadow-blur: 12px;
+    drop-shadow-color: #00000066;
+    animate opacity { duration: Motion.effect; }
+    HorizontalLayout {
+        padding-left: 16px;
+        padding-right: 4px;
+        spacing: 8px;
+        t := Text {
+            text: root.text;
+            vertical-alignment: center;
+            overflow: elide;
+            horizontal-stretch: 1;
+            color: Theme.inverse-on-surface;
+            font-size: 14px;
+        }
+        IconButton {
+            y: (parent.height - self.height) / 2;
+            icon: Icons.close;
+            tint: Theme.inverse-on-surface;
+            tooltip: "Dismiss";
+            clicked => { root.dismiss(); }
+        }
+    }
+}
+
+// Section header in settings.
+export component SectionTitle inherits Text {
+    font-size: Theme.title-size;
+    font-weight: 800;
+    color: Theme.on-surface;
+}
+
+// A filled tonal button.
+export component TonalButton inherits Rectangle {
+    in property <string> text;
+    in property <image> icon;
+    in property <bool> primary;
+    in property <bool> enabled: true;
+    callback clicked();
+    height: 40px;
+    width: lbl.preferred-width + (icon.width > 0 ? 64px : 40px);
+    border-radius: ta.pressed ? 12px : 20px;
+    background: primary ? Theme.primary : Theme.secondary-container;
+    opacity: enabled ? 1 : 0.38;
+    animate border-radius { duration: Motion.fast; easing: Springs.spatial; }
+    accessible-role: button;
+    accessible-label: text;
+    accessible-action-default => { clicked(); }
+    Rectangle {
+        border-radius: parent.border-radius;
+        background: primary ? Theme.on-primary : Theme.on-secondary-container;
+        opacity: ta.pressed ? 0.12 : ta.has-hover ? 0.08 : 0;
+    }
+    HorizontalLayout {
+        alignment: center;
+        spacing: 8px;
+        if icon.width > 0: Image {
+            source: icon;
+            width: 18px;
+            height: 18px;
+            y: (parent.height - self.height) / 2;
+            colorize: primary ? Theme.on-primary : Theme.on-secondary-container;
+        }
+        lbl := Text {
+            text: root.text;
+            vertical-alignment: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: primary ? Theme.on-primary : Theme.on-secondary-container;
+        }
+    }
+    ta := TouchArea {
+        enabled: root.enabled;
+        mouse-cursor: pointer;
+        clicked => { root.clicked(); }
+    }
+}
+
+// Captures a key combination. Rust maps the key text to a canonical name.
+export component HotkeyField inherits Rectangle {
+    in property <string> value;
+    in property <string> placeholder: "Click, then press keys";
+    out property <bool> capturing: fs.has-focus;
+    callback captured(string, bool, bool, bool, bool);
+    callback cleared();
+    height: 44px;
+    border-radius: 12px;
+    background: fs.has-focus ? Theme.primary-container : Theme.surface-container-highest;
+    border-width: fs.has-focus ? 2px : 1px;
+    border-color: fs.has-focus ? Theme.primary : Theme.outline-variant;
+    accessible-role: text-input;
+    accessible-label: "Hotkey";
+    accessible-value: value;
+    fs := FocusScope {
+        key-pressed(e) => {
+            if (e.text == Key.Escape) {
+                self.clear-focus();
+                return accept;
+            }
+            if (e.text == Key.Backspace || e.text == Key.Delete) {
+                root.cleared();
+                self.clear-focus();
+                return accept;
+            }
+            if (e.text == Key.Control || e.text == Key.Shift || e.text == Key.Alt || e.text == Key.Meta || e.text == Key.AltGr) {
+                return accept;
+            }
+            root.captured(e.text, e.modifiers.control, e.modifiers.alt, e.modifiers.shift, e.modifiers.meta);
+            self.clear-focus();
+            accept
+        }
+    }
+    TouchArea {
+        mouse-cursor: pointer;
+        clicked => { fs.focus(); }
+    }
+    HorizontalLayout {
+        padding-left: 14px;
+        padding-right: 6px;
+        spacing: 8px;
+        Image {
+            source: Icons.keyboard;
+            width: 20px;
+            height: 20px;
+            y: (parent.height - self.height) / 2;
+            colorize: Theme.on-surface-variant;
+        }
+        Text {
+            horizontal-stretch: 1;
+            vertical-alignment: center;
+            text: fs.has-focus ? "Press a key combination… (Esc cancels, Backspace clears)" : value != "" ? value : placeholder;
+            color: value != "" || fs.has-focus ? Theme.on-surface : Theme.on-surface-variant;
+            font-size: 14px;
+            font-weight: value != "" ? 700 : 400;
+            overflow: elide;
+        }
+        if value != "" && !fs.has-focus: IconButton {
+            y: (parent.height - self.height) / 2;
+            size: 32px;
+            icon-size: 16px;
+            icon: Icons.close;
+            tooltip: "Clear hotkey";
+            clicked => { root.cleared(); }
+        }
+    }
+}

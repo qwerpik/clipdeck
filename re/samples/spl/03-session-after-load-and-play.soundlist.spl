@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Soundlist url="Z:\home\user\Projects\soundpad\re\wine\media\02-rich.spl" saved="1">
+  <Sound hash="0-0-8032898" url="Z:\home\user\Projects\soundpad\re\wine\media\plain.mp3" artist="" title="plain" duration="0:03" keyModifiers="2" key="112" addedOn="2026-01-02" color="FF0000" customTag="my tag"/>
+  <Sound hash="0-0-8032900" url="Z:\home\user\Projects\soundpad\re\wine\media\notify ding.m4a" artist="" title="" duration="" addedOn="2025-12-31"/>
+  <Sound hash="1-2-3" url="Z:\home\user\Projects\soundpad\re\wine\media\Zażółć gęślą &amp; &lt;jaźń&gt; &quot;q&quot; 'a'.mp3" artist="Ünïcødé" title="Ⓣitle ✓" duration="" addedOn="2026-11-21"/>
+  <Sound hash="Z:\home\user\Projects\soundpad\re\wine\media\does-not-exist.mp3" url="Z:\home\user\Projects\soundpad\re\wine\media\does-not-exist.mp3" artist="" title="Missing file" duration="" addedOn="2026-11-21"/>
+  <Categories>
+    <Category type="1" icon="stock_icon_cat_list" hidden="true"/>
+    <Category name="Memes" icon="stock_icon_cat_home" color="00FF00" index="5" keyModifiers="4" key="113">
+      <Sound id="0"/>
+      <Sound id="2"/>
+      <Category name="Sub &amp; Nested" icon="stock_icon_cat_dir">
+        <Sound id="1"/>
+      </Category>
+    </Category>
+    <Category name="Other" icon="stock_icon_cat_dir">
+      <Sound id="3"/>
+    </Category>
+  </Categories>
+  <Hotbar>
+    <HotbarPage/>
+  </Hotbar>
+</Soundlist>

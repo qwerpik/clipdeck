@@ -1,0 +1,17 @@
+/target
+**/*.rs.bk
+*.pdb
+/dist
+# reverse-engineering workspace: third-party binaries, Wine prefix, decompiler output and vendor UI catalogs stay local
+/re/target/
+/re/wine/
+/re/ghidra/proj/
+/re/ghidra/out/
+/re/ghidra/*.log
+/re/tools/*.exe
+/re/tools/*.out
+/re/analyze-*.json
+/re/analyze-*.err
+/re/samples/screens/
+/re/samples/i18n/
+/re/soundpad.snapshot

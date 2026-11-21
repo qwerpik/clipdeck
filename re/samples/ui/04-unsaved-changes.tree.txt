@@ -1,0 +1,6 @@
+0000000000060202 id=0 cls=#32770 text="Unsaved changes" rect=1099,666 360x108 vis=1 en=1 style=14c802c4
+  0000000000020208 id=0 cls=Static text="" rect=1110,703 32x32 vis=1 en=1 style=50000003
+  000000000001020E id=0 cls=Static text="Save current sound list?" rect=1150,703 125x13 vis=1 en=1 style=50000000
+  0000000000010210 id=6 cls=Button text="&Yes" rect=1213,743 75x23 vis=1 en=1 style=50010001
+  0000000000010212 id=7 cls=Button text="&No" rect=1296,743 75x23 vis=1 en=1 style=50010000
+  0000000000010214 id=2 cls=Button text="Cancel" rect=1379,743 75x23 vis=1 en=1 style=50010000

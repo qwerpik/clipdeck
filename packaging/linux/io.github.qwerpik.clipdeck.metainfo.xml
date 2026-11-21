@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.qwerpik.clipdeck</id>
+  <name>Clipdeck</name>
+  <summary>Play sound clips into your microphone</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+  <description>
+    <p>Clipdeck is a fast soundboard for Linux and Windows. It creates a virtual microphone
+    (“Clipdeck Mic” on PipeWire, VB-CABLE on Windows) that mixes your real microphone with
+    sound clips, so friends in Discord, games and streams hear them.</p>
+    <ul>
+      <li>Global hotkeys, fuzzy search, categories, favorites</li>
+      <li>Loudness normalization (EBU R128), trim, loop, playback modes</li>
+      <li>Imports and exports Soundpad sound lists (.spl)</li>
+    </ul>
+  </description>
+  <launchable type="desktop-id">io.github.qwerpik.clipdeck.desktop</launchable>
+  <url type="homepage">https://github.com/qwerpik/clipdeck</url>
+  <url type="bugtracker">https://github.com/qwerpik/clipdeck/issues</url>
+  <content_rating type="oars-1.1"/>
+  <releases>
+    <release version="0.1.0" date="2026-11-21"/>
+  </releases>
+</component>

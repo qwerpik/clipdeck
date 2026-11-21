@@ -1,0 +1,27 @@
+[package]
+name = "clipdeck-audio"
+description = "Decoding, clip cache, loudness analysis and the lock-free mixer for Clipdeck"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+
+[dependencies]
+clipdeck-core.workspace = true
+cpal.workspace = true
+crossbeam-channel.workspace = true
+ebur128.workspace = true
+parking_lot.workspace = true
+rtrb.workspace = true
+rubato.workspace = true
+symphonia.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+
+[target.'cfg(target_os = "linux")'.dependencies]
+cpal = { workspace = true, features = ["pipewire"] }
+
+[lints]
+workspace = true

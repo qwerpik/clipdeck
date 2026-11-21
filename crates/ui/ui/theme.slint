@@ -1,0 +1,105 @@
+// Material 3 Expressive tokens. Colors are filled from Rust (HCT dynamic color from the seed).
+
+export global Theme {
+    in property <bool> dark: true;
+    in property <color> primary: #cfbcff;
+    in property <color> on-primary: #381e72;
+    in property <color> primary-container: #4f378b;
+    in property <color> on-primary-container: #eaddff;
+    in property <color> secondary: #ccc2dc;
+    in property <color> on-secondary: #332d41;
+    in property <color> secondary-container: #4a4458;
+    in property <color> on-secondary-container: #e8def8;
+    in property <color> tertiary: #efb8c8;
+    in property <color> on-tertiary: #492532;
+    in property <color> tertiary-container: #633b48;
+    in property <color> on-tertiary-container: #ffd8e4;
+    in property <color> error: #ffb4ab;
+    in property <color> on-error: #690005;
+    in property <color> error-container: #93000a;
+    in property <color> on-error-container: #ffdad6;
+    in property <color> surface: #141218;
+    in property <color> surface-dim: #141218;
+    in property <color> surface-bright: #3b383e;
+    in property <color> surface-container-lowest: #0f0d13;
+    in property <color> surface-container-low: #1d1b20;
+    in property <color> surface-container: #211f26;
+    in property <color> surface-container-high: #2b2930;
+    in property <color> surface-container-highest: #36343b;
+    in property <color> on-surface: #e6e0e9;
+    in property <color> on-surface-variant: #cac4d0;
+    in property <color> outline: #938f99;
+    in property <color> outline-variant: #49454f;
+    in property <color> inverse-surface: #e6e0e9;
+    in property <color> inverse-on-surface: #322f35;
+    in property <color> scrim: #000000;
+
+    // Type scale (Expressive: bigger, bolder display/headline).
+    out property <length> display-size: 44px;
+    out property <length> headline-size: 30px;
+    out property <length> title-size: 20px;
+    out property <length> body-size: 14px;
+    out property <length> label-size: 13px;
+    out property <length> small-size: 11px;
+
+    // Shapes.
+    out property <length> shape-xs: 6px;
+    out property <length> shape-sm: 10px;
+    out property <length> shape-md: 16px;
+    out property <length> shape-lg: 24px;
+    out property <length> shape-xl: 32px;
+    out property <length> shape-full: 999px;
+}
+
+// Motion: spring-like curves. `reduce` turns every animation into an instant change.
+export global Motion {
+    in property <bool> reduce: false;
+    // Fast spatial spring (press, hover).
+    out property <duration> fast: reduce ? 0ms : 220ms;
+    // Default spatial spring (shape morphs, open/close).
+    out property <duration> normal: reduce ? 0ms : 420ms;
+    // Slow spatial spring (page transitions).
+    out property <duration> slow: reduce ? 0ms : 560ms;
+    // Effects (color/opacity): no overshoot.
+    out property <duration> effect: reduce ? 0ms : 180ms;
+}
+
+// Overshooting cubic that approximates M3 Expressive's spatial springs (damping ≈ 0.6–0.8).
+export global Springs {
+    out property <easing> spatial: cubic-bezier(0.34, 1.45, 0.64, 1);
+    out property <easing> spatial-soft: cubic-bezier(0.30, 1.22, 0.55, 1);
+    out property <easing> effects: cubic-bezier(0.2, 0, 0, 1);
+}
+
+export global Icons {
+    out property <image> play: @image-url("icons/play.svg");
+    out property <image> stop: @image-url("icons/stop.svg");
+    out property <image> pause: @image-url("icons/pause.svg");
+    out property <image> search: @image-url("icons/search.svg");
+    out property <image> library: @image-url("icons/library.svg");
+    out property <image> star: @image-url("icons/star.svg");
+    out property <image> history: @image-url("icons/history.svg");
+    out property <image> folder: @image-url("icons/folder.svg");
+    out property <image> tune: @image-url("icons/tune.svg");
+    out property <image> mic: @image-url("icons/mic.svg");
+    out property <image> mic-off: @image-url("icons/mic-off.svg");
+    out property <image> headphones: @image-url("icons/headphones.svg");
+    out property <image> add: @image-url("icons/add.svg");
+    out property <image> edit: @image-url("icons/edit.svg");
+    out property <image> delete: @image-url("icons/delete.svg");
+    out property <image> grid: @image-url("icons/grid.svg");
+    out property <image> list: @image-url("icons/list.svg");
+    out property <image> close: @image-url("icons/close.svg");
+    out property <image> loop: @image-url("icons/loop.svg");
+    out property <image> volume: @image-url("icons/volume.svg");
+    out property <image> keyboard: @image-url("icons/keyboard.svg");
+    out property <image> import: @image-url("icons/import.svg");
+    out property <image> export: @image-url("icons/export.svg");
+    out property <image> shuffle: @image-url("icons/shuffle.svg");
+    out property <image> warning: @image-url("icons/warning.svg");
+    out property <image> note: @image-url("icons/note.svg");
+    out property <image> check: @image-url("icons/check.svg");
+    out property <image> heart: @image-url("icons/heart.svg");
+    out property <image> bolt: @image-url("icons/bolt.svg");
+    out property <image> app: @image-url("../../../assets/clipdeck-128.png");
+}

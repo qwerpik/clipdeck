@@ -1,0 +1,70 @@
+[workspace]
+resolver = "3"
+members = ["crates/core", "crates/audio", "crates/platform", "crates/ui", "crates/cli"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.88"
+license = "GPL-3.0-or-later"
+authors = ["Clipdeck contributors"]
+repository = "https://github.com/qwerpik/clipdeck"
+homepage = "https://github.com/qwerpik/clipdeck"
+
+[workspace.dependencies]
+clipdeck-core = { path = "crates/core" }
+clipdeck-audio = { path = "crates/audio" }
+clipdeck-platform = { path = "crates/platform" }
+clipdeck-ui = { path = "crates/ui" }
+
+anyhow = "1.0.104"
+clap = { version = "4.6.9", features = ["derive"] }
+crossbeam-channel = "0.5.17"
+directories = "6.0.0"
+interprocess = "2.4.9"
+nucleo-matcher = "0.3.1"
+parking_lot = "0.13.0"
+quick-xml = "0.42.0"
+serde = { version = "1.0.229", features = ["derive"] }
+thiserror = "2.0.21"
+toml = "1.2.2"
+tracing = "0.1.44"
+tracing-appender = "0.2.5"
+tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
+
+cpal = "0.18.2"
+ebur128 = "0.1.11"
+rtrb = "0.4.1"
+rubato = "5.1.0"
+symphonia = { version = "0.6.1", default-features = false, features = ["aac", "alac", "flac", "isomp4", "mkv", "mp3", "ogg", "pcm", "vorbis", "wav", "adpcm"] }
+
+slint = "1.19.0"
+slint-build = "1.19.0"
+material-colors = "0.5.0"
+rfd = "0.18.0"
+notify = "9.0.0"
+image = { version = "0.25.10", default-features = false, features = ["png"] }
+
+global-hotkey = "0.10.0"
+ashpd = "0.14.2"
+pipewire = { version = "0.10.1", features = ["v0_3_53"] }
+
+[workspace.lints.rust]
+unsafe_op_in_unsafe_fn = "warn"
+missing_debug_implementations = "allow"
+
+[workspace.lints.clippy]
+unwrap_used = "warn"
+expect_used = "warn"
+dbg_macro = "warn"
+todo = "warn"
+
+[profile.release]
+lto = "fat"
+codegen-units = 1
+opt-level = 3
+panic = "abort"
+strip = true
+
+[profile.dev.package."*"]
+opt-level = 2

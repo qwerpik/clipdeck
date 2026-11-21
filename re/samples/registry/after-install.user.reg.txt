@@ -1,0 +1,28 @@
+[Software\\Leppsoft\\Soundpad] 1795284587
+#time=1dd79e37e0cb182
+"menu"=dword:00000001
+
+[Software\\Leppsoft\\Soundpad\\MainFrame] 1795284587
+#time=1dd79e37e0cd0e0
+"updateAvailable"=dword:00000000
+"updateVersion"=""
+"version"="4.0.35"
+
+[Software\\Leppsoft\\Soundpad\\MainFrame\\Hotbar] 1795284587
+#time=1dd79e37e0cb92a
+"cols"=dword:00000006
+"hotkeys"=""
+"itemLines"=dword:00000002
+"locked"=dword:00000000
+"menuTop"=dword:00000000
+"page-0"=""
+"page-color-0"=dword:ffffffff
+"page-icon-0"=""
+"page-title-0"=""
+"pages"=dword:00000001
+"rows"=dword:00000002
+"sameColors"=dword:00000001
+"selectedPage"=dword:00000000
+"selectSoundOnPlayback"=dword:00000000
+"showPagination"=dword:00000001
+"style"=dword:00000000

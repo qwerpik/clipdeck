@@ -1,0 +1,51 @@
+[Software\\Classes\\AudioEngine\\AudioProcessingObjects\\{27384E53-9860-0AC3-9519-C60EBCAA2C71}] 1795284587
+#time=1dd79e37e19e794
+"APOInterface0"="{FD7F2B29-24D0-4B5C-B177-592C39F9CA10}"
+"Copyright"="Copyright (C) 2016-2026 Leppsoft"
+"Flags"=dword:0000000e
+"FriendlyName"="UniteFx"
+"MajorVersion"=dword:00000001
+"MaxInputConnections"=dword:00000001
+"MaxInstances"=dword:ffffffff
+"MaxOutputConnections"=dword:00000001
+"MinInputConnections"=dword:00000001
+"MinorVersion"=dword:00000008
+"MinOutputConnections"=dword:00000001
+"NumAPOInterfaces"=dword:00000001
+
+[Software\\Classes\\CLSID\\{27384E53-9860-0AC3-9519-C60EBCAA2C71}] 1795284587
+#time=1dd79e37e1a0076
+@="UniteFx Class"
+
+[Software\\Classes\\CLSID\\{27384E53-9860-0AC3-9519-C60EBCAA2C71}\\InprocServer32] 1795284587
+#time=1dd79e37e1a02c4
+@="C:\\windows\\system32\\UniteFx1.8.0.dll"
+"ThreadingModel"="Both"
+
+[Software\\Leppsoft\\Soundpad] 1795284585
+#time=1dd79e37d5f7512
+"DesktopShortcut"=""
+"InstallDir"="C:\\Program Files\\Soundpad\\"
+
+[Software\\Leppsoft\\UniteFx] 1795284587
+#time=1dd79e37e6040ea
+"CaptureDevices"=str(7):"{A6825A6D-55EF-46BF-958D-8C922E5AE44E}\0"
+"DisableDrmProtection"=dword:00000001
+"FilterBlockVoice"=dword:00000000
+"LogLevel"="ERROR"
+"SetupDate"=hex(b):6b,de,01,6b,00,00,00,00
+"Standalone"=dword:00000001
+
+[Software\\Leppsoft\\UniteFx\\{A6825A6D-55EF-46BF-958D-8C922E5AE44E}] 1795284587
+#time=1dd79e37e600008
+"Version"=dword:00000003
+
+[Software\\Leppsoft\\UniteFx\\{A6825A6D-55EF-46BF-958D-8C922E5AE44E},1] 1795284587
+#time=1dd79e37e600fee
+"AutoMode"=dword:00000000
+"Mode"=dword:00000000
+
+[Software\\Microsoft\\Windows\\CurrentVersion\\MMDevices\\Audio\\Capture\\{A6825A6D-55EF-46BF-958D-8C922E5AE44E}\\FxProperties] 1795285460
+#time=1dd79e58685d3b4
+"{d04e05a6-594b-4fb6-a80d-01af5eed7d1d},7"="{27384E53-9860-0AC3-9519-C60EBCAA2C71}"
+"{d3993a3f-99c2-4402-b5ec-a92a0367664b},7"=str(7):"{C18E2F7E-933D-4965-B7D1-1EEF228D2AF3}\0"

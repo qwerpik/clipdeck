@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Soundlist>
+  <Sound url="Z:\home\user\Projects\soundpad\re\wine\media\plain.mp3" artist="Some &amp; Artist" title="Plain title" duration="0:02" addedOn="2026-01-02" key="112" keyModifiers="2" color="FF0000" customTag="my tag"/>
+  <Sound url="Z:\home\user\Projects\soundpad\re\wine\media\notify ding.m4a" artist="" title="" duration="" addedOn="2025-12-31" numCode="42"/>
+  <Sound url="Z:\home\user\Projects\soundpad\re\wine\media\Zażółć gęślą &amp; &lt;jaźń&gt; &quot;q&quot; &apos;a&apos;.mp3" artist="Ünïcødé" title="Ⓣitle ✓" addedOn="2026-11-21" hash="1-2-3"/>
+  <Sound url="Z:\home\user\Projects\soundpad\re\wine\media\does-not-exist.mp3" title="Missing file" addedOn="2026-11-21"/>
+  <Categories>
+    <Category type="1" icon="stock_icon_cat_list" hidden="true"/>
+    <Category name="Memes" icon="stock_icon_cat_home" color="00FF00" index="5" key="113" keyModifiers="4">
+      <Sound id="0"/>
+      <Sound id="2"/>
+      <Category name="Sub &amp; Nested" icon="stock_icon_cat_dir" hidden="true">
+        <Sound id="1"/>
+      </Category>
+    </Category>
+    <Category name="Other">
+      <Sound id="3"/>
+      <Sound id="0"/>
+    </Category>
+  </Categories>
+  <Hotbar>
+    <HotbarPage>
+      <HotbarItem soundId="0"/>
+      <HotbarItem soundId="2"/>
+    </HotbarPage>
+  </Hotbar>
+</Soundlist>

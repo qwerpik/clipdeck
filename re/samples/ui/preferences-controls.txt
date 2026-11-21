@@ -1,0 +1,415 @@
+wxWindowNR id=0 568x736: 'Preferences'
+Static id=-31849 83x20: ' Warning ' [hidden-tab]
+Static id=-31847 224x27: 'Conflicting hotkey configuration detected. / ' [hidden-tab]
+_wx_SysTabCtl32 id=-31846 560x659: ''
+msctls_updown32 id=0 34x17: '' [hidden-tab]
+    - updown min=0 max=0 pos=0
+Static id=-31841 200x20: ' Volume normalization ' [hidden-tab]
+Static id=-31840 451x27: 'Adjusts the sound file volume on playback to let others hear you and your sounds with  / the same loudness.' [hidden-tab]
+Static id=-31839 72x14: 'Voice volume:' [hidden-tab]
+ComboBox id=-31838 76x21: '' [hidden-tab]
+    - item[0] "59 dB"
+    - item[1] "62 dB"
+    - item[2] "65 dB"
+    - item[3] "68 dB"
+    - item[4] "71 dB"
+    - item[5] "74 dB"
+    - item[6] "77 dB"
+    - item[7] "80 dB"
+    - item[8] "83 dB"
+    - item[9] "86 dB"
+    - item[10] "89 dB"
+    - item[11] "92 dB"
+    - item[12] "95 dB"
+    - item[13] "98 dB"
+    - item[14] "101 dB"
+    - item[15] "104 dB"
+    - item[16] "107 dB"
+Button id=-31837 24x24: '' [hidden-tab]
+Static id=-31835 356x27: 'Speak into your microphone as if you are talking to others in a voice  / application.' [hidden-tab]
+Static id=-31833 126x14: 'Measured voice volume:' [hidden-tab]
+Static id=-31832 44x14: '18.0 dB' [hidden-tab]
+Button id=-31830 253x13: 'Dynamic volume adjustment (recommended)' [hidden-tab]
+Button id=-31828 214x13: 'Fixed volume adjustment (advanced)' [hidden-tab]
+Static id=-31824 119x14: 'Volume adjustment by:' [hidden-tab]
+ComboBox id=-31823 76x21: '' [hidden-tab]
+    - item[0] "-30 dB"
+    - item[1] "-27 dB"
+    - item[2] "-24 dB"
+    - item[3] "-21 dB"
+    - item[4] "-18 dB"
+    - item[5] "-15 dB"
+    - item[6] "-12 dB"
+    - item[7] "-9 dB"
+    - item[8] "-6 dB"
+    - item[9] "-3 dB"
+    - item[10] "0 dB"
+    - item[11] "3 dB"
+    - item[12] "6 dB"
+    - item[13] "9 dB"
+    - item[14] "12 dB"
+    - item[15] "15 dB"
+    - item[16] "18 dB"
+    - item[17] "21 dB"
+    - item[18] "24 dB"
+    - item[19] "27 dB"
+    - item[20] "30 dB"
+Button id=-31822 24x24: '' [hidden-tab]
+Static id=-31820 96x14: 'Measured volume:' [hidden-tab]
+Static id=-31819 80x14: '96.0 dB' [hidden-tab]
+Static id=-31818 36x14: 'Status:' [hidden-tab]
+Static id=-31816 77x14: 'Analyzed files:' [hidden-tab]
+Static id=-31815 100x14: '0' [hidden-tab]
+Static id=-31813 106x20: ' Block voice ' [hidden-tab]
+Button id=-31812 269x13: 'Block voice while playing sounds on microphone' [hidden-tab]
+    - checked=0
+Static id=-31810 246x20: ' Play voice activation sound ' [hidden-tab]
+Static id=-31809 438x27: "Triggers other application's voice activation by playing the below selected sound to  / others before the real sound is being played." [hidden-tab]
+Button id=-31808 55x13: 'Enable' [hidden-tab]
+    - checked=0
+Edit id=-31807 391x24: '' [hidden-tab]
+Button id=251 75x24: 'Browse' [hidden-tab]
+Button id=194 24x24: '' [hidden-tab]
+Static id=-31802 174x20: ' Push-to-Talk delay ' [hidden-tab]
+Static id=-31801 417x27: "Delays the playback of sounds so you have time to press your voice application's  / Push-to-Talk hotkey." [hidden-tab]
+Static id=-31800 62x14: 'Delay in ms:' [hidden-tab]
+Edit id=-1 50x21: '' [hidden-tab]
+msctls_updown32 id=-31799 17x21: '' [hidden-tab]
+    - updown min=0 max=0 pos=0
+Static id=-31797 83x20: ' Karaoke ' [hidden-tab]
+Static id=-31796 425x27: 'Let sounds begin later on the microphone when playing sounds on speakers and  / microphone.' [hidden-tab]
+Static id=-31795 177x14: 'Delay sound on microphone in ms:' [hidden-tab]
+Edit id=-1 50x21: '' [hidden-tab]
+msctls_updown32 id=-31794 17x21: '' [hidden-tab]
+    - updown min=0 max=0 pos=0
+Static id=-31792 327x20: ' Reduce volume of other applications ' [hidden-tab]
+Static id=-31791 332x14: 'Reduce the volume of other applications while playing a sound.' [hidden-tab]
+Button id=-31789 55x13: 'Enable' [hidden-tab]
+    - checked=0
+Button id=-31787 133x13: 'Mute all other sounds' [hidden-tab] [disabled]
+Button id=-31786 246x13: 'Reduce the volume of other sounds by 80%' [hidden-tab] [disabled]
+Button id=-31785 246x13: 'Reduce the volume of other sounds by 50%' [hidden-tab] [disabled]
+Static id=-31780 146x20: ' Special Hotkeys ' [hidden-tab]
+wxWindowNR id=-31779 505x192: 'dataviewCtrl' [hidden-tab]
+wxDataView id=-31778 484x171: 'wxdataviewctrlmainwindow' [hidden-tab]
+wxWindowNR id=-31777 484x17: 'wxHeaderCtrl' [hidden-tab]
+SysHeader32 id=-31776 484x17: '' [hidden-tab]
+Button id=-31775 75x23: 'Set hotkey' [hidden-tab] [disabled]
+Button id=-31774 92x23: 'Change value' [hidden-tab] [disabled]
+Static id=-31772 154x20: ' Numpad Hotkeys ' [hidden-tab]
+Button id=-31771 174x13: 'Enable Alt+Numcode hotkeys' [hidden-tab]
+Button id=-31770 106x23: 'Change modifier' [hidden-tab]
+Button id=-31769 181x13: 'Enable Ctrl+Alt+Index hotkeys' [hidden-tab]
+Button id=-31768 106x23: 'Change modifier' [hidden-tab]
+Button id=-31766 136x13: 'Enable category index' [hidden-tab]
+    - checked=0
+Button id=-31765 72x13: 'Two digits' [hidden-tab]
+    - checked=0
+Static id=-31763 95x20: ' Auto Keys ' [hidden-tab]
+Static id=-31762 259x14: 'Presses keys automatically when you play sounds.' [hidden-tab]
+wxWindowNR id=-31761 505x94: 'dataviewCtrl' [hidden-tab]
+wxDataView id=-31760 501x73: 'wxdataviewctrlmainwindow' [hidden-tab]
+wxWindowNR id=-31759 501x17: 'wxHeaderCtrl' [hidden-tab]
+SysHeader32 id=-31758 501x17: '' [hidden-tab]
+Button id=-31757 75x23: 'Add' [hidden-tab]
+Button id=-31756 75x23: 'Edit' [hidden-tab] [disabled]
+Button id=-31755 75x23: 'Remove' [hidden-tab] [disabled]
+Static id=-31753 163x20: ' Advanced options ' [hidden-tab]
+Button id=-31752 85x13: 'Pass hotkeys' [hidden-tab]
+    - checked=0
+Button id=-31751 154x13: 'Auto stop (recommended)' [hidden-tab]
+    - checked=1
+Button id=-31750 170x13: 'Allow left and right modifiers' [hidden-tab]
+    - checked=0
+Button id=-31749 179x13: 'Same hotkeys in all categories' [hidden-tab]
+    - checked=0
+Static id=-31744 97x20: ' Language ' [hidden-tab]
+Static id=-31743 58x14: 'Language:' [hidden-tab]
+ComboBox id=-31742 200x21: '' [hidden-tab]
+    - item[0] "System default"
+    - item[1] "Arabic (ar)"
+    - item[2] "Bulgarian (Bulgaria) (bg_BG)"
+    - item[3] "Chinese (Simplified, China) (zh_CN)"
+    - item[4] "Croatian (Croatia) (hr_HR)"
+    - item[5] "Czech (cs)"
+    - item[6] "Danish (da)"
+    - item[7] "Dutch (nl)"
+    - item[8] "English (en_US)"
+    - item[9] "Estonian (Estonia) (et_EE)"
+    - item[10] "Finnish (fi)"
+    - item[11] "French (fr)"
+    - item[12] "German (de)"
+    - item[13] "Greek (Greece) (el_GR)"
+    - item[14] "Hebrew (Israel) (he_IL)"
+    - item[15] "Hindi (India) (hi_IN)"
+    - item[16] "Hungarian (Hungary) (hu_HU)"
+    - item[17] "Indonesian (Indonesia) (id_ID)"
+    - item[18] "Italian (it)"
+    - item[19] "Japanese (ja)"
+    - item[20] "Korean (ko)"
+    - item[21] "Latvian (Latvia) (lv_LV)"
+    - item[22] "Lithuanian (Lithuania) (lt_LT)"
+    - item[23] "Malay (Malaysia) (ms_MY)"
+    - item[24] "Norwegian Bokmål (Norway) (nb_NO)"
+    - item[25] "Polish (pl)"
+    - item[26] "Portuguese (Brazil) (pt_BR)"
+    - item[27] "Romanian (Romania) (ro_RO)"
+    - item[28] "Russian (ru)"
+    - item[29] "Serbian (Serbia) (sr_RS)"
+    - item[30] "Slovak (Slovakia) (sk_SK)"
+    - item[31] "Slovenian (Slovenia) (sl_SI)"
+    - item[32] "Spanish (Spain, International Sort) (es_ES)"
+    - item[33] "Swedish (sv)"
+    - item[34] "Thai (th)"
+    - item[35] "Turkish (tr)"
+    - item[36] "Ukrainian (uk)"
+    - item[37] "Vietnamese (Vietnam) (vi_VN)"
+Static id=-31741 65x14: 'Date format:' [hidden-tab]
+ComboBox id=-31740 200x21: '' [hidden-tab]
+    - item[0]* "Language default"
+    - item[1] "ISO 8601 - 2016-10-30"
+    - item[2] "English (en_US) - 10/30/2016"
+    - item[3] "English (en_GB) - 30/10/2016"
+    - item[4] "Deutsch (de_DE) - 30.10.2016"
+Static id=-31738 78x20: ' Toolbar ' [hidden-tab]
+Static id=-31737 28x14: 'Style:' [hidden-tab]
+ComboBox id=-31736 200x21: '' [hidden-tab]
+    - item[0]* "System default"
+    - item[1] "Light"
+    - item[2] "Dark"
+    - item[3] "Navy"
+Static id=-31735 31x14: 'Zoom:' [hidden-tab]
+ComboBox id=-31734 200x21: '' [hidden-tab]
+    - item[0]* "100%"
+    - item[1] "150%"
+    - item[2] "200%"
+Static id=-31733 66x14: 'Toolbar size:' [hidden-tab]
+ComboBox id=-31732 200x21: '' [hidden-tab]
+    - item[0]* "Small"
+    - item[1] "Medium"
+    - item[2] "Large"
+Static id=-31731 119x14: 'Toolbar and icon color:' [hidden-tab]
+wxWindow id=-31730 200x21: 'comboBox' [hidden-tab]
+Edit id=-31729 175x13: '' [hidden-tab]
+Static id=-31725 158x14: 'Playback position update rate:' [hidden-tab]
+msctls_trackbar32 id=-31724 160x25: '' [hidden-tab]
+    - trackbar min=10 max=200 pos=60
+Static id=-31723 21x14: '60/s' [hidden-tab]
+Button id=-31722 202x13: 'Display microphone level on toolbar' [hidden-tab]
+    - checked=0
+Button id=-31721 164x13: 'Volume slider works linearly' [hidden-tab]
+    - checked=1
+Static id=-31718 99x20: ' Play mode ' [hidden-tab]
+Static id=-31717 439x27: 'Determines whether a sound is played back on speakers, microphone, or both when  / you play it by hotkey, double-click, Enter or Play icon.' [hidden-tab]
+Button id=-31716 202x13: 'Allow resume in another play mode' [hidden-tab]
+    - checked=0
+Static id=-31715 136x14: 'Hotkey switches between:' [hidden-tab]
+ComboBox id=-31714 151x21: '' [hidden-tab]
+    - item[0] "all play modes"
+    - item[1]* "default and speakers"
+    - item[2] "default and microphone"
+Static id=-31712 47x20: ' Misc ' [hidden-tab]
+Button id=-31711 209x13: 'Run Soundpad when Windows starts' [hidden-tab]
+    - checked=0
+Button id=-31710 132x13: 'Show system tray icon' [hidden-tab]
+    - checked=1
+Button id=-31709 140x13: 'Minimize to system tray' [hidden-tab]
+    - checked=0
+Button id=-31708 152x13: 'Minimize instead of close' [hidden-tab] [disabled]
+    - checked=0
+Button id=-31707 119x13: 'Show always on top' [hidden-tab]
+    - checked=0
+Button id=-31706 162x13: 'Disable sorting in sound list' [hidden-tab]
+    - checked=0
+Button id=-31705 155x13: 'Use alternating row colors' [hidden-tab]
+    - checked=0
+Button id=-31704 131x13: 'Typing begins search' [hidden-tab]
+    - checked=1
+Button id=-31703 212x13: 'Typing prefers TTS when TTS is open' [hidden-tab]
+    - checked=0
+Button id=-31702 309x13: 'Remember playback state throughout application starts' [hidden-tab]
+    - checked=1
+Static id=-31697 147x20: ' Playback device '
+Static id=-31696 87x14: 'Playback device:'
+ComboBox id=-31695 300x21: ''
+    - item[0]* "Default"
+    - item[1] "Speakers (<host-device-0>)"
+    - item[2] "Speakers (<host-device-2>)"
+    - item[3] "Speakers (<host-device-1>)"
+    - item[4] "Speakers (PulseAudio Output)"
+Static id=-31693 167x20: ' Recording devices '
+Static id=-31692 370x14: 'Sounds will be played on the recording devices, which you select here.'
+Button id=-31691 220x13: 'Check device configuration on startup'
+    - checked=1
+Static id=-31690 140x14: 'Check at least one device:'
+wxWindowNR id=-31689 475x407: 'dataviewCtrl'
+wxDataView id=-31688 454x369: 'wxdataviewctrlmainwindow'
+wxWindowNR id=-31687 454x17: 'wxHeaderCtrl'
+SysHeader32 id=-31686 454x17: ''
+Static id=-31685 36x14: 'Status:'
+Static id=-31684 101x14: 'Repair required'
+SysLink id=-31681 176x13: '<A HREF="ms-settings:privacy-microphone">Open microphone privacy settings</A>' [hidden-tab]
+SysLink id=-31678 78x13: '<A HREF="https://www.leppsoft.com/soundpad/help/manual/compatibility/">Online manual</A>' [hidden-tab]
+Button id=-31677 75x23: 'Repair'
+Button id=-31676 113x23: 'Restart Win-Audio' [hidden-tab]
+Button id=-31675 24x24: ''
+Static id=-31670 90x20: ' Recorder ' [hidden-tab]
+Static id=-31669 100x14: 'Save recordings in:' [hidden-tab]
+Edit id=-31668 320x21: '' [hidden-tab]
+Button id=-31667 75x23: 'Browse' [hidden-tab]
+Static id=-31666 43x14: 'Save as:' [hidden-tab]
+ComboBox id=-31665 162x21: '' [hidden-tab]
+    - item[0]* "M4A"
+    - item[1] "WAV"
+Static id=-31664 86x14: 'Add to category:' [hidden-tab]
+ComboBox id=-31663 162x21: '' [hidden-tab]
+    - item[0]* "Selected category"
+    - item[1] "My Sounds"
+Static id=-31662 143x14: 'Insert position in sound list:' [hidden-tab]
+ComboBox id=-31661 162x21: '' [hidden-tab]
+    - item[0] "Beginning"
+    - item[1]* "End"
+Button id=-31660 220x13: 'Automatically normalize recordings to:' [hidden-tab]
+    - checked=1
+ComboBox id=-31659 162x21: '' [hidden-tab]
+    - item[0] "59 dB"
+    - item[1] "62 dB"
+    - item[2] "65 dB"
+    - item[3] "68 dB"
+    - item[4] "71 dB"
+    - item[5] "74 dB"
+    - item[6] "77 dB"
+    - item[7] "80 dB"
+    - item[8] "83 dB"
+    - item[9] "86 dB"
+    - item[10] "89 dB"
+    - item[11] "92 dB"
+    - item[12] "95 dB"
+    - item[13] "98 dB"
+    - item[14] "101 dB"
+    - item[15] "104 dB"
+    - item[16] "107 dB"
+Button id=-31658 83x13: 'Trim silence' [hidden-tab]
+    - checked=1
+Static id=-31657 191x14: 'Maximum recording time in seconds:' [hidden-tab]
+Edit id=-31656 162x21: '' [hidden-tab]
+Static id=-31655 29x14: '(5:00)' [hidden-tab]
+Static id=-31650 63x20: ' Editor ' [hidden-tab]
+Button id=-31649 154x13: 'Use external sound editor' [hidden-tab]
+    - checked=0
+Static id=-31648 115x14: 'External sound editor:' [hidden-tab]
+Edit id=-31647 320x21: '' [hidden-tab] [disabled]
+Button id=-31646 75x23: 'Browse' [hidden-tab] [disabled]
+Static id=-31645 36x14: 'Param:' [hidden-tab]
+Edit id=-31644 150x21: '' [hidden-tab] [disabled]
+Static id=-31638 54x14: ' Recorder ' [hidden-tab]
+Button id=214 159x13: 'Start to record speakers' [hidden-tab]
+    - checked=1
+Edit id=233 232x21: '' [hidden-tab]
+Button id=252 75x24: 'Browse' [hidden-tab]
+Button id=195 24x24: '' [hidden-tab]
+Button id=215 159x13: 'Start to record microphone' [hidden-tab]
+    - checked=1
+Edit id=234 232x21: '' [hidden-tab]
+Button id=253 75x24: 'Browse' [hidden-tab]
+Button id=196 24x24: '' [hidden-tab]
+Button id=216 159x13: 'Stop recording' [hidden-tab]
+    - checked=1
+Edit id=235 232x21: '' [hidden-tab]
+Button id=254 75x24: 'Browse' [hidden-tab]
+Button id=197 24x24: '' [hidden-tab]
+Static id=-31636 59x14: ' Play mode ' [hidden-tab]
+Button id=-31635 316x13: 'Notify me when playing first sound after application start' [hidden-tab]
+    - checked=1
+Button id=217 159x13: 'Default' [hidden-tab]
+    - checked=1
+Edit id=236 232x21: '' [hidden-tab]
+Button id=255 75x24: 'Browse' [hidden-tab]
+Button id=198 24x24: '' [hidden-tab]
+Button id=218 159x13: 'Speakers' [hidden-tab]
+    - checked=1
+Edit id=237 232x21: '' [hidden-tab]
+Button id=256 75x24: 'Browse' [hidden-tab]
+Button id=199 24x24: '' [hidden-tab]
+Button id=219 159x13: 'Microphone' [hidden-tab]
+    - checked=1
+Edit id=238 232x21: '' [hidden-tab]
+Button id=257 75x24: 'Browse' [hidden-tab]
+Button id=200 24x24: '' [hidden-tab]
+Static id=-31633 47x14: ' Hotkeys ' [hidden-tab]
+Button id=220 159x13: 'Enabled' [hidden-tab]
+    - checked=1
+Edit id=239 232x21: '' [hidden-tab]
+Button id=258 75x24: 'Browse' [hidden-tab]
+Button id=201 24x24: '' [hidden-tab]
+Button id=221 159x13: 'Disabled' [hidden-tab]
+    - checked=1
+Edit id=240 232x21: '' [hidden-tab]
+Button id=259 75x24: 'Browse' [hidden-tab]
+Button id=202 24x24: '' [hidden-tab]
+Static id=-31631 57x14: ' Auto Keys ' [hidden-tab]
+Button id=222 159x13: 'Enabled' [hidden-tab]
+    - checked=1
+Edit id=241 232x21: '' [hidden-tab]
+Button id=260 75x24: 'Browse' [hidden-tab]
+Button id=203 24x24: '' [hidden-tab]
+Button id=223 159x13: 'Disabled' [hidden-tab]
+    - checked=1
+Edit id=242 232x21: '' [hidden-tab]
+Button id=261 75x24: 'Browse' [hidden-tab]
+Button id=204 24x24: '' [hidden-tab]
+Static id=-31629 41x14: ' Hotbar ' [hidden-tab]
+Button id=224 159x13: 'Page 1' [hidden-tab]
+    - checked=1
+Edit id=243 232x21: '' [hidden-tab]
+Button id=262 75x24: 'Browse' [hidden-tab]
+Button id=205 24x24: '' [hidden-tab]
+Button id=225 159x13: 'Page 2' [hidden-tab]
+    - checked=1
+Edit id=244 232x21: '' [hidden-tab]
+Button id=263 75x24: 'Browse' [hidden-tab]
+Button id=206 24x24: '' [hidden-tab]
+Button id=226 159x13: 'Page 3' [hidden-tab]
+    - checked=1
+Edit id=245 232x21: '' [hidden-tab]
+Button id=264 75x24: 'Browse' [hidden-tab]
+Button id=207 24x24: '' [hidden-tab]
+Button id=227 159x13: 'Page 4' [hidden-tab]
+    - checked=1
+Edit id=246 232x21: '' [hidden-tab]
+Button id=265 75x24: 'Browse' [hidden-tab]
+Button id=208 24x24: '' [hidden-tab]
+Button id=228 159x13: 'Page 5' [hidden-tab]
+    - checked=1
+Edit id=247 232x21: '' [hidden-tab]
+Button id=266 75x24: 'Browse' [hidden-tab]
+Button id=209 24x24: '' [hidden-tab]
+Button id=229 159x13: 'Page 6' [hidden-tab]
+    - checked=1
+Edit id=248 232x21: '' [hidden-tab]
+Button id=267 75x24: 'Browse' [hidden-tab]
+Button id=210 24x24: '' [hidden-tab]
+Button id=230 159x13: 'Page 7' [hidden-tab]
+    - checked=1
+Edit id=249 232x21: '' [hidden-tab]
+Button id=268 75x24: 'Browse' [hidden-tab]
+Button id=211 24x24: '' [hidden-tab]
+Button id=231 159x13: 'Page 8' [hidden-tab]
+    - checked=1
+Edit id=250 232x21: '' [hidden-tab]
+Button id=269 75x24: 'Browse' [hidden-tab]
+Button id=212 24x24: '' [hidden-tab]
+Button id=232 159x13: 'Page 9' [hidden-tab]
+    - checked=1
+Edit id=251 232x21: '' [hidden-tab]
+Button id=270 75x24: 'Browse' [hidden-tab]
+Button id=213 24x24: '' [hidden-tab]
+Static id=-31625 99x14: '&Check for updates:' [hidden-tab]
+ComboBox id=-31624 150x21: '' [hidden-tab]
+    - item[0]* "Never"
+    - item[1] "Daily"
+    - item[2] "Weekly"
+Button id=-31623 75x23: 'Reset'
+Button id=-31622 75x23: 'OK'
+Button id=-31621 75x23: 'Cancel'
+Button id=-31620 75x23: 'Apply' [disabled]

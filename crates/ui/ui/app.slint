@@ -1,0 +1,1075 @@
+import { ComboBox, Slider, Switch, ScrollView, ListView, Palette } from "std-widgets.slint";
+import { Theme, Motion, Springs, Icons } from "theme.slint";
+import { SoundItem, CategoryItem, IconButton, ToggleButton, StopFab, NavItem, SearchBar, HotkeyChip, SoundCard, SoundRow, Snackbar, SectionTitle, TonalButton, HotkeyField, ProgressRing } from "components.slint";
+
+export { Theme, Motion, SoundItem, CategoryItem, Palette }
+
+export global Settings {
+    in property <bool> is-windows;
+    in property <[string]> output-devices;
+    in-out property <int> output-index;
+    in property <[string]> input-devices;
+    in-out property <int> input-index;
+    in property <[string]> cable-devices;
+    in-out property <int> cable-index;
+    in property <string> virtual-mic-status;
+    in property <bool> virtual-mic-ok;
+    in property <string> monitor-status;
+    in property <string> input-status;
+    in property <string> mic-hint;
+    in-out property <int> buffer-index;
+    in-out property <int> mode-index;
+    in-out property <int> route-index;
+    in-out property <bool> normalize;
+    in-out property <float> target-lufs: -16;
+    in-out property <bool> block-voice;
+    in-out property <float> monitor-volume;
+    in-out property <float> mic-volume;
+    in-out property <bool> hotkeys-enabled;
+    in property <string> stop-hotkey;
+    in property <string> pause-hotkey;
+    in property <string> hotkey-note;
+    in-out property <bool> dark: true;
+    in-out property <int> seed-index;
+    in property <[color]> seeds;
+    in-out property <bool> reduce-motion;
+    in-out property <bool> start-minimized;
+    in-out property <bool> tray: true;
+    in-out property <bool> close-to-tray;
+    in-out property <bool> gpu-rendering;
+    in property <[string]> watch-folders;
+    in property <string> config-path;
+    in property <string> library-path;
+    in property <string> version;
+    in property <string> latency-text;
+    callback changed();
+    callback capture-hotkey(string, string, bool, bool, bool, bool);
+    callback clear-hotkey(string);
+    callback import-spl();
+    callback export-spl();
+    callback add-watch-folder();
+    callback remove-watch-folder(int);
+    callback relink();
+    callback open-data-folder();
+    callback reopen-devices();
+    callback open-url(string);
+}
+
+export global Editor {
+    in-out property <bool> open;
+    in-out property <int> id: -1;
+    in-out property <string> name;
+    in-out property <float> volume: 1;
+    in property <string> hotkey;
+    in property <string> hotkey-error;
+    in-out property <int> mode-index;   // 0 default, 1 overlap, 2 restart, 3 stop others
+    in-out property <bool> looped;
+    in-out property <bool> favorite;
+    in property <[string]> category-names;
+    in-out property <int> category-index;
+    in-out property <int> color-index;   // 0 = none
+    in property <[color]> palette;
+    in-out property <float> trim-start;  // 0..1
+    in-out property <float> trim-end: 1; // 0..1
+    in property <int> duration-ms;
+    in property <image> waveform;
+    in property <string> path;
+    in property <string> loudness;
+    callback save();
+    callback cancel();
+    callback remove();
+    callback preview();
+    callback capture-hotkey(string, bool, bool, bool, bool);
+    callback clear-hotkey();
+    callback reveal();
+}
+
+export global CategoryEditor {
+    in-out property <bool> open;
+    in-out property <int> id: -1;
+    in-out property <string> name;
+    in-out property <int> color-index;
+    in property <[color]> palette;
+    in property <string> hotkey;
+    callback save();
+    callback remove();
+    callback cancel();
+    callback capture-hotkey(string, bool, bool, bool, bool);
+    callback clear-hotkey();
+}
+
+component Card inherits Rectangle {
+    border-radius: Theme.shape-lg;
+    background: Theme.surface-container;
+    VerticalLayout {
+        padding: 20px;
+        spacing: 14px;
+        @children
+    }
+}
+
+component Row inherits HorizontalLayout {
+    in property <string> label;
+    in property <string> hint;
+    spacing: 16px;
+    alignment: space-between;
+    VerticalLayout {
+        alignment: center;
+        horizontal-stretch: 1;
+        Text { text: label; font-size: 15px; font-weight: 600; color: Theme.on-surface; wrap: word-wrap; }
+        if hint != "": Text { text: hint; font-size: 12px; color: Theme.on-surface-variant; wrap: word-wrap; }
+    }
+    @children
+}
+
+component StatusDot inherits Rectangle {
+    in property <bool> ok;
+    width: 10px;
+    height: 10px;
+    border-radius: 5px;
+    background: ok ? #3ddc84 : Theme.error;
+}
+
+component SettingsPage inherits ScrollView {
+    VerticalLayout {
+        padding: 8px;
+        padding-bottom: 120px;
+        spacing: 20px;
+
+        Card {
+            SectionTitle { text: "Audio"; }
+            Row {
+                label: "Virtual microphone";
+                hint: Settings.is-windows
+                    ? "Clipdeck plays into VB-CABLE. In Discord, pick “CABLE Output” as your input device."
+                    : "Clipdeck creates “Clipdeck Mic”. In Discord pick it as your input device and turn noise suppression off.";
+                HorizontalLayout {
+                    spacing: 8px;
+                    alignment: end;
+                    StatusDot { ok: Settings.virtual-mic-ok; y: (parent.height - self.height) / 2; }
+                    Text { text: Settings.virtual-mic-status; vertical-alignment: center; color: Theme.on-surface-variant; font-size: 13px; max-width: 280px; overflow: elide; }
+                }
+            }
+            if Settings.is-windows && !Settings.virtual-mic-ok: Rectangle {
+                height: 64px;
+                border-radius: 16px;
+                background: Theme.tertiary-container;
+                HorizontalLayout {
+                    padding: 14px;
+                    spacing: 12px;
+                    Image { source: Icons.warning; width: 24px; height: 24px; y: (parent.height - self.height) / 2; colorize: Theme.on-tertiary-container; }
+                    Text {
+                        text: "VB-CABLE is not installed. Install the free driver, restart Clipdeck, then choose “CABLE Output” in Discord.";
+                        wrap: word-wrap;
+                        vertical-alignment: center;
+                        horizontal-stretch: 1;
+                        color: Theme.on-tertiary-container;
+                    }
+                    TonalButton { text: "Get VB-CABLE"; primary: true; y: (parent.height - self.height) / 2; clicked => { Settings.open-url("https://vb-audio.com/Cable/"); } }
+                }
+            }
+            if Settings.is-windows: Row {
+                label: "Cable device";
+                hint: "The output that feeds the virtual microphone.";
+                ComboBox { width: 280px; model: Settings.cable-devices; current-index <=> Settings.cable-index; selected => { Settings.changed(); } }
+            }
+            Row {
+                label: "Hear it yourself";
+                hint: Settings.monitor-status;
+                ComboBox { width: 280px; model: Settings.output-devices; current-index <=> Settings.output-index; selected => { Settings.changed(); } }
+            }
+            Row {
+                label: "Your microphone";
+                hint: Settings.input-status;
+                ComboBox { width: 280px; model: Settings.input-devices; current-index <=> Settings.input-index; selected => { Settings.changed(); } }
+            }
+            Row {
+                label: "Monitor volume";
+                Slider { width: 280px; minimum: 0; maximum: 1; value <=> Settings.monitor-volume; changed => { Settings.changed(); } }
+            }
+            Row {
+                label: "Microphone volume";
+                hint: "Level of your real voice in the virtual mic.";
+                Slider { width: 280px; minimum: 0; maximum: 2; value <=> Settings.mic-volume; changed => { Settings.changed(); } }
+            }
+            Row {
+                label: "Mute my voice while a sound plays";
+                hint: "Soundpad calls this “block voice”.";
+                Switch { checked <=> Settings.block-voice; toggled => { Settings.changed(); } }
+            }
+            Row {
+                label: "Playback mode";
+                hint: "What happens when you trigger a sound while others play.";
+                ComboBox { width: 280px; model: ["Overlap", "Restart the same sound", "Stop others first"]; current-index <=> Settings.mode-index; selected => { Settings.changed(); } }
+            }
+            Row {
+                label: "Default route";
+                ComboBox { width: 280px; model: ["Microphone and me", "Only me", "Only microphone"]; current-index <=> Settings.route-index; selected => { Settings.changed(); } }
+            }
+            Row {
+                label: "Loudness normalization";
+                hint: "Every sound plays at about " + round(Settings.target-lufs) + " LUFS, so nothing blasts your friends.";
+                Switch { checked <=> Settings.normalize; toggled => { Settings.changed(); } }
+            }
+            if Settings.normalize: Row {
+                label: "Target loudness";
+                Slider { width: 280px; minimum: -30; maximum: -8; value <=> Settings.target-lufs; changed => { Settings.changed(); } }
+            }
+            Row {
+                label: "Buffer size";
+                hint: "Smaller is faster; raise it if you hear crackles.";
+                ComboBox { width: 280px; model: ["128 frames", "256 frames", "512 frames", "1024 frames"]; current-index <=> Settings.buffer-index; selected => { Settings.changed(); } }
+            }
+            HorizontalLayout {
+                alignment: end;
+                spacing: 8px;
+                Text { text: Settings.latency-text; color: Theme.on-surface-variant; vertical-alignment: center; font-size: 12px; }
+                TonalButton { text: "Reconnect devices"; clicked => { Settings.reopen-devices(); } }
+            }
+        }
+
+        Card {
+            SectionTitle { text: "Hotkeys"; }
+            if Settings.hotkey-note != "": Text { text: Settings.hotkey-note; wrap: word-wrap; color: Theme.on-surface-variant; font-size: 13px; }
+            Row {
+                label: "Global hotkeys";
+                hint: "Per-sound hotkeys are set in each sound's editor.";
+                Switch { checked <=> Settings.hotkeys-enabled; toggled => { Settings.changed(); } }
+            }
+            Row {
+                label: "Stop all";
+                HotkeyField {
+                    width: 280px;
+                    value: Settings.stop-hotkey;
+                    captured(t, c, a, s, m) => { Settings.capture-hotkey("stop", t, c, a, s, m); }
+                    cleared => { Settings.clear-hotkey("stop"); }
+                }
+            }
+            Row {
+                label: "Pause / resume";
+                HotkeyField {
+                    width: 280px;
+                    value: Settings.pause-hotkey;
+                    captured(t, c, a, s, m) => { Settings.capture-hotkey("pause", t, c, a, s, m); }
+                    cleared => { Settings.clear-hotkey("pause"); }
+                }
+            }
+        }
+
+        Card {
+            SectionTitle { text: "Appearance"; }
+            Row {
+                label: "Dark theme";
+                Switch { checked <=> Settings.dark; toggled => { Settings.changed(); } }
+            }
+            Row {
+                label: "Accent color";
+                hint: "Material dynamic color builds the whole palette from it.";
+                HorizontalLayout {
+                    spacing: 10px;
+                    alignment: end;
+                    for c[i] in Settings.seeds: Rectangle {
+                        width: 36px;
+                        height: 36px;
+                        border-radius: Settings.seed-index == i ? 12px : 18px;
+                        background: c;
+                        border-width: Settings.seed-index == i ? 3px : 0px;
+                        border-color: Theme.on-surface;
+                        animate border-radius { duration: Motion.normal; easing: Springs.spatial; }
+                        TouchArea {
+                            mouse-cursor: pointer;
+                            clicked => {
+                                Settings.seed-index = i;
+                                Settings.changed();
+                            }
+                        }
+                    }
+                }
+            }
+            Row {
+                label: "Reduce motion";
+                hint: "Turns off springs and shape morphing.";
+                Switch { checked <=> Settings.reduce-motion; toggled => { Settings.changed(); } }
+            }
+        }
+
+        Card {
+            SectionTitle { text: "Window"; }
+            Row {
+                label: "Tray icon";
+                Switch { checked <=> Settings.tray; toggled => { Settings.changed(); } }
+            }
+            Row {
+                label: "Close to tray";
+                hint: "Closing the window keeps Clipdeck and its hotkeys running.";
+                Switch { checked <=> Settings.close-to-tray; toggled => { Settings.changed(); } }
+            }
+            Row {
+                label: "Start minimized";
+                Switch { checked <=> Settings.start-minimized; toggled => { Settings.changed(); } }
+            }
+            Row {
+                label: "GPU rendering";
+                hint: "Smoother on very large or high-DPI windows; uses about 70 MB more memory. Takes effect after a restart.";
+                Switch { checked <=> Settings.gpu-rendering; toggled => { Settings.changed(); } }
+            }
+        }
+
+        Card {
+            SectionTitle { text: "Library"; }
+            Row {
+                label: "Soundpad lists";
+                hint: "Import a .spl (hotkeys, categories, colors and play counts carry over) or export yours back.";
+                HorizontalLayout {
+                    spacing: 8px;
+                    TonalButton { text: "Import .spl"; icon: Icons.import; clicked => { Settings.import-spl(); } }
+                    TonalButton { text: "Export .spl"; icon: Icons.export; clicked => { Settings.export-spl(); } }
+                }
+            }
+            Row {
+                label: "Watched folders";
+                hint: "New audio files in these folders are added automatically.";
+                TonalButton { text: "Add folder"; icon: Icons.folder; clicked => { Settings.add-watch-folder(); } }
+            }
+            for f[i] in Settings.watch-folders: HorizontalLayout {
+                spacing: 8px;
+                Image { source: Icons.folder; width: 18px; height: 18px; y: (parent.height - self.height) / 2; colorize: Theme.on-surface-variant; }
+                Text { text: f; horizontal-stretch: 1; vertical-alignment: center; color: Theme.on-surface; overflow: elide; }
+                IconButton { icon: Icons.close; size: 32px; icon-size: 16px; tooltip: "Stop watching"; clicked => { Settings.remove-watch-folder(i); } }
+            }
+            Row {
+                label: "Missing files";
+                hint: "Find moved files by name inside a folder you pick.";
+                TonalButton { text: "Relink…"; clicked => { Settings.relink(); } }
+            }
+        }
+
+        Card {
+            SectionTitle { text: "About"; }
+            Text { text: "Clipdeck " + Settings.version + " — a fast soundboard for Linux and Windows. GPL-3.0-or-later."; color: Theme.on-surface-variant; wrap: word-wrap; }
+            Text { text: "Settings: " + Settings.config-path; color: Theme.on-surface-variant; font-size: 12px; wrap: word-wrap; }
+            Text { text: "Library: " + Settings.library-path; color: Theme.on-surface-variant; font-size: 12px; wrap: word-wrap; }
+            HorizontalLayout {
+                alignment: start;
+                spacing: 8px;
+                TonalButton { text: "Open data folder"; clicked => { Settings.open-data-folder(); } }
+                TonalButton { text: "Project page"; clicked => { Settings.open-url("https://github.com/qwerpik/clipdeck"); } }
+            }
+        }
+    }
+}
+
+// Sound editor as a modal sheet.
+component EditorSheet inherits Rectangle {
+    background: #00000088;
+    TouchArea { clicked => { Editor.cancel(); } }
+    sheet := Rectangle {
+        width: min(parent.width - 32px, 640px);
+        height: min(parent.height - 32px, 700px);
+        border-radius: 32px;
+        background: Theme.surface-container-high;
+        drop-shadow-blur: 24px;
+        drop-shadow-color: #00000088;
+        TouchArea { }
+        ScrollView {
+            height: parent.height - 76px;
+            y: 0;
+            VerticalLayout {
+                padding: 24px;
+                padding-bottom: 8px;
+                spacing: 14px;
+                HorizontalLayout {
+                    spacing: 12px;
+                    Text { text: "Edit sound"; font-size: Theme.headline-size; font-weight: 800; color: Theme.on-surface; horizontal-stretch: 1; }
+                    IconButton { icon: Icons.close; tooltip: "Close"; clicked => { Editor.cancel(); } }
+                }
+                Text { text: Editor.path; font-size: 12px; color: Theme.on-surface-variant; overflow: elide; }
+                Rectangle {
+                    height: 52px;
+                    border-radius: 14px;
+                    background: Theme.surface-container-highest;
+                    name-input := TextInput {
+                        x: 16px;
+                        width: parent.width - 32px;
+                        height: 100%;
+                        vertical-alignment: center;
+                        text <=> Editor.name;
+                        font-size: 18px;
+                        font-weight: 700;
+                        color: Theme.on-surface;
+                        single-line: true;
+                    }
+                }
+                // Waveform with trim handles.
+                wave := Rectangle {
+                    height: 120px;
+                    border-radius: 16px;
+                    background: Theme.surface-container-lowest;
+                    clip: true;
+                    Image { source: Editor.waveform; width: 100%; height: 100%; image-fit: fill; colorize: Theme.primary; }
+                    // Dimmed trimmed-out regions.
+                    Rectangle { x: 0; width: Editor.trim-start * parent.width; height: 100%; background: Theme.surface-container-lowest; opacity: 0.75; }
+                    Rectangle { x: Editor.trim-end * parent.width; width: parent.width - self.x; height: 100%; background: Theme.surface-container-lowest; opacity: 0.75; }
+                    start-h := Rectangle {
+                        x: Editor.trim-start * parent.width - 6px;
+                        width: 12px;
+                        height: 100%;
+                        Rectangle { width: 4px; border-radius: 2px; background: Theme.tertiary; }
+                        TouchArea {
+                            mouse-cursor: ew-resize;
+                            moved => {
+                                if (self.pressed) {
+                                    Editor.trim-start = clamp((start-h.x + self.mouse-x) / wave.width, 0, Editor.trim-end - 0.01);
+                                }
+                            }
+                        }
+                    }
+                    end-h := Rectangle {
+                        x: Editor.trim-end * parent.width - 6px;
+                        width: 12px;
+                        height: 100%;
+                        Rectangle { width: 4px; border-radius: 2px; background: Theme.tertiary; }
+                        TouchArea {
+                            mouse-cursor: ew-resize;
+                            moved => {
+                                if (self.pressed) {
+                                    Editor.trim-end = clamp((end-h.x + self.mouse-x) / wave.width, Editor.trim-start + 0.01, 1);
+                                }
+                            }
+                        }
+                    }
+                }
+                HorizontalLayout {
+                    spacing: 12px;
+                    Text {
+                        text: "Trim " + round(Editor.trim-start * Editor.duration-ms / 100) / 10 + " s – " + round(Editor.trim-end * Editor.duration-ms / 100) / 10 + " s" + (Editor.loudness != "" ? "   ·   " + Editor.loudness : "");
+                        color: Theme.on-surface-variant;
+                        vertical-alignment: center;
+                        horizontal-stretch: 1;
+                        font-size: 13px;
+                    }
+                    TonalButton { text: "Preview"; icon: Icons.play; clicked => { Editor.preview(); } }
+                    TonalButton { text: "Reset trim"; clicked => { Editor.trim-start = 0; Editor.trim-end = 1; } }
+                }
+                Row {
+                    label: "Volume";
+                    Slider { width: 260px; minimum: 0; maximum: 2; value <=> Editor.volume; }
+                }
+                Row {
+                    label: "Hotkey";
+                    hint: Editor.hotkey-error;
+                    HotkeyField {
+                        width: 260px;
+                        value: Editor.hotkey;
+                        captured(t, c, a, s, m) => { Editor.capture-hotkey(t, c, a, s, m); }
+                        cleared => { Editor.clear-hotkey(); }
+                    }
+                }
+                Row {
+                    label: "Playback mode";
+                    ComboBox { width: 260px; model: ["Use default", "Overlap", "Restart", "Stop others"]; current-index <=> Editor.mode-index; }
+                }
+                Row {
+                    label: "Category";
+                    ComboBox { width: 260px; model: Editor.category-names; current-index <=> Editor.category-index; }
+                }
+                Row {
+                    label: "Loop until stopped";
+                    Switch { checked <=> Editor.looped; }
+                }
+                Row {
+                    label: "Favorite";
+                    Switch { checked <=> Editor.favorite; }
+                }
+                Row {
+                    label: "Color";
+                    HorizontalLayout {
+                        spacing: 8px;
+                        alignment: end;
+                        for c[i] in Editor.palette: Rectangle {
+                            width: 30px;
+                            height: 30px;
+                            border-radius: Editor.color-index == i ? 10px : 15px;
+                            background: i == 0 ? Theme.surface-container-highest : c;
+                            border-width: Editor.color-index == i ? 3px : 1px;
+                            border-color: Editor.color-index == i ? Theme.on-surface : Theme.outline-variant;
+                            animate border-radius { duration: Motion.fast; easing: Springs.spatial; }
+                            if i == 0: Image { source: Icons.close; width: 14px; height: 14px; colorize: Theme.on-surface-variant; }
+                            TouchArea { mouse-cursor: pointer; clicked => { Editor.color-index = i; } }
+                        }
+                    }
+                }
+            }
+        }
+        // Actions stay pinned under the scrolling form.
+        actions := HorizontalLayout {
+            y: parent.height - self.height;
+            height: 76px;
+            padding: 18px;
+            padding-left: 24px;
+            padding-right: 24px;
+            spacing: 10px;
+            TonalButton { text: "Remove"; icon: Icons.delete; clicked => { Editor.remove(); } }
+            TonalButton { text: "Show file"; icon: Icons.folder; clicked => { Editor.reveal(); } }
+            Rectangle { horizontal-stretch: 1; }
+            TonalButton { text: "Cancel"; clicked => { Editor.cancel(); } }
+            TonalButton { text: "Save"; primary: true; icon: Icons.check; clicked => { Editor.save(); } }
+        }
+    }
+}
+
+component CategorySheet inherits Rectangle {
+    background: #00000088;
+    TouchArea { clicked => { CategoryEditor.cancel(); } }
+    Rectangle {
+        width: min(parent.width - 32px, 520px);
+        height: 380px;
+        border-radius: 32px;
+        background: Theme.surface-container-high;
+        drop-shadow-blur: 24px;
+        drop-shadow-color: #00000088;
+        TouchArea { }
+        VerticalLayout {
+            padding: 24px;
+            spacing: 16px;
+            Text { text: "Category"; font-size: Theme.headline-size; font-weight: 800; color: Theme.on-surface; }
+            Rectangle {
+                height: 52px;
+                border-radius: 14px;
+                background: Theme.surface-container-highest;
+                cat-name := TextInput {
+                    x: 16px;
+                    width: parent.width - 32px;
+                    height: 100%;
+                    vertical-alignment: center;
+                    text <=> CategoryEditor.name;
+                    font-size: 18px;
+                    font-weight: 700;
+                    color: Theme.on-surface;
+                    single-line: true;
+                    accepted => { CategoryEditor.save(); }
+                }
+            }
+            Row {
+                label: "Random-play hotkey";
+                HotkeyField {
+                    width: 240px;
+                    value: CategoryEditor.hotkey;
+                    captured(t, c, a, s, m) => { CategoryEditor.capture-hotkey(t, c, a, s, m); }
+                    cleared => { CategoryEditor.clear-hotkey(); }
+                }
+            }
+            HorizontalLayout {
+                spacing: 8px;
+                for c[i] in CategoryEditor.palette: Rectangle {
+                    width: 30px;
+                    height: 30px;
+                    border-radius: CategoryEditor.color-index == i ? 10px : 15px;
+                    background: i == 0 ? Theme.surface-container-highest : c;
+                    border-width: CategoryEditor.color-index == i ? 3px : 1px;
+                    border-color: CategoryEditor.color-index == i ? Theme.on-surface : Theme.outline-variant;
+                    animate border-radius { duration: Motion.fast; easing: Springs.spatial; }
+                    TouchArea { mouse-cursor: pointer; clicked => { CategoryEditor.color-index = i; } }
+                }
+            }
+            Rectangle { vertical-stretch: 1; }
+            HorizontalLayout {
+                spacing: 10px;
+                TonalButton { text: "Delete"; icon: Icons.delete; clicked => { CategoryEditor.remove(); } }
+                Rectangle { horizontal-stretch: 1; }
+                TonalButton { text: "Cancel"; clicked => { CategoryEditor.cancel(); } }
+                TonalButton { text: "Save"; primary: true; icon: Icons.check; clicked => { CategoryEditor.save(); } }
+            }
+        }
+    }
+    init => { cat-name.focus(); }
+}
+
+export component ClipdeckTray inherits SystemTrayIcon {
+    icon: Icons.app;
+    tooltip: "Clipdeck";
+    title: "Clipdeck";
+    callback show-hide();
+    callback stop-all();
+    callback toggle-mic();
+    callback toggle-monitor();
+    callback quit();
+    clicked => { show-hide(); }
+    Menu {
+        MenuItem { title: "Show / hide Clipdeck"; activated => { root.show-hide(); } }
+        MenuItem { title: "Stop all sounds"; activated => { root.stop-all(); } }
+        MenuSeparator { }
+        MenuItem { title: "Toggle microphone passthrough"; activated => { root.toggle-mic(); } }
+        MenuItem { title: "Toggle hear-it-yourself"; activated => { root.toggle-monitor(); } }
+        MenuSeparator { }
+        MenuItem { title: "Quit"; activated => { root.quit(); } }
+    }
+}
+
+export component AppWindow inherits Window {
+    title: "Clipdeck";
+    icon: Icons.app;
+    min-width: 560px;
+    min-height: 460px;
+    preferred-width: 1180px;
+    preferred-height: 760px;
+    background: Theme.surface;
+    default-font-size: Theme.body-size;
+    forward-focus: keys;
+
+    in property <[SoundItem]> sounds;
+    in property <[CategoryItem]> categories;
+    in property <int> library-count;
+    in property <int> favorites-count;
+    in-out property <int> page: 0;
+    in-out property <int> category-id: -1;
+    in property <string> page-title: "Library";
+    in property <string> page-subtitle;
+    in-out property <string> search;
+    in-out property <bool> grid-view: true;
+    in-out property <int> selected: -1;
+
+    in property <bool> np-active;
+    in property <string> np-title;
+    in property <float> np-progress;
+    in property <string> np-time;
+    in property <int> np-count;
+    in-out property <float> master-volume: 0.8;
+    in-out property <bool> monitor-on: true;
+    in-out property <bool> mic-on: true;
+    in property <float> level;
+    in property <bool> mic-ok;
+    in property <string> mic-label;
+
+    in property <string> snack-text;
+    in property <bool> snack-shown;
+    in property <bool> dropping;
+
+    callback search-edited(string);
+    callback play(int);
+    callback stop-all();
+    callback edit(int);
+    callback toggle-favorite(int);
+    callback navigate(int, int);
+    callback add-files();
+    callback add-folder();
+    callback files-dropped(DropEvent);
+    callback master-volume-changed(float);
+    callback monitor-toggled(bool);
+    callback mic-toggled(bool);
+    callback dismiss-snack();
+    callback view-changed(bool);
+    callback random();
+    callback new-category();
+    callback edit-category(int);
+
+    property <length> gap: 14px;
+    property <length> card-min: 188px;
+    property <length> card-h: 150px;
+    property <length> content-w: content.width - 22px; // leave room for the scrollbar
+    property <int> cols: max(1, floor((content-w + gap) / (card-min + gap)));
+    property <length> card-w: (content-w - (cols - 1) * gap) / cols;
+    property <int> rows: ceil(sounds.length / cols);
+
+    public function focus-search() {
+        search-bar.focus-input();
+    }
+
+    function move-selection(delta: int) {
+        if (sounds.length == 0) { return; }
+        selected = clamp(selected < 0 ? 0 : selected + delta, 0, sounds.length - 1);
+    }
+
+    keys := FocusScope {
+        key-pressed(e) => {
+            if (Editor.open || CategoryEditor.open) {
+                if (e.text == Key.Escape) { Editor.cancel(); CategoryEditor.cancel(); return accept; }
+                return reject;
+            }
+            if (e.modifiers.control && (e.text == "f" || e.text == "F")) {
+                root.focus-search();
+                return accept;
+            }
+            if (e.modifiers.control && e.text == "1") { root.navigate(0, -1); return accept; }
+            if (e.modifiers.control && e.text == "2") { root.navigate(1, -1); return accept; }
+            if (e.modifiers.control && e.text == "3") { root.navigate(2, -1); return accept; }
+            if (e.modifiers.control && e.text == "4") { root.navigate(3, root.category-id); return accept; }
+            if (e.modifiers.control && (e.text == "5" || e.text == ",")) { root.navigate(4, -1); return accept; }
+            if (e.modifiers.control && (e.text == "n" || e.text == "N")) { root.add-files(); return accept; }
+            if (e.text == Key.RightArrow) { root.move-selection(1); return accept; }
+            if (e.text == Key.LeftArrow) { root.move-selection(-1); return accept; }
+            if (e.text == Key.DownArrow) { root.move-selection(root.grid-view && root.page != 4 ? root.cols : 1); return accept; }
+            if (e.text == Key.UpArrow) { root.move-selection(root.grid-view && root.page != 4 ? -root.cols : -1); return accept; }
+            if (e.text == Key.Return) {
+                if (root.selected >= 0 && root.selected < root.sounds.length) { root.play(root.sounds[root.selected].id); }
+                return accept;
+            }
+            if (e.text == " ") { root.stop-all(); return accept; }
+            if (e.text == Key.F2) {
+                if (root.selected >= 0 && root.selected < root.sounds.length) { root.edit(root.sounds[root.selected].id); }
+                return accept;
+            }
+            if (e.text == Key.Escape) {
+                root.search = "";
+                root.search-edited("");
+                return accept;
+            }
+            // Typing anywhere starts a search.
+            if (!e.modifiers.control && !e.modifiers.alt && !e.modifiers.meta && e.text != "" && e.text >= "!" && e.text <= "~") {
+                root.search = root.search + e.text;
+                root.search-edited(root.search);
+                root.focus-search();
+                return accept;
+            }
+            reject
+        }
+    }
+
+    DropArea {
+        can-drop(e) => { return DragAction.copy; }
+        dropped(e) => {
+            root.files-dropped(e);
+            return DragAction.copy;
+        }
+    }
+
+    HorizontalLayout {
+        // Navigation rail.
+        rail := Rectangle {
+            width: 96px;
+            background: Theme.surface-container-low;
+            VerticalLayout {
+                padding-top: 20px;
+                padding-bottom: 20px;
+                spacing: 6px;
+                alignment: start;
+                HorizontalLayout {
+                    alignment: center;
+                    padding-bottom: 12px;
+                    Image { source: Icons.app; width: 44px; height: 44px; }
+                }
+                HorizontalLayout {
+                    alignment: center;
+                    padding-bottom: 14px;
+                    add-fab := Rectangle {
+                        width: 56px;
+                        height: 56px;
+                        border-radius: add-ta.pressed ? 28px : 16px;
+                        background: Theme.tertiary-container;
+                        animate border-radius { duration: Motion.fast; easing: Springs.spatial; }
+                        accessible-role: button;
+                        accessible-label: "Add sounds";
+                        Image { source: Icons.add; width: 26px; height: 26px; colorize: Theme.on-tertiary-container; }
+                        add-ta := TouchArea { mouse-cursor: pointer; clicked => { root.add-files(); } }
+                    }
+                }
+                HorizontalLayout { alignment: center; NavItem { icon: Icons.library; label: "Library"; selected: root.page == 0; clicked => { root.navigate(0, -1); } } }
+                HorizontalLayout { alignment: center; NavItem { icon: Icons.star; label: "Favorites"; selected: root.page == 1; clicked => { root.navigate(1, -1); } } }
+                HorizontalLayout { alignment: center; NavItem { icon: Icons.history; label: "Recent"; selected: root.page == 2; clicked => { root.navigate(2, -1); } } }
+                HorizontalLayout { alignment: center; NavItem { icon: Icons.folder; label: "Categories"; selected: root.page == 3; clicked => { root.navigate(3, root.category-id); } } }
+                HorizontalLayout { alignment: center; NavItem { icon: Icons.tune; label: "Settings"; selected: root.page == 4; clicked => { root.navigate(4, -1); } } }
+            }
+        }
+
+        // Category list (only on the Categories page).
+        if root.page == 3: Rectangle {
+            width: 232px;
+            background: Theme.surface-container-low;
+            VerticalLayout {
+                padding: 12px;
+                padding-top: 24px;
+                spacing: 4px;
+                HorizontalLayout {
+                    padding-left: 12px;
+                    padding-bottom: 8px;
+                    Text { text: "Categories"; font-size: 18px; font-weight: 800; color: Theme.on-surface; vertical-alignment: center; horizontal-stretch: 1; }
+                    IconButton { icon: Icons.add; size: 36px; icon-size: 20px; tooltip: "New category"; clicked => { root.new-category(); } }
+                }
+                ListView {
+                    for c in root.categories: Rectangle {
+                        height: 44px;
+                        border-radius: 22px;
+                        background: root.category-id == c.id ? Theme.secondary-container : cta.has-hover ? Theme.surface-container-high : transparent;
+                        animate background { duration: Motion.effect; }
+                        cta := TouchArea {
+                            mouse-cursor: pointer;
+                            clicked => { root.navigate(3, c.id); }
+                            double-clicked => { root.edit-category(c.id); }
+                        }
+                        HorizontalLayout {
+                            padding-left: 14px + c.depth * 14px;
+                            padding-right: 14px;
+                            spacing: 10px;
+                            Rectangle { width: 10px; height: 10px; y: (parent.height - self.height) / 2; border-radius: 5px; background: c.has-color ? c.color : Theme.outline; }
+                            Text { text: c.name; vertical-alignment: center; horizontal-stretch: 1; overflow: elide; font-weight: root.category-id == c.id ? 700 : 500; color: Theme.on-surface; }
+                            Text { text: c.count; vertical-alignment: center; color: Theme.on-surface-variant; font-size: 12px; }
+                            if cta.has-hover || root.category-id == c.id: IconButton {
+                                y: (parent.height - self.height) / 2;
+                                size: 30px;
+                                icon-size: 16px;
+                                icon: Icons.edit;
+                                tooltip: "Rename, color, hotkey";
+                                clicked => { root.edit-category(c.id); }
+                            }
+                        }
+                    }
+                }
+                if root.categories.length == 0: Text {
+                    text: "No categories yet. Import a Soundpad list or create one with +.";
+                    wrap: word-wrap;
+                    color: Theme.on-surface-variant;
+                }
+            }
+        }
+
+        // Main column.
+        main := Rectangle {
+            horizontal-stretch: 1;
+            VerticalLayout {
+                padding-left: 28px;
+                padding-right: 28px;
+                padding-top: 20px;
+                spacing: 16px;
+
+                // Header + search.
+                HorizontalLayout {
+                    spacing: 16px;
+                    VerticalLayout {
+                        alignment: center;
+                        Text { text: root.page-title; font-size: Theme.display-size; font-weight: 900; color: Theme.on-surface; letter-spacing: -0.5px; }
+                        Text { text: root.page-subtitle; font-size: 13px; color: Theme.on-surface-variant; }
+                    }
+                    search-bar := SearchBar {
+                        visible: root.page != 4;
+                        horizontal-stretch: 1;
+                        min-width: 200px;
+                        text <=> root.search;
+                        edited(t) => { root.search-edited(t); }
+                        accepted => {
+                            if (root.sounds.length > 0) { root.play(root.sounds[max(root.selected, 0)].id); }
+                        }
+                        escape => {
+                            root.search = "";
+                            root.search-edited("");
+                            keys.focus();
+                        }
+                    }
+                    if root.page != 4: HorizontalLayout {
+                        spacing: 4px;
+                        alignment: center;
+                        IconButton { icon: Icons.shuffle; tooltip: "Play a random sound"; clicked => { root.random(); } }
+                        IconButton {
+                            icon: root.grid-view ? Icons.list : Icons.grid;
+                            tooltip: root.grid-view ? "Compact list" : "Card grid";
+                            clicked => {
+                                root.grid-view = !root.grid-view;
+                                root.view-changed(root.grid-view);
+                            }
+                        }
+                    }
+                }
+
+                content := Rectangle {
+                    vertical-stretch: 1;
+                    if root.page == 4: SettingsPage { width: 100%; height: 100%; }
+                    if root.page != 4 && root.sounds.length == 0: VerticalLayout {
+                        alignment: center;
+                        spacing: 16px;
+                        HorizontalLayout {
+                            alignment: center;
+                            Rectangle {
+                                width: 120px;
+                                height: 120px;
+                                border-radius: 40px;
+                                background: Theme.primary-container;
+                                Image { source: Icons.note; width: 56px; height: 56px; colorize: Theme.on-primary-container; }
+                            }
+                        }
+                        Text {
+                            horizontal-alignment: center;
+                            text: root.search != "" ? "Nothing matches “" + root.search + "”" : root.page == 1 ? "No favorites yet — tap the star on a card." : root.page == 2 ? "Nothing played yet." : root.page == 3 ? "This category is empty." : "Drop audio files here to get started";
+                            font-size: 22px;
+                            font-weight: 800;
+                            color: Theme.on-surface;
+                        }
+                        if root.page == 0 && root.search == "": Text {
+                            horizontal-alignment: center;
+                            text: "MP3, WAV, FLAC, OGG, M4A/AAC — or import your Soundpad list in Settings.";
+                            color: Theme.on-surface-variant;
+                        }
+                        if root.page == 0 && root.search == "": HorizontalLayout {
+                            alignment: center;
+                            spacing: 10px;
+                            TonalButton { text: "Add files"; icon: Icons.add; primary: true; clicked => { root.add-files(); } }
+                            TonalButton { text: "Add folder"; icon: Icons.folder; clicked => { root.add-folder(); } }
+                            TonalButton { text: "Import Soundpad list"; icon: Icons.import; clicked => { Settings.import-spl(); } }
+                        }
+                    }
+                    if root.page != 4 && root.sounds.length > 0 && root.grid-view: ListView {
+                        width: 100%;
+                        height: 100%;
+                        for r in root.rows: Rectangle {
+                            height: root.card-h + root.gap;
+                            for c in root.cols: SoundCard {
+                                property <int> idx: r * root.cols + c;
+                                visible: idx < root.sounds.length;
+                                x: c * (root.card-w + root.gap);
+                                y: 0;
+                                width: root.card-w;
+                                height: root.card-h;
+                                item: idx < root.sounds.length ? root.sounds[idx] : root.sounds[0];
+                                selected: root.selected == idx;
+                                play => { root.selected = idx; root.play(self.item.id); keys.focus(); }
+                                edit => { root.edit(self.item.id); }
+                                toggle-favorite => { root.toggle-favorite(self.item.id); }
+                                context(p) => { root.edit(self.item.id); }
+                            }
+                        }
+                    }
+                    if root.page != 4 && root.sounds.length > 0 && !root.grid-view: ListView {
+                        width: 100%;
+                        height: 100%;
+                        for s[i] in root.sounds: SoundRow {
+                            item: s;
+                            selected: root.selected == i;
+                            play => { root.selected = i; root.play(s.id); keys.focus(); }
+                            edit => { root.edit(s.id); }
+                            toggle-favorite => { root.toggle-favorite(s.id); }
+                            context(p) => { root.edit(s.id); }
+                        }
+                    }
+                }
+
+                // Now-playing toolbar.
+                bar := Rectangle {
+                    height: 92px;
+                    border-radius: 28px;
+                    background: Theme.surface-container-high;
+                    HorizontalLayout {
+                        padding-left: 18px;
+                        padding-right: 14px;
+                        spacing: 14px;
+                        // Level meter + state.
+                        Rectangle {
+                            width: 56px;
+                            height: 56px;
+                            y: (parent.height - self.height) / 2;
+                            border-radius: root.np-active ? 18px : 28px;
+                            background: root.np-active ? Theme.primary : Theme.surface-container-highest;
+                            animate border-radius { duration: Motion.normal; easing: Springs.spatial; }
+                            Rectangle {
+                                width: 56px * (0.55 + 0.45 * min(1, root.level * 1.6));
+                                height: self.width;
+                                border-radius: self.width / 2;
+                                background: Theme.on-primary;
+                                opacity: root.np-active ? 0.22 : 0;
+                                animate width { duration: 90ms; }
+                            }
+                            Image { source: Icons.volume; width: 26px; height: 26px; colorize: root.np-active ? Theme.on-primary : Theme.on-surface-variant; }
+                        }
+                        VerticalLayout {
+                            alignment: center;
+                            horizontal-stretch: 1;
+                            spacing: 6px;
+                            Text {
+                                text: root.np-active ? root.np-title + (root.np-count > 1 ? "  +" + (root.np-count - 1) : "") : "Nothing playing";
+                                font-size: 16px;
+                                font-weight: 700;
+                                color: Theme.on-surface;
+                                overflow: elide;
+                            }
+                            // Wavy expressive progress track.
+                            Rectangle {
+                                height: 8px;
+                                border-radius: 4px;
+                                background: Theme.surface-container-highest;
+                                clip: true;
+                                Rectangle {
+                                    x: 0;
+                                    width: parent.width * clamp(root.np-progress, 0, 1);
+                                    height: 100%;
+                                    border-radius: 4px;
+                                    background: Theme.primary;
+                                }
+                            }
+                            Text { text: root.np-time; font-size: 12px; color: Theme.on-surface-variant; }
+                        }
+                        HorizontalLayout {
+                            spacing: 8px;
+                            alignment: center;
+                            Image { source: Icons.volume; width: 20px; height: 20px; y: (parent.height - self.height) / 2; colorize: Theme.on-surface-variant; }
+                            Slider {
+                                width: 140px;
+                                minimum: 0;
+                                maximum: 1;
+                                value <=> root.master-volume;
+                                changed(v) => { root.master-volume-changed(v); }
+                            }
+                        }
+                        ToggleButton {
+                            y: (parent.height - self.height) / 2;
+                            icon: Icons.headphones;
+                            checked <=> root.monitor-on;
+                            tooltip: "Hear it yourself";
+                            toggled(v) => { root.monitor-toggled(v); }
+                        }
+                        ToggleButton {
+                            y: (parent.height - self.height) / 2;
+                            icon: Icons.mic;
+                            icon-off: Icons.mic-off;
+                            checked <=> root.mic-on;
+                            tooltip: "Pass your real microphone through";
+                            toggled(v) => { root.mic-toggled(v); }
+                        }
+                        StopFab {
+                            y: (parent.height - self.height) / 2;
+                            active: root.np-active;
+                            clicked => { root.stop-all(); }
+                        }
+                    }
+                }
+                Rectangle { height: 8px; }
+            }
+
+            // Mic status pill (top right, under the header).
+            if !root.mic-ok && root.page != 4: Rectangle {
+                x: parent.width - self.width - 28px;
+                y: 92px;
+                height: 30px;
+                width: mt.preferred-width + 44px;
+                border-radius: 15px;
+                background: Theme.error-container;
+                HorizontalLayout {
+                    padding-left: 10px;
+                    padding-right: 12px;
+                    spacing: 6px;
+                    Image { source: Icons.warning; width: 16px; height: 16px; y: (parent.height - self.height) / 2; colorize: Theme.on-error-container; }
+                    mt := Text { text: root.mic-label; vertical-alignment: center; font-size: 12px; font-weight: 600; color: Theme.on-error-container; }
+                }
+                TouchArea { mouse-cursor: pointer; clicked => { root.navigate(4, -1); } }
+            }
+        }
+    }
+
+    // Drop highlight.
+    if root.dropping: Rectangle {
+        border-radius: 32px;
+        border-width: 3px;
+        border-color: Theme.primary;
+        background: #00000033;
+        Text { text: "Drop to add sounds"; font-size: 28px; font-weight: 900; color: Theme.primary; }
+    }
+
+    // Snackbar.
+    Snackbar {
+        x: (parent.width - self.width) / 2;
+        y: parent.height - self.height - 124px;
+        text: root.snack-text;
+        shown: root.snack-shown;
+        visible: self.opacity > 0;
+        dismiss => { root.dismiss-snack(); }
+    }
+
+    if Editor.open: EditorSheet { width: 100%; height: 100%; }
+    if CategoryEditor.open: CategorySheet { width: 100%; height: 100%; }
+}

@@ -1,0 +1,652 @@
+00000000000800D2 id=0 cls=wxWindowNR text="Preferences" rect=995,352 568x736 vis=1 en=1 style=16cf0000
+  000000000004021E id=-31851 cls=wxWindowNR text="panel" rect=999,382 560x702 vis=1 en=1 style=52000000
+    000000000006020C id=-31850 cls=wxWindowNR text="panel" rect=999,382 20x20 vis=0 en=1 style=42000000
+      0000000000100214 id=-31849 cls=Static text=" Warning " rect=999,382 83x20 vis=0 en=1 style=52000100
+      0000000000020208 id=-31848 cls=Static text="" rect=999,382 32x32 vis=0 en=1 style=52000303
+      00000000000A0224 id=-31847 cls=Static text="Conflicting hotkey configuration detected.
+" rect=999,382 224x27 vis=0 en=1 style=52000100
+    0000000000010226 id=-31846 cls=_wx_SysTabCtl32 text="" rect=999,382 560x659 vis=1 en=1 style=56010000
+      0000000000010228 id=0 cls=msctls_updown32 text="" rect=973,383 34x17 vis=0 en=1 style=40000040
+        - updown min=0 max=0 pos=0
+      000000000001022A id=-31845 cls=wxWindowNR text="panel" rect=1003,404 552x633 vis=0 en=1 style=42200000
+        000000000001022C id=-31844 cls=wxWindowNR text="control" rect=1003,404 0x0 vis=0 en=1 style=52010000
+        000000000001022E id=-31843 cls=wxWindowNR text="panel" rect=1003,404 535x769 vis=0 en=1 style=52000000
+          0000000000010230 id=-31842 cls=wxWindowNR text="panel" rect=1008,409 525x163 vis=0 en=1 style=52000000
+            0000000000010232 id=-31841 cls=Static text=" Volume normalization " rect=1013,409 200x20 vis=0 en=1 style=52000100
+            0000000000010234 id=-31840 cls=Static text="Adjusts the sound file volume on playback to let others hear you and your sounds with 
+the same loudness." rect=1018,439 451x27 vis=0 en=1 style=52000100
+            0000000000010236 id=-31839 cls=Static text="Voice volume:" rect=1018,486 72x14 vis=0 en=1 style=52000100
+            0000000000010238 id=-31838 cls=ComboBox text="" rect=1095,482 76x21 vis=0 en=1 style=56010042
+              - item[0] "59 dB"
+              - item[1] "62 dB"
+              - item[2] "65 dB"
+              - item[3] "68 dB"
+              - item[4] "71 dB"
+              - item[5] "74 dB"
+              - item[6] "77 dB"
+              - item[7] "80 dB"
+              - item[8] "83 dB"
+              - item[9] "86 dB"
+              - item[10] "89 dB"
+              - item[11] "92 dB"
+              - item[12] "95 dB"
+              - item[13] "98 dB"
+              - item[14] "101 dB"
+              - item[15] "104 dB"
+              - item[16] "107 dB"
+              000000000001023C id=1001 cls=Edit text="" rect=1098,485 53x15 vis=0 en=1 style=50000380
+            000000000001023E id=-31837 cls=Button text="" rect=1176,481 24x24 vis=0 en=1 style=5601000b
+            0000000000010240 id=-31836 cls=wxWindowNR text="panel" rect=1008,409 20x20 vis=0 en=1 style=42000000
+              0000000000010242 id=-31835 cls=Static text="Speak into your microphone as if you are talking to others in a voice 
+application." rect=1008,409 356x27 vis=0 en=1 style=52000100
+              0000000000010244 id=-31834 cls=wxWindowNR text="control" rect=1008,409 355x40 vis=0 en=1 style=52010000
+              0000000000010246 id=-31833 cls=Static text="Measured voice volume:" rect=1008,409 126x14 vis=0 en=1 style=52000100
+              0000000000010248 id=-31832 cls=Static text="18.0 dB" rect=1008,409 44x14 vis=0 en=1 style=52000100
+              000000000001024A id=-31831 cls=Static text="" rect=1008,409 0x14 vis=0 en=1 style=52000100
+            000000000001024C id=-31830 cls=Button text="Dynamic volume adjustment (recommended)" rect=1018,521 253x13 vis=0 en=1 style=52030004
+            000000000001024E id=-31829 cls=Static text="" rect=1276,520 16x16 vis=0 en=1 style=5200030e
+            0000000000010250 id=-31828 cls=Button text="Fixed volume adjustment (advanced)" rect=1018,542 214x13 vis=0 en=1 style=52000004
+            0000000000010252 id=-31827 cls=Static text="" rect=1276,541 16x16 vis=0 en=1 style=5200030e
+            0000000000010254 id=-31826 cls=wxWindowNR text="panel" rect=1008,409 20x20 vis=0 en=1 style=42000000
+              0000000000010256 id=-31825 cls=wxWindowNR text="panel" rect=1008,409 20x20 vis=0 en=1 style=52000000
+                0000000000010258 id=-31824 cls=Static text="Volume adjustment by:" rect=1008,409 119x14 vis=0 en=1 style=52000100
+                000000000001025A id=-31823 cls=ComboBox text="" rect=1008,409 76x21 vis=0 en=1 style=56010042
+                  - item[0] "-30 dB"
+                  - item[1] "-27 dB"
+                  - item[2] "-24 dB"
+                  - item[3] "-21 dB"
+                  - item[4] "-18 dB"
+                  - item[5] "-15 dB"
+                  - item[6] "-12 dB"
+                  - item[7] "-9 dB"
+                  - item[8] "-6 dB"
+                  - item[9] "-3 dB"
+                  - item[10] "0 dB"
+                  - item[11] "3 dB"
+                  - item[12] "6 dB"
+                  - item[13] "9 dB"
+                  - item[14] "12 dB"
+                  - item[15] "15 dB"
+                  - item[16] "18 dB"
+                  - item[17] "21 dB"
+                  - item[18] "24 dB"
+                  - item[19] "27 dB"
+                  - item[20] "30 dB"
+                  000000000001025E id=1001 cls=Edit text="" rect=1011,412 53x15 vis=0 en=1 style=50000380
+                0000000000010260 id=-31822 cls=Button text="" rect=1008,409 24x24 vis=0 en=1 style=5601000b
+              0000000000010262 id=-31821 cls=wxWindowNR text="panel" rect=1008,409 20x20 vis=0 en=1 style=42000000
+                0000000000010264 id=-31820 cls=Static text="Measured volume:" rect=1008,409 96x14 vis=0 en=1 style=52000100
+                0000000000010266 id=-31819 cls=Static text="96.0 dB" rect=1008,409 80x14 vis=0 en=1 style=52000100
+                0000000000010268 id=-31818 cls=Static text="Status:" rect=1008,409 36x14 vis=0 en=1 style=52000100
+                000000000001026A id=-31817 cls=Static text="" rect=1008,409 315x14 vis=0 en=1 style=52004100
+                000000000001026C id=-31816 cls=Static text="Analyzed files:" rect=1008,409 77x14 vis=0 en=1 style=52000100
+                000000000001026E id=-31815 cls=Static text="0" rect=1008,409 100x14 vis=0 en=1 style=52000100
+          0000000000010270 id=-31814 cls=wxWindowNR text="panel" rect=1008,587 525x53 vis=0 en=1 style=52000000
+            0000000000010272 id=-31813 cls=Static text=" Block voice " rect=1013,587 106x20 vis=0 en=1 style=52000100
+            0000000000010274 id=-31812 cls=Button text="Block voice while playing sounds on microphone" rect=1023,617 269x13 vis=0 en=1 style=52010002
+              - checked=0
+          0000000000010276 id=-31811 cls=wxWindowNR text="panel" rect=1008,655 525x129 vis=0 en=1 style=52000000
+            0000000000010278 id=-31810 cls=Static text=" Play voice activation sound " rect=1013,655 246x20 vis=0 en=1 style=52000100
+            000000000001027A id=-31809 cls=Static text="Triggers other application's voice activation by playing the below selected sound to 
+others before the real sound is being played." rect=1023,685 438x27 vis=0 en=1 style=52000100
+            000000000001027C id=-31808 cls=Button text="Enable" rect=1023,727 55x13 vis=0 en=1 style=52010002
+              - checked=0
+            000000000001027E id=-31807 cls=Edit text="" rect=1023,745 391x24 vis=0 en=1 style=52010080
+            0000000000010280 id=251 cls=Button text="Browse" rect=1419,745 75x24 vis=0 en=1 style=56010000
+            0000000000010282 id=194 cls=Button text="" rect=1494,745 24x24 vis=0 en=1 style=5601000b
+            0000000000010284 id=-31806 cls=wxWindowNR text="panel" rect=1023,774 0x0 vis=0 en=1 style=52000000
+              0000000000010288 id=-31805 cls=Static text="" rect=1023,774 16x16 vis=0 en=1 style=42000303
+              000000000001028A id=-31804 cls=Static text="" rect=1023,774 0x14 vis=0 en=1 style=42000100
+          000000000001028C id=-31803 cls=wxWindowNR text="panel" rect=1008,799 525x103 vis=0 en=1 style=52000000
+            000000000001028E id=-31802 cls=Static text=" Push-to-Talk delay " rect=1013,799 174x20 vis=0 en=1 style=52000100
+            0000000000010290 id=-31801 cls=Static text="Delays the playback of sounds so you have time to press your voice application's 
+Push-to-Talk hotkey." rect=1023,829 417x27 vis=0 en=1 style=52000100
+            0000000000010292 id=-31800 cls=Static text="Delay in ms:" rect=1023,874 62x14 vis=0 en=1 style=52000100
+            0000000000010294 id=-1 cls=Edit text="" rect=1090,871 50x21 vis=0 en=1 style=52012080
+            0000000000010296 id=-31799 cls=msctls_updown32 text="" rect=1138,871 17x21 vis=0 en=1 style=500100a6
+              - updown min=0 max=0 pos=0
+          0000000000010298 id=-31798 cls=wxWindowNR text="panel" rect=1008,917 525x103 vis=0 en=1 style=52000000
+            000000000001029A id=-31797 cls=Static text=" Karaoke " rect=1013,917 83x20 vis=0 en=1 style=52000100
+            000000000001029C id=-31796 cls=Static text="Let sounds begin later on the microphone when playing sounds on speakers and 
+microphone." rect=1023,947 425x27 vis=0 en=1 style=52000100
+            000000000001029E id=-31795 cls=Static text="Delay sound on microphone in ms:" rect=1023,992 177x14 vis=0 en=1 style=52000100
+            00000000000102A0 id=-1 cls=Edit text="" rect=1205,989 50x21 vis=0 en=1 style=52010080
+            00000000000102A2 id=-31794 cls=msctls_updown32 text="" rect=1253,989 17x21 vis=0 en=1 style=500100a6
+              - updown min=0 max=0 pos=0
+          00000000000102A4 id=-31793 cls=wxWindowNR text="panel" rect=1008,1035 525x138 vis=0 en=1 style=52000000
+            00000000000102A6 id=-31792 cls=Static text=" Reduce volume of other applications " rect=1013,1035 327x20 vis=0 en=1 style=52000100
+            00000000000102A8 id=-31791 cls=Static text="Reduce the volume of other applications while playing a sound." rect=1023,1065 332x14 vis=0 en=1 style=52000100
+            00000000000102AA id=-31790 cls=Static text="" rect=1360,1065 16x16 vis=0 en=1 style=5200030e
+            00000000000102AC id=-31789 cls=Button text="Enable" rect=1023,1096 55x13 vis=0 en=1 style=52010002
+              - checked=0
+            00000000000102AE id=-31788 cls=wxWindowNR text="panel" rect=1043,1114 246x49 vis=0 en=1 style=52000000
+              00000000000102B0 id=-31787 cls=Button text="Mute all other sounds" rect=1043,1114 133x13 vis=0 en=0 style=5a020004
+              00000000000102B2 id=-31786 cls=Button text="Reduce the volume of other sounds by 80%" rect=1043,1132 246x13 vis=0 en=0 style=5a000004
+              00000000000102B4 id=-31785 cls=Button text="Reduce the volume of other sounds by 50%" rect=1043,1150 246x13 vis=0 en=0 style=5a000004
+      00000000000C02B6 id=-31784 cls=wxWindowNR text="panel" rect=1003,404 552x633 vis=0 en=1 style=42200000
+        00000000000302B8 id=-31783 cls=wxWindowNR text="control" rect=1003,404 0x0 vis=0 en=1 style=52010000
+        00000000000D02BA id=-31782 cls=wxWindowNR text="panel" rect=1003,404 535x709 vis=0 en=1 style=52000000
+          00000000000502BC id=-31781 cls=wxWindowNR text="panel" rect=1008,409 525x260 vis=0 en=1 style=52000000
+            00000000000102BE id=-31780 cls=Static text=" Special Hotkeys " rect=1013,409 146x20 vis=0 en=1 style=52000100
+            00000000000102C0 id=-31779 cls=wxWindowNR text="dataviewCtrl" rect=1018,439 505x192 vis=0 en=1 style=52210000
+              00000000000102C2 id=-31778 cls=wxDataView text="wxdataviewctrlmainwindow" rect=1020,458 484x171 vis=0 en=1 style=52000000
+              00000000000102C4 id=-31777 cls=wxWindowNR text="wxHeaderCtrl" rect=1020,441 484x17 vis=0 en=1 style=52000000
+                00000000000102C6 id=-31776 cls=SysHeader32 text="" rect=1020,441 484x17 vis=0 en=1 style=520100c6
+            00000000000102E6 id=-31775 cls=Button text="Set hotkey" rect=1018,636 75x23 vis=0 en=0 style=5e010000
+            00000000000102E8 id=-31774 cls=Button text="Change value" rect=1098,636 92x23 vis=0 en=0 style=5e010000
+          00000000000102EA id=-31773 cls=wxWindowNR text="panel" rect=1008,684 525x96 vis=0 en=1 style=52000000
+            00000000000102EC id=-31772 cls=Static text=" Numpad Hotkeys " rect=1013,684 154x20 vis=0 en=1 style=52000100
+            00000000000102EE id=-31771 cls=Button text="Enable Alt+Numcode hotkeys" rect=1023,719 174x13 vis=0 en=1 style=5201000b
+            00000000000102F0 id=-31770 cls=Button text="Change modifier" rect=1209,714 106x23 vis=0 en=1 style=56010000
+            00000000000102F2 id=-31769 cls=Button text="Enable Ctrl+Alt+Index hotkeys" rect=1023,747 181x13 vis=0 en=1 style=5201000b
+            00000000000102F4 id=-31768 cls=Button text="Change modifier" rect=1209,742 106x23 vis=0 en=1 style=56010000
+            00000000000102F6 id=-31767 cls=wxWindowNR text="panel" rect=1008,684 20x20 vis=0 en=1 style=42000000
+              00000000000102F8 id=-31766 cls=Button text="Enable category index" rect=1008,684 136x13 vis=0 en=1 style=52010002
+                - checked=0
+              00000000000102FA id=-31765 cls=Button text="Two digits" rect=1008,684 72x13 vis=0 en=1 style=42010002
+                - checked=0
+          00000000000102FC id=-31764 cls=wxWindowNR text="panel" rect=1008,795 525x186 vis=0 en=1 style=52000000
+            00000000000102FE id=-31763 cls=Static text=" Auto Keys " rect=1013,795 95x20 vis=0 en=1 style=52000100
+            0000000000010300 id=-31762 cls=Static text="Presses keys automatically when you play sounds." rect=1018,825 259x14 vis=0 en=1 style=52000100
+            0000000000010302 id=-31761 cls=wxWindowNR text="dataviewCtrl" rect=1018,849 505x94 vis=0 en=1 style=52010000
+              0000000000010304 id=-31760 cls=wxDataView text="wxdataviewctrlmainwindow" rect=1020,868 501x73 vis=0 en=1 style=52000000
+              0000000000010306 id=-31759 cls=wxWindowNR text="wxHeaderCtrl" rect=1020,851 501x17 vis=0 en=1 style=52000000
+                0000000000010308 id=-31758 cls=SysHeader32 text="" rect=1020,851 501x17 vis=0 en=1 style=520100c6
+            000000000001030A id=-31757 cls=Button text="Add" rect=1018,948 75x23 vis=0 en=1 style=56010000
+            000000000001030C id=-31756 cls=Button text="Edit" rect=1098,948 75x23 vis=0 en=0 style=5e010000
+            000000000001030E id=-31755 cls=Button text="Remove" rect=1178,948 75x23 vis=0 en=0 style=5e010000
+          0000000000010310 id=-31754 cls=wxWindowNR text="panel" rect=1008,996 525x117 vis=0 en=1 style=52000000
+            0000000000010312 id=-31753 cls=Static text=" Advanced options " rect=1013,996 163x20 vis=0 en=1 style=52000100
+            0000000000010314 id=-31752 cls=Button text="Pass hotkeys" rect=1018,1031 85x13 vis=0 en=1 style=52010002
+              - checked=0
+            0000000000010316 id=-31751 cls=Button text="Auto stop (recommended)" rect=1018,1049 154x13 vis=0 en=1 style=52010002
+              - checked=1
+            0000000000010318 id=-31750 cls=Button text="Allow left and right modifiers" rect=1018,1067 170x13 vis=0 en=1 style=52010002
+              - checked=0
+            000000000001031A id=-31749 cls=Button text="Same hotkeys in all categories" rect=1018,1085 179x13 vis=0 en=1 style=52010002
+              - checked=0
+      000000000012031C id=-31748 cls=wxWindowNR text="panel" rect=1003,404 552x633 vis=0 en=1 style=42200000
+        000000000003031E id=-31747 cls=wxWindowNR text="control" rect=1003,404 0x0 vis=0 en=1 style=52010000
+        0000000000090320 id=-31746 cls=wxWindowNR text="panel" rect=1003,404 535x754 vis=0 en=1 style=52000000
+          0000000000090322 id=-31745 cls=wxWindowNR text="panel" rect=1008,409 525x87 vis=0 en=1 style=52000000
+            0000000000010324 id=-31744 cls=Static text=" Language " rect=1013,409 97x20 vis=0 en=1 style=52000100
+            0000000000010326 id=-31743 cls=Static text="Language:" rect=1023,437 58x14 vis=0 en=1 style=52000100
+            0000000000010328 id=-31742 cls=ComboBox text="" rect=1098,434 200x21 vis=0 en=1 style=56010042
+              - item[0] "System default"
+              - item[1] "Arabic (ar)"
+              - item[2] "Bulgarian (Bulgaria) (bg_BG)"
+              - item[3] "Chinese (Simplified, China) (zh_CN)"
+              - item[4] "Croatian (Croatia) (hr_HR)"
+              - item[5] "Czech (cs)"
+              - item[6] "Danish (da)"
+              - item[7] "Dutch (nl)"
+              - item[8] "English (en_US)"
+              - item[9] "Estonian (Estonia) (et_EE)"
+              - item[10] "Finnish (fi)"
+              - item[11] "French (fr)"
+              - item[12] "German (de)"
+              - item[13] "Greek (Greece) (el_GR)"
+              - item[14] "Hebrew (Israel) (he_IL)"
+              - item[15] "Hindi (India) (hi_IN)"
+              - item[16] "Hungarian (Hungary) (hu_HU)"
+              - item[17] "Indonesian (Indonesia) (id_ID)"
+              - item[18] "Italian (it)"
+              - item[19] "Japanese (ja)"
+              - item[20] "Korean (ko)"
+              - item[21] "Latvian (Latvia) (lv_LV)"
+              - item[22] "Lithuanian (Lithuania) (lt_LT)"
+              - item[23] "Malay (Malaysia) (ms_MY)"
+              - item[24] "Norwegian Bokmål (Norway) (nb_NO)"
+              - item[25] "Polish (pl)"
+              - item[26] "Portuguese (Brazil) (pt_BR)"
+              - item[27] "Romanian (Romania) (ro_RO)"
+              - item[28] "Russian (ru)"
+              - item[29] "Serbian (Serbia) (sr_RS)"
+              - item[30] "Slovak (Slovakia) (sk_SK)"
+              - item[31] "Slovenian (Slovenia) (sl_SI)"
+              - item[32] "Spanish (Spain, International Sort) (es_ES)"
+              - item[33] "Swedish (sv)"
+              - item[34] "Thai (th)"
+              - item[35] "Turkish (tr)"
+              - item[36] "Ukrainian (uk)"
+              - item[37] "Vietnamese (Vietnam) (vi_VN)"
+              000000000001032C id=1001 cls=Edit text="" rect=1101,437 177x15 vis=0 en=1 style=50000380
+            000000000001032E id=-31741 cls=Static text="Date format:" rect=1023,468 65x14 vis=0 en=1 style=52000100
+            0000000000010330 id=-31740 cls=ComboBox text="" rect=1098,465 200x21 vis=0 en=1 style=56010042
+              - item[0]* "Language default"
+              - item[1] "ISO 8601 - 2016-10-30"
+              - item[2] "English (en_US) - 10/30/2016"
+              - item[3] "English (en_GB) - 30/10/2016"
+              - item[4] "Deutsch (de_DE) - 30.10.2016"
+              0000000000010334 id=1001 cls=Edit text="" rect=1101,468 177x15 vis=0 en=1 style=50000380
+          0000000000010336 id=-31739 cls=wxWindowNR text="panel" rect=1008,511 525x231 vis=0 en=1 style=52000000
+            0000000000010338 id=-31738 cls=Static text=" Toolbar " rect=1013,511 78x20 vis=0 en=1 style=52000100
+            000000000001033A id=-31737 cls=Static text="Style:" rect=1023,539 28x14 vis=0 en=1 style=52000100
+            000000000001033C id=-31736 cls=ComboBox text="" rect=1152,536 200x21 vis=0 en=1 style=56010042
+              - item[0]* "System default"
+              - item[1] "Light"
+              - item[2] "Dark"
+              - item[3] "Navy"
+              0000000000010340 id=1001 cls=Edit text="" rect=1155,539 177x15 vis=0 en=1 style=50000380
+            0000000000010342 id=-31735 cls=Static text="Zoom:" rect=1023,570 31x14 vis=0 en=1 style=52000100
+            0000000000010344 id=-31734 cls=ComboBox text="" rect=1152,567 200x21 vis=0 en=1 style=56010042
+              - item[0]* "100%"
+              - item[1] "150%"
+              - item[2] "200%"
+              0000000000010348 id=1001 cls=Edit text="" rect=1155,570 177x15 vis=0 en=1 style=50000380
+            000000000001034A id=-31733 cls=Static text="Toolbar size:" rect=1023,601 66x14 vis=0 en=1 style=52000100
+            000000000001034C id=-31732 cls=ComboBox text="" rect=1152,598 200x21 vis=0 en=1 style=56010042
+              - item[0]* "Small"
+              - item[1] "Medium"
+              - item[2] "Large"
+              0000000000010350 id=1001 cls=Edit text="" rect=1155,601 177x15 vis=0 en=1 style=50000380
+            0000000000010352 id=-31731 cls=Static text="Toolbar and icon color:" rect=1023,632 119x14 vis=0 en=1 style=52000100
+            0000000000010354 id=-31730 cls=wxWindow text="comboBox" rect=1152,629 200x21 vis=0 en=1 style=52010000
+              0000000000010356 id=-31729 cls=Edit text="" rect=1157,633 175x13 vis=0 en=1 style=52010080
+            00000000001D035E id=-31725 cls=Static text="Playback position update rate:" rect=1023,660 158x14 vis=0 en=1 style=52000100
+            0000000000010360 id=-31724 cls=msctls_trackbar32 text="" rect=1191,655 160x25 vis=0 en=1 style=52010050
+              - trackbar min=10 max=200 pos=60
+            0000000000010362 id=-31723 cls=Static text="60/s" rect=1361,660 21x14 vis=0 en=1 style=52000100
+            0000000000010364 id=-31722 cls=Button text="Display microphone level on toolbar" rect=1023,685 202x13 vis=0 en=1 style=52010002
+              - checked=0
+            0000000000010366 id=-31721 cls=Button text="Volume slider works linearly" rect=1023,713 164x13 vis=0 en=1 style=52010002
+              - checked=1
+            0000000000010368 id=-31720 cls=wxWindowNR text="panel" rect=1207,708 99x24 vis=0 en=1 style=52000000
+          000000000001036A id=-31719 cls=wxWindowNR text="panel" rect=1008,757 525x126 vis=0 en=1 style=52000000
+            000000000001036C id=-31718 cls=Static text=" Play mode " rect=1013,757 99x20 vis=0 en=1 style=52000100
+            000000000001036E id=-31717 cls=Static text="Determines whether a sound is played back on speakers, microphone, or both when 
+you play it by hotkey, double-click, Enter or Play icon." rect=1023,787 439x27 vis=0 en=1 style=52000100
+            0000000000010370 id=-31716 cls=Button text="Allow resume in another play mode" rect=1023,829 202x13 vis=0 en=1 style=52010002
+              - checked=0
+            0000000000010372 id=-31715 cls=Static text="Hotkey switches between:" rect=1023,855 136x14 vis=0 en=1 style=52000100
+            0000000000010374 id=-31714 cls=ComboBox text="" rect=1164,852 151x21 vis=0 en=1 style=56010043
+              - item[0] "all play modes"
+              - item[1]* "default and speakers"
+              - item[2] "default and microphone"
+          0000000000010378 id=-31713 cls=wxWindowNR text="panel" rect=1008,898 525x255 vis=0 en=1 style=52000000
+            000000000001037A id=-31712 cls=Static text=" Misc " rect=1013,898 47x20 vis=0 en=1 style=52000100
+            000000000001037C id=-31711 cls=Button text="Run Soundpad when Windows starts" rect=1023,923 209x13 vis=0 en=1 style=52010002
+              - checked=0
+            000000000001037E id=-31710 cls=Button text="Show system tray icon" rect=1023,946 132x13 vis=0 en=1 style=52010002
+              - checked=1
+            0000000000010380 id=-31709 cls=Button text="Minimize to system tray" rect=1023,969 140x13 vis=0 en=1 style=52010002
+              - checked=0
+            0000000000010382 id=-31708 cls=Button text="Minimize instead of close" rect=1023,992 152x13 vis=0 en=0 style=5a010002
+              - checked=0
+            0000000000010384 id=-31707 cls=Button text="Show always on top" rect=1023,1015 119x13 vis=0 en=1 style=52010002
+              - checked=0
+            0000000000010386 id=-31706 cls=Button text="Disable sorting in sound list" rect=1023,1038 162x13 vis=0 en=1 style=52010002
+              - checked=0
+            0000000000010388 id=-31705 cls=Button text="Use alternating row colors" rect=1023,1061 155x13 vis=0 en=1 style=52010002
+              - checked=0
+            000000000001038A id=-31704 cls=Button text="Typing begins search" rect=1023,1084 131x13 vis=0 en=1 style=52010002
+              - checked=1
+            000000000001038C id=-31703 cls=Button text="Typing prefers TTS when TTS is open" rect=1023,1107 212x13 vis=0 en=1 style=52010002
+              - checked=0
+            000000000001038E id=-31702 cls=Button text="Remember playback state throughout application starts" rect=1023,1130 309x13 vis=0 en=1 style=52010002
+              - checked=1
+      0000000000080390 id=-31701 cls=wxWindowNR text="panel" rect=1003,404 552x633 vis=1 en=1 style=52000000
+        0000000000030392 id=-31700 cls=wxWindowNR text="control" rect=1003,404 0x0 vis=1 en=1 style=52010000
+        0000000000090394 id=-31699 cls=wxWindowNR text="panel" rect=1003,404 515x633 vis=1 en=1 style=52000000
+          0000000000010396 id=-31698 cls=wxWindowNR text="panel" rect=1008,409 505x61 vis=1 en=1 style=52000000
+            0000000000010398 id=-31697 cls=Static text=" Playback device " rect=1013,409 147x20 vis=1 en=1 style=52000100
+            000000000001039A id=-31696 cls=Static text="Playback device:" rect=1023,442 87x14 vis=1 en=1 style=52000100
+            000000000001039C id=-31695 cls=ComboBox text="" rect=1115,439 300x21 vis=1 en=1 style=56010043
+              - item[0]* "Default"
+              - item[1] "Speakers (<host-device-0>)"
+              - item[2] "Speakers (<host-device-2>)"
+              - item[3] "Speakers (<host-device-1>)"
+              - item[4] "Speakers (PulseAudio Output)"
+          00000000000103A0 id=-31694 cls=wxWindowNR text="panel" rect=1008,485 505x552 vis=1 en=1 style=52000000
+            00000000000103A2 id=-31693 cls=Static text=" Recording devices " rect=1013,485 167x20 vis=1 en=1 style=52000100
+            00000000000103A4 id=-31692 cls=Static text="Sounds will be played on the recording devices, which you select here." rect=1023,515 370x14 vis=1 en=1 style=52000100
+            00000000000103A6 id=-31691 cls=Button text="Check device configuration on startup" rect=1023,544 220x13 vis=1 en=1 style=52010002
+              - checked=1
+            00000000000103A8 id=-31690 cls=Static text="Check at least one device:" rect=1023,567 140x14 vis=1 en=1 style=52000100
+            00000000000103AA id=-31689 cls=wxWindowNR text="dataviewCtrl" rect=1023,586 475x407 vis=1 en=1 style=52310000
+              00000000000103AC id=-31688 cls=wxDataView text="wxdataviewctrlmainwindow" rect=1025,605 454x369 vis=1 en=1 style=52000000
+              00000000000103AE id=-31687 cls=wxWindowNR text="wxHeaderCtrl" rect=1025,588 454x17 vis=1 en=1 style=52000000
+                00000000000103B0 id=-31686 cls=SysHeader32 text="" rect=1025,588 454x17 vis=1 en=1 style=520100c6
+            00000000000103B2 id=-31685 cls=Static text="Status:" rect=1023,1003 36x14 vis=1 en=1 style=52000100
+            00000000000103B4 id=-31684 cls=Static text="Repair required" rect=1064,1003 101x14 vis=1 en=1 style=52000100
+            00000000000103B6 id=-31683 cls=wxWindowNR text="control" rect=1064,1002 16x16 vis=0 en=1 style=42010000
+            00000000000103B8 id=-31682 cls=Static text="" rect=1170,1002 16x16 vis=1 en=1 style=5200030e
+            00000000000103BA id=-31681 cls=SysLink text="<A HREF="ms-settings:privacy-microphone">Open microphone privacy settings</A>" rect=1008,485 176x13 vis=0 en=1 style=42010000
+            00000000000103BC id=-31680 cls=wxWindowNR text="panel" rect=1008,485 20x20 vis=0 en=1 style=42000000
+              00000000000103BE id=-31679 cls=Static text="" rect=1008,485 16x16 vis=0 en=1 style=5200030e
+              00000000000103C0 id=-31678 cls=SysLink text="<A HREF="https://www.leppsoft.com/soundpad/help/manual/compatibility/">Online manual</A>" rect=1008,485 78x13 vis=0 en=1 style=52010000
+            00000000000103C2 id=-31677 cls=Button text="Repair" rect=1394,998 75x23 vis=1 en=1 style=56010001
+            00000000000103C4 id=-31676 cls=Button text="Restart Win-Audio" rect=1008,485 113x23 vis=0 en=1 style=46010000
+            00000000000103C6 id=-31675 cls=Button text="" rect=1474,998 24x24 vis=1 en=1 style=5601000b
+      00000000000B03C8 id=-31674 cls=wxWindowNR text="panel" rect=1003,404 552x633 vis=0 en=1 style=42000000
+        00000000000303CA id=-31673 cls=wxWindowNR text="control" rect=1003,404 0x0 vis=0 en=1 style=52010000
+        00000000000503CC id=-31672 cls=wxWindowNR text="panel" rect=1003,404 552x633 vis=0 en=1 style=52000000
+          00000000000503CE id=-31671 cls=wxWindowNR text="panel" rect=1008,404 525x265 vis=0 en=1 style=52000000
+            00000000000103D0 id=-31670 cls=Static text=" Recorder " rect=1013,404 90x20 vis=0 en=1 style=52000100
+            00000000000103D2 id=-31669 cls=Static text="Save recordings in:" rect=1018,434 100x14 vis=0 en=1 style=52000100
+            00000000000103D4 id=-31668 cls=Edit text="" rect=1018,454 320x21 vis=0 en=1 style=52010080
+            00000000000103D6 id=-31667 cls=Button text="Browse" rect=1343,453 75x23 vis=0 en=1 style=56010000
+            00000000000103D8 id=-31666 cls=Static text="Save as:" rect=1018,494 43x14 vis=0 en=1 style=52000100
+            00000000000103DA id=-31665 cls=ComboBox text="" rect=1248,491 162x21 vis=0 en=1 style=56010043
+              - item[0]* "M4A"
+              - item[1] "WAV"
+            00000000000103DE id=-31664 cls=Static text="Add to category:" rect=1018,525 86x14 vis=0 en=1 style=52000100
+            00000000000103E0 id=-31663 cls=ComboBox text="" rect=1248,522 162x21 vis=0 en=1 style=56010043
+              - item[0]* "Selected category"
+              - item[1] "My Sounds"
+            00000000000103E4 id=-31662 cls=Static text="Insert position in sound list:" rect=1018,556 143x14 vis=0 en=1 style=52000100
+            00000000000103E6 id=-31661 cls=ComboBox text="" rect=1248,553 162x21 vis=0 en=1 style=56010043
+              - item[0] "Beginning"
+              - item[1]* "End"
+            00000000000103EA id=-31660 cls=Button text="Automatically normalize recordings to:" rect=1018,588 220x13 vis=0 en=1 style=52010002
+              - checked=1
+            00000000000103EC id=-31659 cls=ComboBox text="" rect=1248,584 162x21 vis=0 en=1 style=56010042
+              - item[0] "59 dB"
+              - item[1] "62 dB"
+              - item[2] "65 dB"
+              - item[3] "68 dB"
+              - item[4] "71 dB"
+              - item[5] "74 dB"
+              - item[6] "77 dB"
+              - item[7] "80 dB"
+              - item[8] "83 dB"
+              - item[9] "86 dB"
+              - item[10] "89 dB"
+              - item[11] "92 dB"
+              - item[12] "95 dB"
+              - item[13] "98 dB"
+              - item[14] "101 dB"
+              - item[15] "104 dB"
+              - item[16] "107 dB"
+              00000000000103F0 id=1001 cls=Edit text="" rect=1251,587 139x15 vis=0 en=1 style=50000380
+            00000000000103F2 id=-31658 cls=Button text="Trim silence" rect=1018,615 83x13 vis=0 en=1 style=52010002
+              - checked=1
+            00000000000103F4 id=-31657 cls=Static text="Maximum recording time in seconds:" rect=1018,641 191x14 vis=0 en=1 style=52000100
+            00000000000103F6 id=-31656 cls=Edit text="" rect=1248,638 162x21 vis=0 en=1 style=52010080
+            00000000000103F8 id=-31655 cls=Static text="(5:00)" rect=1420,641 29x14 vis=0 en=1 style=52000100
+      00000000000403FA id=-31654 cls=wxWindowNR text="panel" rect=1003,404 552x633 vis=0 en=1 style=42000000
+        00000000000303FC id=-31653 cls=wxWindowNR text="control" rect=1003,404 0x0 vis=0 en=1 style=52010000
+        00000000000103FE id=-31652 cls=wxWindowNR text="panel" rect=1003,404 552x633 vis=0 en=1 style=52000000
+          0000000000010400 id=-31651 cls=wxWindowNR text="panel" rect=1008,404 525x161 vis=0 en=1 style=52000000
+            0000000000010402 id=-31650 cls=Static text=" Editor " rect=1013,404 63x20 vis=0 en=1 style=52000100
+            0000000000010404 id=-31649 cls=Button text="Use external sound editor" rect=1018,434 154x13 vis=0 en=1 style=52010002
+              - checked=0
+            0000000000010406 id=-31648 cls=Static text="External sound editor:" rect=1018,462 115x14 vis=0 en=1 style=52000100
+            0000000000010408 id=-31647 cls=Edit text="" rect=1018,482 320x21 vis=0 en=0 style=5a010080
+            000000000001040A id=-31646 cls=Button text="Browse" rect=1343,481 75x23 vis=0 en=0 style=5e010000
+            000000000001040C id=-31645 cls=Static text="Param:" rect=1018,522 36x14 vis=0 en=1 style=52000100
+            000000000001040E id=-31644 cls=Edit text="" rect=1059,519 150x21 vis=0 en=0 style=5a010080
+            0000000000010410 id=-31643 cls=Static text="" rect=1008,404 0x13 vis=0 en=1 style=42000100
+      0000000000040412 id=-31642 cls=wxWindowNR text="panel" rect=1003,404 552x633 vis=0 en=1 style=42200000
+        0000000000030414 id=-31641 cls=wxWindowNR text="control" rect=1003,404 0x0 vis=0 en=1 style=52010000
+        0000000000010416 id=-31640 cls=wxWindowNR text="panel" rect=1003,404 535x764 vis=0 en=1 style=52000000
+          0000000000010418 id=-31639 cls=wxWindowNR text="panel" rect=1008,414 525x106 vis=0 en=1 style=52000000
+            000000000001041A id=-31638 cls=Static text=" Recorder " rect=1013,414 54x14 vis=0 en=1 style=52000100
+            000000000001041C id=214 cls=Button text="Start to record speakers" rect=1018,438 159x13 vis=0 en=1 style=52010002
+              - checked=1
+            000000000001041E id=233 cls=Edit text="" rect=1182,434 232x21 vis=0 en=1 style=52010080
+            0000000000010420 id=252 cls=Button text="Browse" rect=1419,433 75x24 vis=0 en=1 style=56010000
+            0000000000010422 id=195 cls=Button text="" rect=1499,433 24x24 vis=0 en=1 style=5601000b
+            0000000000010424 id=215 cls=Button text="Start to record microphone" rect=1018,467 159x13 vis=0 en=1 style=52010002
+              - checked=1
+            0000000000010426 id=234 cls=Edit text="" rect=1182,463 232x21 vis=0 en=1 style=52010080
+            0000000000010428 id=253 cls=Button text="Browse" rect=1419,462 75x24 vis=0 en=1 style=56010000
+            000000000001042A id=196 cls=Button text="" rect=1499,462 24x24 vis=0 en=1 style=5601000b
+            000000000001042C id=216 cls=Button text="Stop recording" rect=1018,496 159x13 vis=0 en=1 style=52010002
+              - checked=1
+            000000000001042E id=235 cls=Edit text="" rect=1182,492 232x21 vis=0 en=1 style=52010080
+            0000000000010430 id=254 cls=Button text="Browse" rect=1419,491 75x24 vis=0 en=1 style=56010000
+            0000000000010432 id=197 cls=Button text="" rect=1499,491 24x24 vis=0 en=1 style=5601000b
+          0000000000010434 id=-31637 cls=wxWindowNR text="panel" rect=1008,535 525x129 vis=0 en=1 style=52000000
+            0000000000010436 id=-31636 cls=Static text=" Play mode " rect=1013,535 59x14 vis=0 en=1 style=52000100
+            0000000000010438 id=-31635 cls=Button text="Notify me when playing first sound after application start" rect=1018,554 316x13 vis=0 en=1 style=52010002
+              - checked=1
+            000000000001043A id=217 cls=Button text="Default" rect=1018,582 159x13 vis=0 en=1 style=52010002
+              - checked=1
+            000000000001043C id=236 cls=Edit text="" rect=1182,578 232x21 vis=0 en=1 style=52010080
+            000000000001043E id=255 cls=Button text="Browse" rect=1419,577 75x24 vis=0 en=1 style=56010000
+            0000000000010440 id=198 cls=Button text="" rect=1499,577 24x24 vis=0 en=1 style=5601000b
+            0000000000010442 id=218 cls=Button text="Speakers" rect=1018,611 159x13 vis=0 en=1 style=52010002
+              - checked=1
+            0000000000010444 id=237 cls=Edit text="" rect=1182,607 232x21 vis=0 en=1 style=52010080
+            0000000000010446 id=256 cls=Button text="Browse" rect=1419,606 75x24 vis=0 en=1 style=56010000
+            0000000000010448 id=199 cls=Button text="" rect=1499,606 24x24 vis=0 en=1 style=5601000b
+            000000000001044A id=219 cls=Button text="Microphone" rect=1018,640 159x13 vis=0 en=1 style=52010002
+              - checked=1
+            000000000001044C id=238 cls=Edit text="" rect=1182,636 232x21 vis=0 en=1 style=52010080
+            000000000001044E id=257 cls=Button text="Browse" rect=1419,635 75x24 vis=0 en=1 style=56010000
+            0000000000010450 id=200 cls=Button text="" rect=1499,635 24x24 vis=0 en=1 style=5601000b
+          0000000000010452 id=-31634 cls=wxWindowNR text="panel" rect=1008,679 525x77 vis=0 en=1 style=52000000
+            0000000000010454 id=-31633 cls=Static text=" Hotkeys " rect=1013,679 47x14 vis=0 en=1 style=52000100
+            0000000000010456 id=220 cls=Button text="Enabled" rect=1018,703 159x13 vis=0 en=1 style=52010002
+              - checked=1
+            0000000000010458 id=239 cls=Edit text="" rect=1182,699 232x21 vis=0 en=1 style=52010080
+            000000000001045A id=258 cls=Button text="Browse" rect=1419,698 75x24 vis=0 en=1 style=56010000
+            000000000001045C id=201 cls=Button text="" rect=1499,698 24x24 vis=0 en=1 style=5601000b
+            000000000001045E id=221 cls=Button text="Disabled" rect=1018,732 159x13 vis=0 en=1 style=52010002
+              - checked=1
+            0000000000010460 id=240 cls=Edit text="" rect=1182,728 232x21 vis=0 en=1 style=52010080
+            0000000000010462 id=259 cls=Button text="Browse" rect=1419,727 75x24 vis=0 en=1 style=56010000
+            0000000000010464 id=202 cls=Button text="" rect=1499,727 24x24 vis=0 en=1 style=5601000b
+          0000000000010466 id=-31632 cls=wxWindowNR text="panel" rect=1008,771 525x77 vis=0 en=1 style=52000000
+            0000000000010468 id=-31631 cls=Static text=" Auto Keys " rect=1013,771 57x14 vis=0 en=1 style=52000100
+            000000000001046A id=222 cls=Button text="Enabled" rect=1018,795 159x13 vis=0 en=1 style=52010002
+              - checked=1
+            000000000001046C id=241 cls=Edit text="" rect=1182,791 232x21 vis=0 en=1 style=52010080
+            000000000001046E id=260 cls=Button text="Browse" rect=1419,790 75x24 vis=0 en=1 style=56010000
+            0000000000010470 id=203 cls=Button text="" rect=1499,790 24x24 vis=0 en=1 style=5601000b
+            0000000000010472 id=223 cls=Button text="Disabled" rect=1018,824 159x13 vis=0 en=1 style=52010002
+              - checked=1
+            0000000000010474 id=242 cls=Edit text="" rect=1182,820 232x21 vis=0 en=1 style=52010080
+            0000000000010476 id=261 cls=Button text="Browse" rect=1419,819 75x24 vis=0 en=1 style=56010000
+            0000000000010478 id=204 cls=Button text="" rect=1499,819 24x24 vis=0 en=1 style=5601000b
+          000000000001047A id=-31630 cls=wxWindowNR text="panel" rect=1008,863 525x280 vis=0 en=1 style=52000000
+            000000000001047C id=-31629 cls=Static text=" Hotbar " rect=1013,863 41x14 vis=0 en=1 style=52000100
+            000000000001047E id=224 cls=Button text="Page 1" rect=1018,887 159x13 vis=0 en=1 style=52010002
+              - checked=1
+            0000000000010480 id=243 cls=Edit text="" rect=1182,883 232x21 vis=0 en=1 style=52010080
+            0000000000010482 id=262 cls=Button text="Browse" rect=1419,882 75x24 vis=0 en=1 style=56010000
+            0000000000010484 id=205 cls=Button text="" rect=1499,882 24x24 vis=0 en=1 style=5601000b
+            0000000000010486 id=225 cls=Button text="Page 2" rect=1018,916 159x13 vis=0 en=1 style=52010002
+              - checked=1
+            0000000000010488 id=244 cls=Edit text="" rect=1182,912 232x21 vis=0 en=1 style=52010080
+            000000000001048A id=263 cls=Button text="Browse" rect=1419,911 75x24 vis=0 en=1 style=56010000
+            000000000001048C id=206 cls=Button text="" rect=1499,911 24x24 vis=0 en=1 style=5601000b
+            000000000001048E id=226 cls=Button text="Page 3" rect=1018,945 159x13 vis=0 en=1 style=52010002
+              - checked=1
+            0000000000010490 id=245 cls=Edit text="" rect=1182,941 232x21 vis=0 en=1 style=52010080
+            0000000000010492 id=264 cls=Button text="Browse" rect=1419,940 75x24 vis=0 en=1 style=56010000
+            0000000000010494 id=207 cls=Button text="" rect=1499,940 24x24 vis=0 en=1 style=5601000b
+            0000000000010496 id=227 cls=Button text="Page 4" rect=1018,974 159x13 vis=0 en=1 style=52010002
+              - checked=1
+            0000000000010498 id=246 cls=Edit text="" rect=1182,970 232x21 vis=0 en=1 style=52010080
+            000000000001049A id=265 cls=Button text="Browse" rect=1419,969 75x24 vis=0 en=1 style=56010000
+            000000000001049C id=208 cls=Button text="" rect=1499,969 24x24 vis=0 en=1 style=5601000b
+            000000000001049E id=228 cls=Button text="Page 5" rect=1018,1003 159x13 vis=0 en=1 style=52010002
+              - checked=1
+            00000000000104A0 id=247 cls=Edit text="" rect=1182,999 232x21 vis=0 en=1 style=52010080
+            00000000000104A2 id=266 cls=Button text="Browse" rect=1419,998 75x24 vis=0 en=1 style=56010000
+            00000000000104A4 id=209 cls=Button text="" rect=1499,998 24x24 vis=0 en=1 style=5601000b
+            00000000000104A6 id=229 cls=Button text="Page 6" rect=1018,1032 159x13 vis=0 en=1 style=52010002
+              - checked=1
+            00000000000104A8 id=248 cls=Edit text="" rect=1182,1028 232x21 vis=0 en=1 style=52010080
+            00000000000104AA id=267 cls=Button text="Browse" rect=1419,1027 75x24 vis=0 en=1 style=56010000
+            00000000000104AC id=210 cls=Button text="" rect=1499,1027 24x24 vis=0 en=1 style=5601000b
+            00000000000104AE id=230 cls=Button text="Page 7" rect=1018,1061 159x13 vis=0 en=1 style=52010002
+              - checked=1
+            00000000000104B0 id=249 cls=Edit text="" rect=1182,1057 232x21 vis=0 en=1 style=52010080
+            00000000000104B2 id=268 cls=Button text="Browse" rect=1419,1056 75x24 vis=0 en=1 style=56010000
+            00000000000104B4 id=211 cls=Button text="" rect=1499,1056 24x24 vis=0 en=1 style=5601000b
+            00000000000104B6 id=231 cls=Button text="Page 8" rect=1018,1090 159x13 vis=0 en=1 style=52010002
+              - checked=1
+            00000000000104B8 id=250 cls=Edit text="" rect=1182,1086 232x21 vis=0 en=1 style=52010080
+            00000000000104BA id=269 cls=Button text="Browse" rect=1419,1085 75x24 vis=0 en=1 style=56010000
+            00000000000104BC id=212 cls=Button text="" rect=1499,1085 24x24 vis=0 en=1 style=5601000b
+            00000000000104BE id=232 cls=Button text="Page 9" rect=1018,1119 159x13 vis=0 en=1 style=52010002
+              - checked=1
+            00000000000104C0 id=251 cls=Edit text="" rect=1182,1115 232x21 vis=0 en=1 style=52010080
+            00000000000104C2 id=270 cls=Button text="Browse" rect=1419,1114 75x24 vis=0 en=1 style=56010000
+            00000000000104C4 id=213 cls=Button text="" rect=1499,1114 24x24 vis=0 en=1 style=5601000b
+      00000000000904C6 id=-31628 cls=wxWindowNR text="panel" rect=1003,404 552x633 vis=0 en=1 style=42000000
+        00000000000304C8 id=-31627 cls=wxWindowNR text="control" rect=1003,404 0x0 vis=0 en=1 style=52010000
+        00000000000B04CA id=-31626 cls=wxWindowNR text="panel" rect=1003,404 552x633 vis=0 en=1 style=52000000
+          00000000000104CC id=-31625 cls=Static text="&Check for updates:" rect=1008,417 99x14 vis=0 en=1 style=52000100
+          00000000000104CE id=-31624 cls=ComboBox text="" rect=1117,414 150x21 vis=0 en=1 style=56010042
+            - item[0]* "Never"
+            - item[1] "Daily"
+            - item[2] "Weekly"
+            00000000000104D2 id=1001 cls=Edit text="" rect=1120,417 127x15 vis=0 en=1 style=50000380
+    00000000000404D4 id=-31623 cls=Button text="Reset" rect=1009,1051 75x23 vis=1 en=1 style=56010000
+    00000000000304D6 id=-31622 cls=Button text="OK" rect=1324,1051 75x23 vis=1 en=1 style=56010000
+    00000000000104D8 id=-31621 cls=Button text="Cancel" rect=1399,1051 75x23 vis=1 en=1 style=56010000
+    00000000000104DA id=-31620 cls=Button text="Apply" rect=1474,1051 75x23 vis=1 en=0 style=5e010000
+0000000000010070 id=65748 cls=wxWindowNR text="Soundpad (Trial)" rect=895,360 769x720 vis=1 en=1 style=16cf0000
+  0000000000010076 id=-31999 cls=wxWindowNR text="text" rect=899,409 20x20 vis=0 en=1 style=42000000
+    0000000000010078 id=-31998 cls=Edit text="" rect=899,409 127x34 vis=0 en=1 style=52211044
+  000000000001007E id=-31997 cls=wxWindowNR text="panel" rect=899,1052 761x24 vis=1 en=1 style=52000000
+    0000000000040080 id=-1 cls=wxWindowNR text="panel" rect=903,1056 16x16 vis=1 en=1 style=52000000
+      0000000000010084 id=-31995 cls=Button text="" rect=903,1056 16x16 vis=1 en=1 style=5601800b
+    0000000000030086 id=-1 cls=wxWindowNR text="panel" rect=927,1056 16x16 vis=1 en=1 style=52000000
+      0000000000010088 id=-31993 cls=Button text="" rect=927,1056 16x16 vis=1 en=1 style=5601800b
+    000000000002008A id=-1 cls=wxWindowNR text="panel" rect=951,1056 16x16 vis=1 en=1 style=52000000
+      000000000001008C id=-31991 cls=Button text="" rect=951,1056 16x16 vis=1 en=1 style=5601800b
+    000000000001008E id=-31990 cls=wxWindowNR text="panel" rect=975,1053 1x22 vis=1 en=1 style=52000000
+    0000000000010090 id=-31989 cls=Static text="" rect=984,1057 0x14 vis=1 en=1 style=52004100
+    0000000000010092 id=-31988 cls=wxWindow text="https://www.leppsoft.com/soundpad" rect=900,1053 185x13 vis=0 en=1 style=42010000
+    0000000000010094 id=-31987 cls=wxWindowNR text="panel" rect=1574,1053 1x22 vis=1 en=1 style=52000000
+    0000000000030096 id=-1 cls=wxWindowNR text="panel" rect=1583,1056 16x16 vis=1 en=1 style=52000000
+      0000000000010098 id=-31985 cls=Button text="" rect=1583,1056 16x16 vis=1 en=1 style=5601800b
+    000000000001009A id=-1 cls=wxWindowNR text="panel" rect=1607,1056 16x16 vis=1 en=1 style=52000000
+      000000000001009C id=-31983 cls=Button text="" rect=1607,1056 16x16 vis=1 en=1 style=5601800b
+    00000000000100AC id=-31982 cls=wxWindowNR text="panel" rect=1631,1053 1x22 vis=1 en=1 style=52000000
+    00000000000200AE id=-1 cls=wxWindowNR text="panel" rect=1640,1056 16x16 vis=1 en=1 style=52000000
+      00000000000100B0 id=-31980 cls=Button text="" rect=1640,1056 16x16 vis=1 en=1 style=5601800b
+  00000000000200D6 id=-31968 cls=ToolbarWindow32 text="" rect=899,409 761x26 vis=1 en=1 style=52008901
+    00000000000C00DA id=-31967 cls=Static text="0:00" rect=1075,416 32x14 vis=1 en=1 style=52000101
+    00000000000100DC id=120 cls=wxWindowNR text="control" rect=1110,412 370x22 vis=1 en=1 style=52010000
+    00000000000100DE id=121 cls=wxWindowNR text="control" rect=1528,412 100x22 vis=1 en=1 style=52010000
+    00000000000100E0 id=-31966 cls=Static text="" rect=1061,416 3x14 vis=1 en=1 style=52000100
+    00000000000100E2 id=-31965 cls=Static text="" rect=1480,416 10x14 vis=1 en=1 style=52000100
+    00000000000100E4 id=-31964 cls=Static text="" rect=1501,416 1x14 vis=1 en=1 style=52000100
+  00000000000400E6 id=-31963 cls=wxWindowNR text="panel" rect=899,435 761x617 vis=1 en=1 style=52000000
+    00000000000100E8 id=-31962 cls=wxWindowNR text="panel" rect=899,435 20x20 vis=0 en=1 style=42000000
+      00000000000100EA id=-31961 cls=Button text="" rect=899,435 13x13 vis=0 en=1 style=52030004
+      00000000000200EC id=-31960 cls=Static text="" rect=899,435 16x16 vis=0 en=1 style=5200030e
+      00000000000100EE id=-31959 cls=Button text="" rect=899,435 13x13 vis=0 en=1 style=52000004
+      00000000000200F0 id=-31958 cls=Static text="" rect=899,435 16x16 vis=0 en=1 style=5200030e
+      00000000000100F2 id=-31957 cls=wxWindowNR text="control" rect=899,435 205x16 vis=0 en=1 style=52010000
+      00000000000100F4 id=-31956 cls=Static text="0:00" rect=899,435 21x14 vis=0 en=1 style=52000100
+      00000000000100F6 id=-31955 cls=Static text=" / 5:00" rect=899,435 31x14 vis=0 en=1 style=52000100
+      00000000000500F8 id=-1 cls=wxWindowNR text="panel" rect=899,435 24x24 vis=0 en=1 style=52000000
+        00000000000100FA id=145 cls=Button text="" rect=899,435 24x24 vis=0 en=1 style=5201100b
+      00000000000100FC id=-1 cls=wxWindowNR text="panel" rect=899,435 24x24 vis=0 en=1 style=52000000
+        00000000000100FE id=-31953 cls=Button text="" rect=899,435 24x24 vis=0 en=1 style=5601000b
+      0000000000010100 id=-1 cls=wxWindowNR text="panel" rect=899,435 24x24 vis=0 en=1 style=52000000
+        0000000000010102 id=147 cls=Button text="" rect=899,435 24x24 vis=0 en=1 style=5601000b
+    0000000000010104 id=-31952 cls=wxWindowNR text="panel" rect=899,435 20x20 vis=0 en=1 style=42000000
+      0000000000010106 id=-31951 cls=wxWindowNR text="panel" rect=899,436 20x19 vis=0 en=1 style=52000000
+        0000000000010108 id=-31950 cls=ComboBox text="" rect=899,437 0x17 vis=0 en=1 style=56010042
+          000000000001010C id=1001 cls=Edit text="" rect=902,440 0x11 vis=0 en=1 style=50000380
+        000000000002010E id=-1 cls=wxWindowNR text="panel" rect=904,436 15x19 vis=0 en=1 style=52000000
+          0000000000010110 id=-31948 cls=Button text="" rect=904,436 15x19 vis=0 en=1 style=5601000b
+        0000000000020112 id=-1 cls=wxWindowNR text="panel" rect=919,436 0x19 vis=0 en=1 style=52000000
+          0000000000010114 id=-31946 cls=Button text="" rect=919,436 0x19 vis=0 en=1 style=5601000b
+        0000000000020116 id=-1 cls=wxWindowNR text="panel" rect=919,436 0x19 vis=0 en=1 style=52000000
+          0000000000010118 id=-31944 cls=Button text="" rect=919,436 0x19 vis=0 en=1 style=5601000b
+        000000000002011A id=-1 cls=wxWindowNR text="panel" rect=919,436 0x19 vis=0 en=1 style=52000000
+          000000000001011C id=-31942 cls=Button text="" rect=919,436 0x19 vis=0 en=1 style=5601000b
+      000000000001011E id=-31941 cls=wxWindowNR text="panel" rect=899,455 20x0 vis=0 en=1 style=52000000
+        0000000000010120 id=-31940 cls=ComboBox text="" rect=899,455 20x6 vis=0 en=1 style=56010043
+          - item[0]* "Dummy voice (en-US)"
+          - item[1] "(null)"
+        0000000000010124 id=-31939 cls=Static text="Speed:" rect=919,455 0x0 vis=0 en=1 style=52000100
+        0000000000010126 id=-31938 cls=wxWindowNR text="panel" rect=919,455 0x0 vis=0 en=1 style=52000000
+        0000000000010128 id=-31937 cls=Static text="0" rect=919,455 0x0 vis=0 en=1 style=52000100
+        000000000001012A id=-31936 cls=Static text="Pitch:" rect=919,455 0x0 vis=0 en=1 style=52000100
+        000000000001012C id=-31935 cls=wxWindowNR text="panel" rect=919,455 0x0 vis=0 en=1 style=52000000
+        000000000001012E id=-31934 cls=Static text="0" rect=919,455 0x0 vis=0 en=1 style=52000100
+        0000000000010130 id=-31933 cls=wxWindowNR text="panel" rect=919,455 0x0 vis=0 en=1 style=52000000
+        0000000000010132 id=-31932 cls=wxWindowNR text="panel" rect=919,455 0x0 vis=0 en=1 style=52000000
+    0000000000010134 id=-31931 cls=wxWindowNR text="panel" rect=899,435 20x20 vis=0 en=1 style=42000000
+      0000000000010136 id=-31930 cls=wxWindowNR text="panel" rect=899,435 22x22 vis=0 en=1 style=52000000
+      0000000000020138 id=-31929 cls=wxWindowNR text="panel" rect=899,435 22x22 vis=0 en=1 style=52000000
+      000000000002013A id=-31928 cls=wxWindowNR text="panel" rect=899,435 1x18 vis=0 en=1 style=52000000
+      000000000001013C id=166 cls=wxWindowNR text="panel" rect=899,435 22x22 vis=0 en=1 style=52000000
+      000000000001013E id=167 cls=wxWindowNR text="panel" rect=899,435 22x22 vis=0 en=1 style=52000000
+      0000000000010140 id=168 cls=wxWindowNR text="panel" rect=899,435 22x22 vis=0 en=1 style=52000000
+      0000000000010142 id=169 cls=wxWindowNR text="panel" rect=899,435 22x22 vis=0 en=1 style=52000000
+      0000000000010144 id=170 cls=wxWindowNR text="panel" rect=899,435 22x22 vis=0 en=1 style=52000000
+      0000000000010146 id=171 cls=wxWindowNR text="panel" rect=899,435 22x22 vis=0 en=1 style=52000000
+      0000000000010148 id=172 cls=wxWindowNR text="panel" rect=899,435 22x22 vis=0 en=1 style=52000000
+      000000000002014A id=173 cls=wxWindowNR text="panel" rect=899,435 22x22 vis=0 en=1 style=52000000
+      000000000001014C id=174 cls=wxWindowNR text="panel" rect=899,435 22x22 vis=0 en=1 style=52000000
+      000000000001014E id=175 cls=wxWindowNR text="panel" rect=899,435 22x22 vis=0 en=1 style=52000000
+      0000000000010150 id=176 cls=wxWindowNR text="panel" rect=899,435 22x22 vis=0 en=1 style=52000000
+      0000000000010152 id=177 cls=wxWindowNR text="panel" rect=899,435 22x22 vis=0 en=1 style=52000000
+      0000000000010154 id=178 cls=wxWindowNR text="panel" rect=899,435 22x22 vis=0 en=1 style=52000000
+      0000000000010156 id=179 cls=wxWindowNR text="panel" rect=899,435 22x22 vis=0 en=1 style=52000000
+      0000000000010158 id=180 cls=wxWindowNR text="panel" rect=899,435 22x22 vis=0 en=1 style=52000000
+      000000000001015A id=181 cls=wxWindowNR text="panel" rect=899,435 22x22 vis=0 en=1 style=52000000
+      000000000001015C id=182 cls=wxWindowNR text="panel" rect=899,435 22x22 vis=0 en=1 style=52000000
+      000000000001015E id=183 cls=wxWindowNR text="panel" rect=899,435 22x22 vis=0 en=1 style=52000000
+      0000000000010160 id=184 cls=wxWindowNR text="panel" rect=899,435 22x22 vis=0 en=1 style=52000000
+      0000000000010162 id=185 cls=wxWindowNR text="panel" rect=899,435 22x22 vis=0 en=1 style=52000000
+      0000000000010164 id=186 cls=wxWindowNR text="panel" rect=899,435 22x22 vis=0 en=1 style=52000000
+      0000000000010166 id=187 cls=wxWindowNR text="panel" rect=899,435 22x22 vis=0 en=1 style=52000000
+      0000000000010168 id=188 cls=wxWindowNR text="panel" rect=899,435 22x22 vis=0 en=1 style=52000000
+      000000000001016A id=189 cls=wxWindowNR text="panel" rect=899,435 22x22 vis=0 en=1 style=52000000
+      000000000002016C id=-1 cls=wxWindowNR text="panel" rect=899,435 24x24 vis=0 en=1 style=52000000
+        000000000001016E id=-31926 cls=Button text="" rect=899,435 24x24 vis=0 en=1 style=5601000b
+    0000000000010170 id=-31925 cls=wxWindowNR text="panel" rect=899,435 20x20 vis=0 en=1 style=42000000
+      0000000000010172 id=-31924 cls=wxWindowNR text="text" rect=899,435 236x24 vis=0 en=1 style=52000000
+        0000000000010174 id=-31923 cls=Edit text="" rect=899,435 236x24 vis=0 en=1 style=52010080
+      0000000000040176 id=-1 cls=wxWindowNR text="panel" rect=899,435 24x24 vis=0 en=1 style=52000000
+        0000000000010178 id=-31921 cls=Button text="" rect=899,435 24x24 vis=0 en=1 style=5601000b
+      000000000001017A id=-1 cls=wxWindowNR text="panel" rect=899,435 24x24 vis=0 en=1 style=52000000
+        000000000001017C id=-31919 cls=Button text="" rect=899,435 24x24 vis=0 en=1 style=5601000b
+      000000000001017E id=-1 cls=wxWindowNR text="panel" rect=899,435 24x24 vis=0 en=1 style=52000000
+        0000000000010180 id=-31917 cls=Button text="" rect=899,435 24x24 vis=0 en=1 style=5601000b
+    0000000000010182 id=-31916 cls=wxWindowNR text="panel" rect=899,435 761x617 vis=1 en=1 style=52000000
+      0000000000010188 id=-31915 cls=wxWindowNR text="splitter" rect=899,435 761x617 vis=1 en=1 style=52000000
+        000000000001018A id=-31914 cls=wxWindowNR text="panel" rect=1082,435 578x617 vis=1 en=1 style=52000000
+          000000000001018C id=-31913 cls=wxWindowNR text="panel" rect=1083,436 575x549 vis=1 en=1 style=52000000
+            000000000001018E id=339 cls=wxWindowNR text="dataviewCtrl" rect=1083,436 575x549 vis=1 en=1 style=52010000
+              0000000000010190 id=-31912 cls=wxDataView text="wxdataviewctrlmainwindow" rect=1083,453 575x532 vis=1 en=1 style=52000000
+              0000000000010192 id=-31911 cls=wxWindowNR text="wxHeaderCtrl" rect=1083,436 575x17 vis=1 en=1 style=52000000
+                0000000000010194 id=-31910 cls=SysHeader32 text="" rect=1083,436 575x17 vis=1 en=1 style=520100c6
+          000000000001019C id=-31909 cls=wxWindowNR text="panel" rect=1083,985 576x66 vis=1 en=1 style=52000000
+            000000000001019E id=-31908 cls=Static text="" rect=1088,994 48x48 vis=1 en=1 style=5200030e
+            00000000000101A0 id=-31907 cls=Static text="My Sounds" rect=1146,1002 55x14 vis=1 en=1 style=52000100
+            00000000000101A2 id=-31906 cls=Static text="Index: " rect=1146,1021 36x14 vis=0 en=1 style=42000100
+            00000000000101A4 id=-31905 cls=Static text="" rect=1151,1021 0x14 vis=1 en=1 style=52000100
+            00000000000101A6 id=-31904 cls=Static text="Sounds: " rect=1251,1002 44x14 vis=1 en=1 style=52000100
+            00000000000101A8 id=-31903 cls=Static text="4" rect=1309,1002 6x14 vis=1 en=1 style=52000100
+            00000000000101AA id=-31902 cls=Static text="Selected: " rect=1251,1021 53x14 vis=1 en=1 style=52000100
+            00000000000101AC id=-31901 cls=Static text="0" rect=1309,1021 6x14 vis=1 en=1 style=52000100
+            00000000000101AE id=-31900 cls=Static text="Play count: " rect=1365,1002 60x14 vis=1 en=1 style=52000100
+            00000000000101B0 id=-31899 cls=Static text="0" rect=1430,1002 6x14 vis=1 en=1 style=52000100
+            00000000000101B2 id=-31898 cls=Static text="Play random file: " rect=1365,1021 90x14 vis=0 en=1 style=42000100
+            00000000000101B4 id=-31897 cls=Static text="" rect=1430,1021 0x14 vis=1 en=1 style=52000100
+            00000000000101B6 id=-31896 cls=Static text="" rect=1486,1002 0x14 vis=1 en=1 style=52000100
+            00000000000101B8 id=-31895 cls=Static text="" rect=1491,1002 0x14 vis=1 en=1 style=52000100
+            00000000000101BA id=-31894 cls=Static text="" rect=1486,1021 0x14 vis=1 en=1 style=52000100
+            00000000000101BC id=-31893 cls=Static text="" rect=1491,1021 0x14 vis=1 en=1 style=52000100
+            00000000000201BE id=-1 cls=wxWindowNR text="panel" rect=1635,991 24x24 vis=1 en=1 style=52000000
+              00000000000101C0 id=-31891 cls=Button text="" rect=1635,991 24x24 vis=1 en=1 style=5601800b
+            00000000000101C2 id=-31890 cls=Static text="" rect=1635,1020 0x14 vis=1 en=1 style=52000100
+            00000000000101C4 id=-31889 cls=wxWindowNR text="panel" rect=1083,985 576x1 vis=1 en=1 style=52000000
+        00000000000101C6 id=-31888 cls=wxWindowNR text="panel" rect=899,435 180x617 vis=1 en=1 style=52000000
+          00000000000101C8 id=-31887 cls=wxWindowNR text="panel" rect=900,436 178x615 vis=1 en=1 style=52000000
+            00000000000101CA id=-31886 cls=wxWindowNR text="dataviewCtrl" rect=900,436 178x615 vis=1 en=1 style=52010000
+              00000000000101CC id=-31885 cls=wxDataView text="wxdataviewctrlmainwindow" rect=900,453 178x598 vis=1 en=1 style=52000000
+              00000000000101CE id=-31884 cls=wxWindowNR text="wxHeaderCtrl" rect=900,436 178x17 vis=1 en=1 style=52000000
+                00000000000101D0 id=-31883 cls=SysHeader32 text="" rect=900,436 178x17 vis=1 en=1 style=520108c6
+    00000000002801D2 id=-31882 cls=wxWindowNR text="panel" rect=899,1052 761x0 vis=1 en=1 style=52000000
+  00000000000101D4 id=-31881 cls=wxWindowNR text="panel" rect=899,435 20x20 vis=0 en=1 style=42000000
+    00000000000101D6 id=-31880 cls=wxWindowNR text="panel" rect=900,436 20x20 vis=0 en=1 style=52000000
+      00000000000101D8 id=-31879 cls=wxWindowNR text="panel" rect=900,436 24x24 vis=0 en=1 style=52000000
+      00000000000301DA id=-31878 cls=wxWindowNR text="panel" rect=900,436 24x24 vis=0 en=1 style=52000000
+      00000000000301DC id=-31877 cls=wxWindowNR text="panel" rect=900,436 24x24 vis=0 en=1 style=52000000
+      00000000000101E0 id=442 cls=wxWindowNR text="panel" rect=900,436 24x24 vis=0 en=1 style=52000000
+    00000000000301DE id=-31876 cls=wxWindowNR text="panel" rect=900,436 20x20 vis=0 en=1 style=52000000
+0000000000010038 id=0 cls=Shell_TrayWnd text="" rect=0,0 166x52 vis=1 en=1 style=14c80000
