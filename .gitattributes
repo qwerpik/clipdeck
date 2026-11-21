@@ -1,0 +1,7 @@
+# Golden files are byte-exact captures from Soundpad (LF, no BOM): never convert line endings.
+crates/core/tests/golden/** -text
+re/samples/** -text
+*.spl -text
+# Shell scripts must keep LF on Windows checkouts.
+*.sh text eol=lf
+PKGBUILD text eol=lf
