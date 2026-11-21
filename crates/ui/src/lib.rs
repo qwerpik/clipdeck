@@ -96,9 +96,14 @@ fn fmt_ms(ms: u32) -> String {
 /// Open a file, folder or URL with the system handler.
 pub fn open_external(target: &str) {
     #[cfg(windows)]
-    let r = std::process::Command::new("cmd")
-        .args(["/C", "start", "", target])
-        .spawn();
+    let r = {
+        use std::os::windows::process::CommandExt;
+        const CREATE_NO_WINDOW: u32 = 0x0800_0000;
+        std::process::Command::new("cmd")
+            .args(["/C", "start", "", target])
+            .creation_flags(CREATE_NO_WINDOW)
+            .spawn()
+    };
     #[cfg(not(windows))]
     let r = std::process::Command::new("xdg-open").arg(target).spawn();
     if let Err(e) = r {
@@ -1590,4 +1595,3 @@ pub fn run(paths: Paths, minimized: bool) -> anyhow::Result<()> {
     core.shutdown();
     Ok(())
 }
-
