@@ -460,6 +460,8 @@ impl Ui {
         s.set_normalize(cfg.audio.normalize);
         s.set_target_lufs(cfg.audio.target_lufs);
         s.set_block_voice(cfg.audio.block_voice);
+        s.set_ptt_delay(cfg.audio.ptt_delay_ms as f32);
+        s.set_karaoke_delay(cfg.audio.karaoke_delay_ms as f32);
         s.set_monitor_volume(cfg.audio.monitor_volume);
         s.set_mic_volume(cfg.audio.mic_volume);
         s.set_hotkeys_enabled(cfg.hotkeys.enabled);
@@ -627,6 +629,8 @@ impl Ui {
             c.audio.normalize = s.get_normalize();
             c.audio.target_lufs = s.get_target_lufs();
             c.audio.block_voice = s.get_block_voice();
+            c.audio.ptt_delay_ms = s.get_ptt_delay().round().max(0.0) as u32;
+            c.audio.karaoke_delay_ms = s.get_karaoke_delay().round().max(0.0) as u32;
             c.audio.monitor_volume = s.get_monitor_volume();
             c.audio.mic_volume = s.get_mic_volume();
             c.hotkeys.enabled = s.get_hotkeys_enabled();

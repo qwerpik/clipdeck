@@ -66,6 +66,8 @@ pub struct VoiceSpec {
     pub mode: PlaybackMode,
     /// When the trigger happened, for latency measurement.
     pub triggered: Option<Instant>,
+    /// Frames of silence before the voice starts (push-to-talk and karaoke delays).
+    pub delay: u32,
 }
 
 /// Control commands.
@@ -215,6 +217,7 @@ struct Voice {
     fade_len: u32,
     triggered: Option<Instant>,
     started: bool,
+    delay: u32,
 }
 
 /// The real-time half; lives inside the output callback.
@@ -379,6 +382,7 @@ impl Mixer {
                         fade_len: 1,
                         triggered: spec.triggered,
                         started: false,
+                        delay: spec.delay,
                     });
                 }
                 Command::StopSound(s) => {
@@ -446,6 +450,10 @@ impl Mixer {
                 }
                 let mut done = false;
                 for i in 0..frames {
+                    if v.delay > 0 {
+                        v.delay -= 1;
+                        continue;
+                    }
                     let (l, r) = match &mut v.source {
                         Source::Memory {
                             clip,
@@ -629,6 +637,7 @@ mod tests {
             looped,
             mode,
             triggered: None,
+            delay: 0,
         }
     }
 
@@ -778,6 +787,18 @@ mod tests {
     }
 
     #[test]
+    fn start_delay_inserts_silence() {
+        let (mut m, mut h) = mixer(48_000);
+        let mut s = spec(1, 1, clip(100, 0.5), PlaybackMode::Overlap, false);
+        s.delay = 30;
+        h.send(Command::Play(s)).ok();
+        let mut out = vec![0.0; 2 * 64];
+        m.render(&mut out, 2);
+        assert!(out[..60].iter().all(|v| *v == 0.0));
+        assert!(out[60..].iter().all(|v| (*v - 0.5).abs() < 1e-3));
+    }
+
+    #[test]
     fn master_gain_trim_mono_and_disable() {
         let (mut m, mut h) = mixer(1000);
         h.shared.set_master(0.5);
@@ -790,6 +811,7 @@ mod tests {
             looped: false,
             mode: PlaybackMode::Overlap,
             triggered: None,
+            delay: 0,
         }))
         .ok();
         let mut out = vec![0.0; 150];

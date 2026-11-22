@@ -49,6 +49,10 @@ pub struct EngineConfig {
     pub target_lufs: f32,
     /// Mute the real mic while a sound plays on the mic.
     pub block_voice: bool,
+    /// Delay before every sound starts, ms (time to press push-to-talk).
+    pub ptt_delay_ms: u32,
+    /// Extra delay on the microphone only, ms (karaoke: you hear it first).
+    pub karaoke_delay_ms: u32,
     /// Clip cache budget in bytes.
     pub cache_bytes: usize,
 }
@@ -67,6 +71,8 @@ impl Default for EngineConfig {
             normalize: true,
             target_lufs: -16.0,
             block_voice: false,
+            ptt_delay_ms: 0,
+            karaoke_delay_ms: 0,
             cache_bytes: 512 << 20,
         }
     }
@@ -87,6 +93,8 @@ impl EngineConfig {
             normalize: a.normalize,
             target_lufs: a.target_lufs,
             block_voice: a.block_voice,
+            ptt_delay_ms: a.ptt_delay_ms,
+            karaoke_delay_ms: a.karaoke_delay_ms,
             ..Default::default()
         }
     }
@@ -488,6 +496,7 @@ impl Engine {
                     looped: false,
                     mode: req.mode,
                     triggered: Some(triggered),
+                    delay: delay_frames(&inner.cfg, bit, out.rate),
                 }));
             }
             inner.live.insert(voice, (req.sound, targets));
@@ -561,6 +570,7 @@ impl Engine {
                 looped: req.looped,
                 mode: req.mode,
                 triggered: Some(triggered),
+                delay: delay_frames(&inner.cfg, bit, out.rate),
             };
             if out.handle.send(Command::Play(spec)).is_err() {
                 tracing::warn!("mixer command queue full; dropped a play");
@@ -1094,6 +1104,13 @@ fn device_thread(
     drop(input_stream);
 }
 
+/// Start delay for a voice on output `bit`: Soundpad's push-to-talk delay applies to every
+/// output (time to press the push-to-talk key), the karaoke delay only to the microphone.
+fn delay_frames(cfg: &EngineConfig, bit: u8, rate: u32) -> u32 {
+    let ms = cfg.ptt_delay_ms + if bit == MIC { cfg.karaoke_delay_ms } else { 0 };
+    (u64::from(ms.min(10_000)) * u64::from(rate) / 1000) as u32
+}
+
 /// Run a mixer offline (no device) — used by tests and the benchmark.
 pub fn offline_render(clip: Arc<Clip>, frames: usize) -> Vec<f32> {
     let (mut m, mut h) = mixer(clip.rate);
@@ -1105,6 +1122,7 @@ pub fn offline_render(clip: Arc<Clip>, frames: usize) -> Vec<f32> {
         looped: false,
         mode: PlaybackMode::Overlap,
         triggered: None,
+        delay: 0,
     }));
     let mut out = vec![0.0; frames * 2];
     m.render(&mut out, 2);

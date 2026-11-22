@@ -63,7 +63,11 @@ jobs:
           New-Item -ItemType Directory -Force $d | Out-Null
           Invoke-WebRequest https://download.vb-audio.com/Download_CABLE/VBCABLE_Driver_Pack45.zip -OutFile "$d\vb.zip"
           Expand-Archive "$d\vb.zip" -DestinationPath $d -Force
-          $cert = (Get-AuthenticodeSignature "$d\vbMmeCable64_win10.cat").SignerCertificate
+          Get-ChildItem $d | Format-Table -AutoSize Name, Length
+          $cat = Get-ChildItem $d -Filter *64*.cat | Select-Object -First 1
+          if (-not $cat) { $cat = Get-ChildItem $d -Filter *.cat | Select-Object -First 1 }
+          $cert = $null
+          if ($cat) { $cert = (Get-AuthenticodeSignature $cat.FullName).SignerCertificate }
           if (-not $cert) { $cert = (Get-AuthenticodeSignature "$d\VBCABLE_Setup_x64.exe").SignerCertificate }
           $store = New-Object System.Security.Cryptography.X509Certificates.X509Store "TrustedPublisher", "LocalMachine"
           $store.Open("ReadWrite"); $store.Add($cert); $store.Close()

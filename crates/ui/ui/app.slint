@@ -34,6 +34,8 @@ export global Settings {
     in-out property <bool> normalize;
     in-out property <float> target-lufs: -16;
     in-out property <bool> block-voice;
+    in-out property <float> ptt-delay;
+    in-out property <float> karaoke-delay;
     in-out property <float> monitor-volume;
     in-out property <float> mic-volume;
     in-out property <bool> hotkeys-enabled;
@@ -247,6 +249,16 @@ component SettingsPage inherits ScrollView {
                 label: "Mute my voice while a sound plays";
                 hint: "Soundpad calls this “block voice”.";
                 Switch { checked <=> Settings.block-voice; toggled => { Settings.changed(); } }
+            }
+            Row {
+                label: "Push-to-talk delay";
+                hint: "Waits before every sound, so you have time to press your push-to-talk key. " + (Settings.ptt-delay < 1 ? "Off." : round(Settings.ptt-delay) + " ms.");
+                Slider { width: 280px; minimum: 0; maximum: 1000; step: 10; value <=> Settings.ptt-delay; changed => { Settings.changed(); } }
+            }
+            Row {
+                label: "Karaoke delay";
+                hint: "Delays the sound on the microphone only, so you hear it first and can sing along. " + (Settings.karaoke-delay < 1 ? "Off." : round(Settings.karaoke-delay) + " ms.");
+                Slider { width: 280px; minimum: 0; maximum: 2000; step: 10; value <=> Settings.karaoke-delay; changed => { Settings.changed(); } }
             }
             Row {
                 label: "Playback mode";

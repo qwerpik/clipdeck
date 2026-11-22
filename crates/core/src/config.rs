@@ -61,6 +61,10 @@ pub struct AudioConfig {
     pub target_lufs: f32,
     /// Cut the real microphone while a sound plays on the mic (Soundpad's "block voice").
     pub block_voice: bool,
+    /// Delay before every sound starts, ms, so there is time to press push-to-talk.
+    pub ptt_delay_ms: u32,
+    /// Extra delay on the microphone only, ms ("karaoke": you hear the sound first).
+    pub karaoke_delay_ms: u32,
 }
 
 impl Default for AudioConfig {
@@ -80,6 +84,8 @@ impl Default for AudioConfig {
             normalize: true,
             target_lufs: -16.0,
             block_voice: false,
+            ptt_delay_ms: 0,
+            karaoke_delay_ms: 0,
         }
     }
 }
