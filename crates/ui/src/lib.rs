@@ -67,6 +67,37 @@ struct Ui {
     editor_extra_color: RefCell<Option<u32>>,
 }
 
+/// Install the in-mic effect on exactly `guids` (none = uninstall) through an elevated
+/// `clipdeck micfx …` process.
+#[cfg(windows)]
+fn apply_micfx(guids: &[String]) -> Result<(), String> {
+    use clipdeck_platform::windows::micfx;
+    let file = std::env::temp_dir().join(format!("clipdeck-micfx-ui-{}.txt", std::process::id()));
+    let _ = std::fs::remove_file(&file);
+    let action = if guids.is_empty() {
+        "micfx uninstall".to_string()
+    } else {
+        let list: Vec<String> = guids.iter().map(|g| format!("\"{g}\"")).collect();
+        format!("micfx install {}", list.join(" "))
+    };
+    let code = micfx::run_elevated(&format!("{action} --result-file \"{}\"", file.display()))?;
+    let msg = std::fs::read_to_string(&file).unwrap_or_default();
+    let _ = std::fs::remove_file(&file);
+    if code == 0 && msg.starts_with("OK") {
+        Ok(())
+    } else {
+        Err(msg
+            .strip_prefix("ERR ")
+            .unwrap_or("Changing the microphones failed.")
+            .to_string())
+    }
+}
+
+#[cfg(not(windows))]
+fn apply_micfx(_guids: &[String]) -> Result<(), String> {
+    Ok(())
+}
+
 thread_local! {
     static UI: RefCell<Option<Rc<Ui>>> = const { RefCell::new(None) };
 }
@@ -409,6 +440,7 @@ impl Ui {
         *self.inputs.borrow_mut() = ins;
 
         s.set_is_windows(cfg!(windows));
+        self.refresh_mics();
         s.set_buffer_index(
             BUFFERS
                 .iter()
@@ -473,6 +505,45 @@ impl Ui {
         );
         self.update_device_status();
     }
+
+    /// Fill the Windows "Microphones" list (in-mic effect per microphone).
+    #[cfg(windows)]
+    fn refresh_mics(&self) {
+        use clipdeck_platform::windows::micfx;
+        let Some(app) = self.app() else { return };
+        let s = app.global::<Settings>();
+        let live = micfx::live_instances();
+        let items: Vec<MicItem> = micfx::endpoints()
+            .into_iter()
+            .map(|e| {
+                let running = live
+                    .iter()
+                    .any(|l| l.info.endpoint.eq_ignore_ascii_case(&e.guid));
+                let status = if !e.active {
+                    "Unplugged"
+                } else if running {
+                    "On · sounds go in here right now"
+                } else if e.installed {
+                    "On · active as soon as an app uses this microphone"
+                } else {
+                    ""
+                };
+                MicItem {
+                    name: e.name.into(),
+                    guid: e.guid.into(),
+                    checked: e.installed,
+                    installed: e.installed,
+                    status: status.into(),
+                }
+            })
+            .collect();
+        s.set_micfx_installed(items.iter().any(|m| m.installed));
+        s.set_mics(ModelRc::new(VecModel::from(items)));
+        s.set_micfx_dirty(false);
+    }
+
+    #[cfg(not(windows))]
+    fn refresh_mics(&self) {}
 
     fn update_device_status(&self) {
         let Some(app) = self.app() else { return };
@@ -1312,6 +1383,56 @@ fn wire(ui: &Rc<Ui>, app: &AppWindow) {
         with_ui(|ui| open_external(&ui.core.paths.data_dir.display().to_string()))
     });
     s.on_open_url(|u| open_external(&u));
+    s.on_refresh_mics(|| with_ui(|ui| ui.refresh_mics()));
+    s.on_mic_toggled(|i, on| {
+        with_ui(|ui| {
+            let Some(app) = ui.app() else { return };
+            let s = app.global::<Settings>();
+            let model = s.get_mics();
+            if let Some(mut row) = model.row_data(i as usize) {
+                row.checked = on;
+                model.set_row_data(i as usize, row);
+            }
+            s.set_micfx_dirty(model.iter().any(|m| m.checked != m.installed));
+        })
+    });
+    s.on_apply_mics(|| {
+        with_ui(|ui| {
+            let Some(app) = ui.app() else { return };
+            let s = app.global::<Settings>();
+            let guids: Vec<String> = s
+                .get_mics()
+                .iter()
+                .filter(|m| m.checked)
+                .map(|m| m.guid.to_string())
+                .collect();
+            s.set_micfx_busy(true);
+            s.set_micfx_note("Waiting for the administrator prompt…".into());
+            std::thread::spawn(move || {
+                let result = apply_micfx(&guids);
+                let _ = slint::invoke_from_event_loop(move || {
+                    with_ui(|ui| {
+                        let Some(app) = ui.app() else { return };
+                        let s = app.global::<Settings>();
+                        s.set_micfx_busy(false);
+                        s.set_micfx_note(
+                            match &result {
+                                Ok(()) if guids.is_empty() => {
+                                    "Removed. Clipdeck uses VB-CABLE again.".to_string()
+                                }
+                                Ok(()) => "Done. Sounds now go into the microphones switched on."
+                                    .to_string(),
+                                Err(e) => e.clone(),
+                            }
+                            .into(),
+                        );
+                        ui.refresh_mics();
+                        ui.core.engine.reopen_devices();
+                    })
+                });
+            });
+        })
+    });
     s.on_reopen_devices(|| {
         with_ui(|ui| {
             ui.core.engine.reopen_devices();

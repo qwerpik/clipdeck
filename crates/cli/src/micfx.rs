@@ -70,6 +70,10 @@ mod imp {
                 || install(&devices),
             ),
             MicfxCmd::Uninstall { result_file } => {
+                if !micfx::is_installed() && result_file.is_none() {
+                    println!("The in-mic effect is not installed.");
+                    return ExitCode::SUCCESS;
+                }
                 elevated("micfx uninstall", result_file.as_deref(), micfx::uninstall)
             }
             MicfxCmd::Test { device, seconds } => test(device.as_deref(), seconds),

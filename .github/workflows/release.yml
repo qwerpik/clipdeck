@@ -56,14 +56,14 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
       - name: Build
-        run: cargo build --release --locked -p clipdeck
+        run: cargo build --release --locked -p clipdeck -p clipdeck-micfx
       - name: Portable zip
         shell: pwsh
         run: |
           $v = "${{ github.ref_name }}".TrimStart("v")
           $d = "dist/clipdeck-$v-windows-x64-portable"
           New-Item -ItemType Directory -Force -Path $d | Out-Null
-          Copy-Item target/release/clipdeck.exe, README.md, LICENSE -Destination $d
+          Copy-Item target/release/clipdeck.exe, target/release/clipdeck_micfx.dll, README.md, LICENSE -Destination $d
           New-Item -ItemType File -Path "$d/portable" | Out-Null
           Compress-Archive -Path "$d/*" -DestinationPath "dist/clipdeck-$v-windows-x64-portable.zip"
       - name: Installer

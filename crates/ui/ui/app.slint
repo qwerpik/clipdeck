@@ -4,8 +4,19 @@ import { SoundItem, CategoryItem, IconButton, ToggleButton, StopFab, NavItem, Se
 
 export { Theme, Motion, SoundItem, CategoryItem, Palette }
 
+/// A microphone in the Windows "Microphones" list.
+export struct MicItem { name: string, guid: string, checked: bool, installed: bool, status: string }
+
 export global Settings {
     in property <bool> is-windows;
+    in-out property <[MicItem]> mics;
+    in property <bool> micfx-installed;
+    in property <bool> micfx-busy;
+    in property <bool> micfx-dirty;
+    in property <string> micfx-note;
+    callback mic-toggled(int, bool);
+    callback apply-mics();
+    callback refresh-mics();
     in property <[string]> output-devices;
     in-out property <int> output-index;
     in property <[string]> input-devices;
@@ -136,12 +147,52 @@ component SettingsPage inherits ScrollView {
         padding-bottom: 120px;
         spacing: 20px;
 
+        if Settings.is-windows: Card {
+            SectionTitle { text: "Microphones"; }
+            Text {
+                text: "Clipdeck adds its sounds straight into the microphones you switch on, so Discord, games and every other app hear them. No virtual cable and no device switch. Applying asks for administrator rights and restarts Windows audio for a moment.";
+                wrap: word-wrap;
+                font-size: 13px;
+                color: Theme.on-surface-variant;
+            }
+            for m[i] in Settings.mics: Row {
+                label: m.name;
+                hint: m.status;
+                Switch {
+                    checked: m.checked;
+                    enabled: !Settings.micfx-busy;
+                    toggled => { Settings.mic-toggled(i, self.checked); }
+                }
+            }
+            if Settings.mics.length == 0: Text { text: "No microphones found."; color: Theme.on-surface-variant; }
+            HorizontalLayout {
+                spacing: 8px;
+                Text {
+                    text: Settings.micfx-note;
+                    vertical-alignment: center;
+                    horizontal-stretch: 1;
+                    wrap: word-wrap;
+                    font-size: 13px;
+                    color: Theme.on-surface-variant;
+                }
+                TonalButton { text: "Refresh"; enabled: !Settings.micfx-busy; clicked => { Settings.refresh-mics(); } }
+                TonalButton {
+                    text: Settings.micfx-busy ? "Applying…" : "Apply";
+                    primary: true;
+                    enabled: Settings.micfx-dirty && !Settings.micfx-busy;
+                    clicked => { if (self.enabled) { Settings.apply-mics(); } }
+                }
+            }
+        }
+
         Card {
             SectionTitle { text: "Audio"; }
             Row {
                 label: "Virtual microphone";
-                hint: Settings.is-windows
-                    ? "Clipdeck plays into VB-CABLE. In Discord, pick “CABLE Output” as your input device."
+                hint: Settings.is-windows && Settings.micfx-installed
+                    ? "Clipdeck plays straight into the microphones switched on above. Nothing to change in Discord."
+                    : Settings.is-windows
+                    ? "Clipdeck plays into VB-CABLE. In Discord, pick “CABLE Output” as your input device. Or switch on a microphone above: then no cable is needed."
                     : "Clipdeck creates “Clipdeck Mic”. In Discord pick it as your input device and turn noise suppression off.";
                 HorizontalLayout {
                     spacing: 8px;
@@ -150,7 +201,7 @@ component SettingsPage inherits ScrollView {
                     Text { text: Settings.virtual-mic-status; vertical-alignment: center; color: Theme.on-surface-variant; font-size: 13px; max-width: 280px; overflow: elide; }
                 }
             }
-            if Settings.is-windows && !Settings.virtual-mic-ok: Rectangle {
+            if Settings.is-windows && !Settings.virtual-mic-ok && !Settings.micfx-installed: Rectangle {
                 height: 64px;
                 border-radius: 16px;
                 background: Theme.tertiary-container;
@@ -159,7 +210,7 @@ component SettingsPage inherits ScrollView {
                     spacing: 12px;
                     Image { source: Icons.warning; width: 24px; height: 24px; y: (parent.height - self.height) / 2; colorize: Theme.on-tertiary-container; }
                     Text {
-                        text: "VB-CABLE is not installed. Install the free driver, restart Clipdeck, then choose “CABLE Output” in Discord.";
+                        text: "Switch on your microphone under Microphones above, or install the free VB-CABLE driver and choose “CABLE Output” in Discord.";
                         wrap: word-wrap;
                         vertical-alignment: center;
                         horizontal-stretch: 1;
@@ -168,7 +219,7 @@ component SettingsPage inherits ScrollView {
                     TonalButton { text: "Get VB-CABLE"; primary: true; y: (parent.height - self.height) / 2; clicked => { Settings.open-url("https://vb-audio.com/Cable/"); } }
                 }
             }
-            if Settings.is-windows: Row {
+            if Settings.is-windows && !Settings.micfx-installed: Row {
                 label: "Cable device";
                 hint: "The output that feeds the virtual microphone.";
                 ComboBox { width: 280px; model: Settings.cable-devices; current-index <=> Settings.cable-index; selected => { Settings.changed(); } }
