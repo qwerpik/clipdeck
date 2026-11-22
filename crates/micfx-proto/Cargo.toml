@@ -1,0 +1,12 @@
+[package]
+name = "clipdeck-micfx-proto"
+description = "Shared-memory protocol between Clipdeck and its in-microphone Windows audio effect"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+
+[lints]
+workspace = true

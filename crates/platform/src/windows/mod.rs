@@ -1,5 +1,7 @@
 //! Windows backends.
 
+pub mod micfx;
+
 use clipdeck_audio::output::{DeviceMic, VirtualMic, find_output_containing};
 
 /// Name fragment of VB-CABLE's playback endpoint.
@@ -16,8 +18,12 @@ pub fn cable_device(configured: Option<&str>) -> Option<String> {
         .or_else(|| find_output_containing(CABLE_INPUT))
 }
 
-/// Virtual mic writing into VB-CABLE (or the configured device).
+/// The virtual mic: an explicitly configured output device, else the in-mic effect when it is
+/// installed on a microphone, else VB-CABLE.
 pub fn virtual_mic(configured: Option<&str>, buffer_frames: u32) -> Option<Box<dyn VirtualMic>> {
+    if configured.is_none() && micfx::is_installed() {
+        return Some(Box::new(micfx::MicFxMic::new()));
+    }
     cable_device(configured)
         .map(|d| Box::new(DeviceMic::new(d, buffer_frames)) as Box<dyn VirtualMic>)
 }

@@ -102,6 +102,11 @@ enum Cmd {
     },
     /// Print where settings and the library live.
     Paths,
+    /// Windows: put Clipdeck into your real microphone (no virtual cable needed).
+    Micfx {
+        #[command(subcommand)]
+        action: micfx::MicfxCmd,
+    },
 }
 
 fn init_logging(
@@ -323,6 +328,7 @@ fn main() -> ExitCode {
             ExitCode::SUCCESS
         }
         Some(Cmd::Bench { file }) => bench::run(paths, file),
+        Some(Cmd::Micfx { action }) => micfx::run(action),
         Some(Cmd::Paths) => {
             println!("config:  {}", paths.config_file().display());
             println!("library: {}", paths.library_file().display());
@@ -461,6 +467,7 @@ fn serve(paths: Paths) -> ExitCode {
 }
 
 mod bench;
+mod micfx;
 
 fn run_app(paths: Paths, minimized: bool) -> ExitCode {
     if ipc::is_running() {

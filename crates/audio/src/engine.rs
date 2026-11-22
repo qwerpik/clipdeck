@@ -996,6 +996,7 @@ fn device_thread(
             Some(mut sink) => match sink.prepare() {
                 Ok((rate, _ch)) => {
                     let (mut m, handle) = mixer(rate);
+                    sink.attach(handle.shared.clone());
                     let render: RenderFn = Box::new(move |out, ch| m.render(out, ch));
                     match sink.start(render) {
                         Ok(()) => {
@@ -1012,8 +1013,12 @@ fn device_thread(
         }
 
         // Real microphone passthrough into the virtual mic.
+        let carries_mic = mic_sink.as_ref().is_some_and(|s| s.carries_real_mic());
         if let Some(mic) = mic_out.as_mut() {
-            if cfg.mic_passthrough {
+            if carries_mic {
+                // The in-mic effect adds our sounds to the real microphone; nothing to capture.
+                status.input = Ok("your microphone (in-mic effect)".into());
+            } else if cfg.mic_passthrough {
                 match output::open_input(cfg.input_device.as_deref(), mic.rate) {
                     Ok((stream, ring)) => {
                         status.input = Ok(stream.device.clone());

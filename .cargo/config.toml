@@ -1,0 +1,7 @@
+# Link the C runtime statically on Windows: clipdeck.exe and clipdeck_micfx.dll (which runs
+# inside audiodg.exe) must not depend on the Visual C++ redistributable.
+[target.x86_64-pc-windows-msvc]
+rustflags = ["-C", "target-feature=+crt-static"]
+
+[target.aarch64-pc-windows-msvc]
+rustflags = ["-C", "target-feature=+crt-static"]

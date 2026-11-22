@@ -922,6 +922,7 @@ dependencies = [
  "clap",
  "clipdeck-audio",
  "clipdeck-core",
+ "clipdeck-micfx-proto",
  "clipdeck-platform",
  "clipdeck-ui",
  "tracing",
@@ -960,12 +961,26 @@ dependencies = [
 ]
 
 [[package]]
+name = "clipdeck-micfx"
+version = "0.1.0"
+dependencies = [
+ "clipdeck-micfx-proto",
+ "windows",
+ "windows-core",
+]
+
+[[package]]
+name = "clipdeck-micfx-proto"
+version = "0.1.0"
+
+[[package]]
 name = "clipdeck-platform"
 version = "0.1.0"
 dependencies = [
  "ashpd",
  "clipdeck-audio",
  "clipdeck-core",
+ "clipdeck-micfx-proto",
  "crossbeam-channel",
  "futures-util",
  "global-hotkey",

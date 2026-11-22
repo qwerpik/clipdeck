@@ -378,6 +378,14 @@ pub trait VirtualMic: Send {
     fn stop(&mut self);
     /// Whether the sink failed since it was started.
     fn failed(&self) -> bool;
+    /// Whether the sink already carries the user's real microphone (the Windows in-mic
+    /// effect), so the engine must not capture and mix it in again. Such a sink applies the
+    /// mic gain and "block voice" itself, from the state handed to [`VirtualMic::attach`].
+    fn carries_real_mic(&self) -> bool {
+        false
+    }
+    /// Receives the mixer's shared state before [`VirtualMic::start`].
+    fn attach(&mut self, _shared: std::sync::Arc<crate::mixer::MixerShared>) {}
 }
 
 /// A virtual microphone that is a plain output device (VB-CABLE `CABLE Input` on Windows,

@@ -38,3 +38,51 @@ jobs:
         run: cargo test --workspace
       - name: Release build
         run: cargo build --release -p clipdeck
+
+  micfx-e2e:
+    name: Windows in-mic effect (end to end)
+    runs-on: windows-2025
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Build
+        run: cargo build --release --locked -p clipdeck -p clipdeck-micfx
+      - name: Enable Windows Audio
+        shell: pwsh
+        run: |
+          Set-Service AudioEndpointBuilder -StartupType Automatic
+          Set-Service Audiosrv -StartupType Automatic
+          Start-Service AudioEndpointBuilder
+          Start-Service Audiosrv
+          Get-Service Audiosrv, AudioEndpointBuilder
+      - name: Install VB-CABLE (gives the runner a microphone)
+        shell: pwsh
+        run: |
+          $d = "$env:RUNNER_TEMP\vbcable"
+          New-Item -ItemType Directory -Force $d | Out-Null
+          Invoke-WebRequest https://download.vb-audio.com/Download_CABLE/VBCABLE_Driver_Pack45.zip -OutFile "$d\vb.zip"
+          Expand-Archive "$d\vb.zip" -DestinationPath $d -Force
+          $cert = (Get-AuthenticodeSignature "$d\vbMmeCable64_win10.cat").SignerCertificate
+          if (-not $cert) { $cert = (Get-AuthenticodeSignature "$d\VBCABLE_Setup_x64.exe").SignerCertificate }
+          $store = New-Object System.Security.Cryptography.X509Certificates.X509Store "TrustedPublisher", "LocalMachine"
+          $store.Open("ReadWrite"); $store.Add($cert); $store.Close()
+          Start-Process -FilePath "$d\VBCABLE_Setup_x64.exe" -ArgumentList "-i","-h" -Wait
+          Start-Sleep -Seconds 10
+          Get-PnpDevice -Class AudioEndpoint -ErrorAction SilentlyContinue | Format-Table -AutoSize FriendlyName, Status
+      - name: Install the effect on CABLE Output and test it
+        shell: pwsh
+        run: |
+          function cd-run([string[]]$a) {
+            $p = Start-Process -FilePath target\release\clipdeck.exe -ArgumentList $a -Wait -NoNewWindow -PassThru `
+              -RedirectStandardOutput out.txt -RedirectStandardError err.txt
+            Get-Content out.txt, err.txt
+            return $p.ExitCode
+          }
+          cd-run @("micfx", "status") | Out-Host
+          $c = cd-run @("micfx", "install", "`"CABLE Output`""); if ($c -ne 0) { throw "install failed ($c)" }
+          cd-run @("micfx", "status") | Out-Host
+          Start-Sleep -Seconds 3
+          $c = cd-run @("micfx", "test", "`"CABLE Output`""); if ($c -ne 0) { throw "test failed ($c)" }
+          $c = cd-run @("micfx", "uninstall"); if ($c -ne 0) { throw "uninstall failed ($c)" }
+          cd-run @("micfx", "status") | Out-Host
