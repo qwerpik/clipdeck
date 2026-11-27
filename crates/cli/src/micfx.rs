@@ -312,7 +312,7 @@ mod imp {
         let started = Instant::now();
         let mut live = false;
         let mut samples: Vec<f32> = Vec::new();
-        while started.elapsed() < Duration::from_secs(seconds + 2) {
+        while started.elapsed() < Duration::from_secs(seconds + 8) {
             while let Ok(l) = ring.pop() {
                 let _ = ring.pop();
                 if live {

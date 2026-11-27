@@ -122,4 +122,8 @@ jobs:
             Get-ItemProperty "$($_.PSPath)\FxProperties" -ErrorAction SilentlyContinue | Format-List
           }
           Get-ChildItem "HKLM:\SOFTWARE\Classes\AudioEngine\AudioProcessingObjects" -ErrorAction SilentlyContinue | Where-Object PSChildName -like "*7B3F9A52*" | Get-ItemProperty | Format-List
+          Write-Host "--- Audio operational log"
+          Get-WinEvent -LogName "Microsoft-Windows-Audio/Operational" -MaxEvents 40 -ErrorAction SilentlyContinue | Format-List TimeCreated, Id, Message
+          Write-Host "--- endpoint Properties of the cable mic"
+          Get-ChildItem $cap | ForEach-Object { Get-ItemProperty "$($_.PSPath)\Properties" -ErrorAction SilentlyContinue | Out-String -Width 300 | Select-String -Pattern "1da5d803|a45c254e},2|b3f8fa53|DeviceState|e4870e26" }
           Get-WinEvent -LogName Application -MaxEvents 30 -ErrorAction SilentlyContinue | Where-Object { $_.ProviderName -match "Audio|Application Error|Windows Error" } | Format-List TimeCreated, ProviderName, Message
