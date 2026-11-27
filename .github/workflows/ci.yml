@@ -105,7 +105,12 @@ jobs:
         shell: pwsh
         run: |
           $log = "$env:SystemRoot\Temp\clipdeck_micfx.log"
-          if (Test-Path $log) { Get-Content $log } else { Write-Host "no micfx log (DLL never loaded)" }
+          Write-Host "--- COM activation of the effect (loads the DLL in this process)"
+          try { $o = [Activator]::CreateInstance([type]::GetTypeFromCLSID("7B3F9A52-4C1E-4D8A-9F60-2A5CC11DDEC0")); Write-Host "created: $o" } catch { Write-Host "COM: $_" }
+          if (Test-Path $log) { Get-Content $log } else { Write-Host "no micfx log" }
+          Get-ChildItem "$env:SystemRoot\System32\clipdeck_micfx*" | Format-Table -AutoSize Name, Length
+          reg query "HKLM\SOFTWARE\Classes\CLSID\{7B3F9A52-4C1E-4D8A-9F60-2A5CC11DDEC0}" /s
+          reg query "HKLM\SOFTWARE\Classes\AudioEngine\AudioProcessingObjects\{7B3F9A52-4C1E-4D8A-9F60-2A5CC11DDEC0}"
           Get-Process audiodg -ErrorAction SilentlyContinue | ForEach-Object {
             Write-Host "audiodg pid $($_.Id)"
             try { $_.Modules | Where-Object ModuleName -like "clipdeck*" | ForEach-Object { Write-Host "  loaded: $($_.FileName)" } } catch { Write-Host "  modules: $_" }

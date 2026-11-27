@@ -952,41 +952,58 @@ fn uninstall_endpoint(guid: &str) -> Result<(), String> {
 
 /// Restart the Windows Audio service so audiodg reloads endpoint effects.
 pub fn restart_audio_service() -> Result<(), String> {
+    // AudioEndpointBuilder owns the endpoint property cache (FxProperties); Audiosrv depends on
+    // it. Restart both so the new effect registration is read again.
+    const ORDER_STOP: [&str; 2] = ["Audiosrv", "AudioEndpointBuilder"];
+    const ORDER_START: [&str; 2] = ["AudioEndpointBuilder", "Audiosrv"];
     // SAFETY: service-control calls with handles we open and close here.
     unsafe {
         let scm = OpenSCManagerW(std::ptr::null(), std::ptr::null(), SC_MANAGER_CONNECT);
         if scm.is_null() {
             return Err("cannot open the service manager".into());
         }
-        let svc = OpenServiceW(
-            scm,
-            wide("Audiosrv").as_ptr(),
-            SERVICE_STOP | SERVICE_START | SERVICE_QUERY_STATUS,
-        );
-        if svc.is_null() {
-            CloseServiceHandle(scm);
-            return Err("cannot open the Windows Audio service".into());
-        }
-        let mut st: SERVICE_STATUS = std::mem::zeroed();
-        let wait_for = |want: u32, st: &mut SERVICE_STATUS| {
-            for _ in 0..100 {
-                if QueryServiceStatus(svc, st) != 0 && st.dwCurrentState == want {
+        let open = |name: &str| {
+            OpenServiceW(
+                scm,
+                wide(name).as_ptr(),
+                SERVICE_STOP | SERVICE_START | SERVICE_QUERY_STATUS,
+            )
+        };
+        let wait_for = |svc, want: u32| {
+            let mut st: SERVICE_STATUS = std::mem::zeroed();
+            for _ in 0..150 {
+                if QueryServiceStatus(svc, &mut st) != 0 && st.dwCurrentState == want {
                     return true;
                 }
                 std::thread::sleep(Duration::from_millis(100));
             }
             false
         };
-        ControlService(svc, SERVICE_CONTROL_STOP, &mut st);
-        wait_for(SERVICE_STOPPED, &mut st);
-        let started = StartServiceW(svc, 0, std::ptr::null()) != 0;
-        let running = wait_for(SERVICE_RUNNING, &mut st);
-        CloseServiceHandle(svc);
+        for name in ORDER_STOP {
+            let svc = open(name);
+            if !svc.is_null() {
+                let mut st: SERVICE_STATUS = std::mem::zeroed();
+                ControlService(svc, SERVICE_CONTROL_STOP, &mut st);
+                wait_for(svc, SERVICE_STOPPED);
+                CloseServiceHandle(svc);
+            }
+        }
+        let mut ok = true;
+        for name in ORDER_START {
+            let svc = open(name);
+            if svc.is_null() {
+                ok = false;
+                continue;
+            }
+            StartServiceW(svc, 0, std::ptr::null());
+            ok &= wait_for(svc, SERVICE_RUNNING);
+            CloseServiceHandle(svc);
+        }
         CloseServiceHandle(scm);
-        if started || running {
+        if ok {
             Ok(())
         } else {
-            Err("the Windows Audio service did not restart; restart Windows".into())
+            Err("Windows Audio did not restart; restart Windows".into())
         }
     }
 }
