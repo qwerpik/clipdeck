@@ -84,6 +84,16 @@ pub enum Command {
     SetSoundGain(u64, f32),
     /// Microphone input ring (or `None` to disconnect).
     SetMicInput(Option<Consumer<f32>>),
+    /// Move every voice of a sound to `ms` from its start (or by `ms` when `relative`).
+    /// In-memory clips only; streamed ones keep playing.
+    Seek {
+        /// Sound id.
+        sound: u64,
+        /// Milliseconds.
+        ms: i64,
+        /// Relative jump.
+        relative: bool,
+    },
 }
 
 /// Events sent back to the control thread.
@@ -403,6 +413,25 @@ impl Mixer {
                 Command::SetSoundGain(s, g) => {
                     for v in self.voices.iter_mut().filter(|v| v.sound == s) {
                         v.gain = g;
+                    }
+                }
+                Command::Seek {
+                    sound,
+                    ms,
+                    relative,
+                } => {
+                    let rate = i64::from(self.rate);
+                    for v in self.voices.iter_mut().filter(|v| v.sound == sound) {
+                        if let Source::Memory {
+                            pos, start, end, ..
+                        } = &mut v.source
+                        {
+                            let len = end.saturating_sub(*start) as i64;
+                            let cur = pos.saturating_sub(*start) as i64;
+                            let delta = ms * rate / 1000;
+                            let to = if relative { cur + delta } else { delta };
+                            *pos = *start + to.clamp(0, (len - 1).max(0)) as usize;
+                        }
                     }
                 }
                 Command::SetMicInput(m) => {
@@ -784,6 +813,46 @@ mod tests {
         h.send(Command::StopSound(1)).ok();
         m.render(&mut out, 2);
         assert_eq!(m.active_voices(), 0);
+    }
+
+    #[test]
+    fn seek_moves_memory_voices() {
+        let (mut m, mut h) = mixer(1000);
+        let c = Arc::new(Clip {
+            samples: (0..2000).map(|i| (i / 2) as f32 / 1000.0).collect(),
+            rate: 1000,
+            lufs: None,
+            peak: 1.0,
+        });
+        h.send(Command::Play(spec(1, 7, c, PlaybackMode::Overlap, false)))
+            .ok();
+        let mut out = vec![0.0; 2 * 10];
+        m.render(&mut out, 2);
+        h.send(Command::Seek {
+            sound: 7,
+            ms: 500,
+            relative: false,
+        })
+        .ok();
+        m.render(&mut out, 2);
+        assert!((out[0] - 0.5).abs() < 1e-6, "{}", out[0]);
+        h.send(Command::Seek {
+            sound: 7,
+            ms: -200,
+            relative: true,
+        })
+        .ok();
+        m.render(&mut out, 2);
+        assert!((out[0] - 0.31).abs() < 1e-6, "{}", out[0]);
+        h.send(Command::Seek {
+            sound: 7,
+            ms: 99_999,
+            relative: false,
+        })
+        .ok();
+        m.render(&mut out, 2);
+        // Clamped to the last frame (the end-of-clip declick scales it slightly).
+        assert!(out[0] > 0.9 && out[2] == 0.0, "{out:?}");
     }
 
     #[test]

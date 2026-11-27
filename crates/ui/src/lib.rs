@@ -357,7 +357,15 @@ impl Ui {
         }
         let (mon, mic) = self.core.engine.peaks();
         app.set_level(mon.max(mic));
-        active
+        let paused = self.core.engine.is_paused();
+        app.set_paused(paused);
+        let rec = self.core.recording();
+        app.set_recording(rec.is_some());
+        if let Some((_, ms, peak)) = rec {
+            app.set_rec_time(format!("{}:{:02}", ms / 60_000, ms / 1000 % 60).into());
+            app.set_rec_level(peak);
+        }
+        active || rec.is_some()
     }
 
     fn start_ticking(self: &Rc<Self>) {
@@ -480,6 +488,24 @@ impl Ui {
         s.set_hotkeys_enabled(cfg.hotkeys.enabled);
         s.set_stop_hotkey(cfg.hotkeys.stop_all.clone().unwrap_or_default().into());
         s.set_pause_hotkey(cfg.hotkeys.pause.clone().unwrap_or_default().into());
+        s.set_record_hotkey(cfg.hotkeys.record.clone().unwrap_or_default().into());
+        s.set_rec_source_index(match cfg.recorder.source {
+            clipdeck_core::config::RecordSource::Speakers => 0,
+            clipdeck_core::config::RecordSource::Microphone => 1,
+        });
+        s.set_rec_folder(
+            cfg.recorder
+                .folder
+                .clone()
+                .filter(|f| !f.trim().is_empty())
+                .unwrap_or_else(|| self.core.paths.recordings_dir().display().to_string())
+                .into(),
+        );
+        s.set_rec_add(cfg.recorder.add_to_library);
+        s.set_rec_category(cfg.recorder.category.clone().into());
+        s.set_rec_trim(cfg.recorder.trim_silence);
+        s.set_rec_normalize(cfg.recorder.normalize);
+        s.set_rec_max(cfg.recorder.max_seconds as f32);
         s.set_dark(cfg.ui.theme == clipdeck_core::config::ThemeMode::Dark);
         let seed = theme::parse_hex(&cfg.ui.seed_color).unwrap_or(theme::SEEDS[0]);
         s.set_seeds(ModelRc::new(VecModel::from(
@@ -653,6 +679,16 @@ impl Ui {
             c.audio.monitor_volume = s.get_monitor_volume();
             c.audio.mic_volume = s.get_mic_volume();
             c.hotkeys.enabled = s.get_hotkeys_enabled();
+            c.recorder.source = if s.get_rec_source_index() == 1 {
+                clipdeck_core::config::RecordSource::Microphone
+            } else {
+                clipdeck_core::config::RecordSource::Speakers
+            };
+            c.recorder.add_to_library = s.get_rec_add();
+            c.recorder.category = s.get_rec_category().trim().to_string();
+            c.recorder.trim_silence = s.get_rec_trim();
+            c.recorder.normalize = s.get_rec_normalize();
+            c.recorder.max_seconds = s.get_rec_max().round().max(10.0) as u32;
             c.ui.theme = if s.get_dark() {
                 clipdeck_core::config::ThemeMode::Dark
             } else {
@@ -1092,6 +1128,7 @@ fn handle_signal(ui: &Rc<Ui>, s: UiSignal) {
             ui.update_device_status();
         }
         UiSignal::HotkeysChanged => ui.register_hotkeys(),
+        UiSignal::Recording => ui.start_ticking(),
     }
 }
 
@@ -1100,6 +1137,43 @@ fn wire(ui: &Rc<Ui>, app: &AppWindow) {
     app.set_categories(ModelRc::from(ui.cats.clone()));
 
     app.on_play(|id| with_ui(|ui| ui.play(id)));
+    app.on_toggle_pause(|| {
+        with_ui(|ui| {
+            ui.core.engine.toggle_pause();
+            ui.start_ticking();
+            ui.tick();
+        })
+    });
+    app.on_seek(|frac| {
+        with_ui(|ui| {
+            if let Some(last) = ui.core.engine.now_playing().last() {
+                let ms = (f64::from(frac.clamp(0.0, 1.0)) * f64::from(last.len_ms)) as i64;
+                ui.core.engine.seek(Some(last.sound), ms, false);
+            }
+        })
+    });
+    app.on_record_start(|which| {
+        with_ui(|ui| {
+            let src = if which == 1 {
+                clipdeck_core::config::RecordSource::Microphone
+            } else {
+                clipdeck_core::config::RecordSource::Speakers
+            };
+            match ui.core.start_recording(Some(src)) {
+                Ok(s) => ui.snack(format!("Recording {}", crate::app::source_name(s))),
+                Err(e) => ui.snack(e),
+            }
+            ui.start_ticking();
+        })
+    });
+    app.on_record_stop(|| {
+        with_ui(|ui| {
+            // Saving can take a moment for long recordings; keep the window responsive.
+            let core = ui.core.clone();
+            std::thread::spawn(move || core.finish_recording());
+            ui.start_ticking();
+        })
+    });
     app.on_stop_all(|| {
         with_ui(|ui| {
             ui.core.engine.stop_all();
@@ -1310,6 +1384,7 @@ fn wire(ui: &Rc<Ui>, app: &AppWindow) {
             };
             ui.core.update_config(|cfg| match which.as_str() {
                 "stop" => cfg.hotkeys.stop_all = Some(h.clone()),
+                "record" => cfg.hotkeys.record = Some(h.clone()),
                 _ => cfg.hotkeys.pause = Some(h.clone()),
             });
             ui.load_settings();
@@ -1320,6 +1395,7 @@ fn wire(ui: &Rc<Ui>, app: &AppWindow) {
         with_ui(|ui| {
             ui.core.update_config(|cfg| match which.as_str() {
                 "stop" => cfg.hotkeys.stop_all = None,
+                "record" => cfg.hotkeys.record = None,
                 _ => cfg.hotkeys.pause = None,
             });
             ui.load_settings();
@@ -1390,6 +1466,40 @@ fn wire(ui: &Rc<Ui>, app: &AppWindow) {
                 })
             });
         });
+    });
+    s.on_pick_rec_folder(|| {
+        std::thread::spawn(|| {
+            let Some(f) = rfd::FileDialog::new()
+                .set_title("Save recordings in")
+                .pick_folder()
+            else {
+                return;
+            };
+            let _ = slint::invoke_from_event_loop(move || {
+                with_ui(|ui| {
+                    let f = f.display().to_string();
+                    ui.core
+                        .update_config(|c| c.recorder.folder = Some(f.clone()));
+                    ui.load_settings();
+                })
+            });
+        });
+    });
+    s.on_open_rec_folder(|| {
+        with_ui(|ui| {
+            let dir = ui
+                .core
+                .config
+                .lock()
+                .recorder
+                .folder
+                .clone()
+                .filter(|f| !f.trim().is_empty())
+                .map(PathBuf::from)
+                .unwrap_or_else(|| ui.core.paths.recordings_dir());
+            let _ = std::fs::create_dir_all(&dir);
+            open_external(&dir.display().to_string());
+        })
     });
     s.on_add_watch_folder(|| {
         std::thread::spawn(|| {

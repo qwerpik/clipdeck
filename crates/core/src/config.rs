@@ -42,6 +42,51 @@ pub enum AfterEnd {
     Repeat,
 }
 
+/// What the recorder captures.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum RecordSource {
+    /// Everything you hear (the default output device, loopback).
+    #[default]
+    Speakers,
+    /// The microphone.
+    Microphone,
+}
+
+/// Recorder settings (Soundpad's "Recorder" preferences).
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct RecorderConfig {
+    /// Source used by the record hotkey and the record button's main action.
+    pub source: RecordSource,
+    /// Folder for recordings; `None` = `<data dir>/recordings`.
+    pub folder: Option<String>,
+    /// Add finished recordings to the library.
+    pub add_to_library: bool,
+    /// Category (by name) for new recordings; created on demand. Empty = none.
+    pub category: String,
+    /// Cut silence at the start and end.
+    pub trim_silence: bool,
+    /// Raise or lower the recording so its peak sits at -1 dBFS.
+    pub normalize: bool,
+    /// Stop automatically after this many seconds (0 = no limit).
+    pub max_seconds: u32,
+}
+
+impl Default for RecorderConfig {
+    fn default() -> Self {
+        RecorderConfig {
+            source: RecordSource::Speakers,
+            folder: None,
+            add_to_library: true,
+            category: "Recordings".into(),
+            trim_silence: true,
+            normalize: true,
+            max_seconds: 300,
+        }
+    }
+}
+
 /// Audio settings.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(default)]
@@ -123,6 +168,8 @@ pub struct HotkeyConfig {
     pub stop_all: Option<String>,
     /// Pause/resume hotkey.
     pub pause: Option<String>,
+    /// Start/stop recording hotkey.
+    pub record: Option<String>,
 }
 
 impl Default for HotkeyConfig {
@@ -131,6 +178,7 @@ impl Default for HotkeyConfig {
             enabled: true,
             stop_all: Some("Ctrl+Alt+S".into()),
             pause: None,
+            record: None,
         }
     }
 }
@@ -191,6 +239,8 @@ pub struct Config {
     pub hotkeys: HotkeyConfig,
     /// UI.
     pub ui: UiConfig,
+    /// Recorder.
+    pub recorder: RecorderConfig,
 }
 
 impl Config {
@@ -227,6 +277,7 @@ impl Config {
         a.mic_volume = a.mic_volume.clamp(0.0, 2.0);
         a.buffer_frames = a.buffer_frames.clamp(64, 4096);
         a.target_lufs = a.target_lufs.clamp(-40.0, -5.0);
+        self.recorder.max_seconds = self.recorder.max_seconds.min(3600);
         self.ui.window_width = self.ui.window_width.clamp(480, 7680);
         self.ui.window_height = self.ui.window_height.clamp(360, 4320);
     }

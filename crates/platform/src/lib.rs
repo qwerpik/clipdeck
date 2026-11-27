@@ -41,6 +41,40 @@ pub fn virtual_mic(configured: Option<&str>, buffer_frames: u32) -> Option<Box<d
     }
 }
 
+/// Opener for the recorder: the microphone (`mic` = device name, `None` = default) or
+/// everything that plays on the default output.
+pub fn record_capture(
+    source: clipdeck_core::config::RecordSource,
+    mic: Option<String>,
+) -> clipdeck_audio::record::OpenCapture {
+    use clipdeck_core::config::RecordSource;
+    const RATE: u32 = 48_000;
+    Box::new(move || match source {
+        RecordSource::Microphone => {
+            let (stream, rx) = clipdeck_audio::output::open_input(mic.as_deref(), RATE)
+                .map_err(|e| e.user_message())?;
+            Ok((Box::new(stream) as Box<dyn std::any::Any>, rx, RATE))
+        }
+        RecordSource::Speakers => {
+            #[cfg(target_os = "linux")]
+            {
+                let (g, rx, rate) = linux::pwcapture::open_monitor()?;
+                Ok((Box::new(g) as Box<dyn std::any::Any>, rx, rate))
+            }
+            #[cfg(windows)]
+            {
+                let (stream, rx) =
+                    clipdeck_audio::output::open_loopback(RATE).map_err(|e| e.user_message())?;
+                Ok((Box::new(stream) as Box<dyn std::any::Any>, rx, RATE))
+            }
+            #[cfg(not(any(target_os = "linux", windows)))]
+            {
+                Err("Recording what you hear is not supported on this system".to_string())
+            }
+        }
+    })
+}
+
 /// What to select as the microphone in Discord on this platform.
 pub fn mic_hint() -> &'static str {
     if cfg!(windows) {

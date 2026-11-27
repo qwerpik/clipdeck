@@ -7,7 +7,8 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::Duration;
 
 use clipdeck_audio::engine::{Engine, EngineConfig, EngineEvent, PlayRequest};
-use clipdeck_core::config::Config;
+use clipdeck_audio::record::{RecordOptions, Recorder};
+use clipdeck_core::config::{Config, RecordSource};
 use clipdeck_core::hotkey::Hotkey;
 use clipdeck_core::library::{AddReport, Library};
 use clipdeck_core::model::{Route, Sound, SoundId};
@@ -43,6 +44,8 @@ pub enum UiSignal {
     Devices(String),
     /// Hotkeys need re-registering.
     HotkeysChanged,
+    /// Recording started or stopped.
+    Recording,
 }
 
 /// The application core.
@@ -65,6 +68,8 @@ pub struct AppCore {
     last: Mutex<Option<(SoundId, u64)>>,
     /// Voice-activation sound and its length, cached.
     activation: Mutex<Option<(PathBuf, u32)>>,
+    /// The recording in progress.
+    recorder: Mutex<Option<(Recorder, RecordSource)>>,
 }
 
 /// Sound id used for the voice-activation sound (never a library id).
@@ -112,6 +117,7 @@ impl AppCore {
             quitting: AtomicBool::new(false),
             last: Mutex::new(None),
             activation: Mutex::new(None),
+            recorder: Mutex::new(None),
         });
         for n in notices {
             core.notify(n);
@@ -153,7 +159,11 @@ impl AppCore {
             .name("clipdeck-saver".into())
             .spawn(move || {
                 while !me.quitting.load(Ordering::Acquire) {
-                    std::thread::sleep(Duration::from_millis(700));
+                    std::thread::sleep(Duration::from_millis(500));
+                    let limit_hit = me.recorder.lock().as_ref().is_some_and(|r| r.0.is_done());
+                    if limit_hit {
+                        me.finish_recording();
+                    }
                     me.flush();
                 }
             });
@@ -439,6 +449,96 @@ impl AppCore {
         self.play(pick, None)
     }
 
+    /// Start recording from `source` (`None` = the configured one).
+    pub fn start_recording(&self, source: Option<RecordSource>) -> Result<RecordSource, String> {
+        let mut slot = self.recorder.lock();
+        if let Some((_, s)) = slot.as_ref() {
+            return Err(format!("Already recording {}", source_name(*s)));
+        }
+        let (cfg, mic) = {
+            let c = self.config.lock();
+            (c.recorder.clone(), c.audio.input_device.clone())
+        };
+        let source = source.unwrap_or(cfg.source);
+        let dir = cfg
+            .folder
+            .as_deref()
+            .filter(|f| !f.trim().is_empty())
+            .map(PathBuf::from)
+            .unwrap_or_else(|| self.paths.recordings_dir());
+        std::fs::create_dir_all(&dir)
+            .map_err(|e| format!("Cannot create {}: {e}", dir.display()))?;
+        let opts = RecordOptions {
+            path: clipdeck_audio::record::unique_path(&dir, &clipdeck_core::date::now_stamp()),
+            trim_silence: cfg.trim_silence,
+            normalize: cfg.normalize,
+            max_seconds: cfg.max_seconds,
+        };
+        let rec = Recorder::start(clipdeck_platform::record_capture(source, mic), opts)?;
+        *slot = Some((rec, source));
+        drop(slot);
+        self.signal(UiSignal::Recording);
+        Ok(source)
+    }
+
+    /// Stop recording, save and add the file to the library. Returns the sound's name.
+    pub fn stop_recording(&self) -> Result<String, String> {
+        let Some((rec, _)) = self.recorder.lock().take() else {
+            return Err("Not recording".into());
+        };
+        self.signal(UiSignal::Recording);
+        let done = rec.stop()?;
+        let cfg = self.config.lock().recorder.clone();
+        let name = done
+            .path
+            .file_stem()
+            .map(|s| s.to_string_lossy().into_owned())
+            .unwrap_or_default();
+        if cfg.add_to_library {
+            let cat = {
+                let wanted = cfg.category.trim();
+                if wanted.is_empty() {
+                    None
+                } else {
+                    let mut lib = self.library.lock();
+                    let found = lib
+                        .categories
+                        .iter()
+                        .find(|c| c.name.eq_ignore_ascii_case(wanted))
+                        .map(|c| c.id);
+                    Some(found.unwrap_or_else(|| lib.add_category(wanted, None)))
+                }
+            };
+            self.add_paths(std::slice::from_ref(&done.path), cat);
+        }
+        Ok(name)
+    }
+
+    /// Stop and report the result in the snackbar.
+    pub fn finish_recording(&self) {
+        match self.stop_recording() {
+            Ok(name) => self.notify(format!("Saved {name}")),
+            Err(e) => self.notify(e),
+        }
+    }
+
+    /// Start or stop recording.
+    pub fn toggle_recording(&self, source: Option<RecordSource>) {
+        if self.recorder.lock().is_some() {
+            self.finish_recording();
+        } else if let Err(e) = self.start_recording(source) {
+            self.notify(e);
+        }
+    }
+
+    /// The recording in progress: source, elapsed ms and peak since the last call.
+    pub fn recording(&self) -> Option<(RecordSource, u64, f32)> {
+        self.recorder
+            .lock()
+            .as_ref()
+            .map(|(r, s)| (*s, r.elapsed_ms(), r.take_peak()))
+    }
+
     /// Add files or folders.
     pub fn add_paths(
         &self,
@@ -504,6 +604,11 @@ impl AppCore {
             "Stop all sounds".into(),
         );
         push("pause".into(), &cfg.hotkeys.pause, "Pause / resume".into());
+        push(
+            "record".into(),
+            &cfg.hotkeys.record,
+            "Start / stop recording".into(),
+        );
         let lib = self.library.lock();
         for s in &lib.sounds {
             push(
@@ -530,6 +635,10 @@ impl AppCore {
         }
         if id == "pause" {
             self.engine.toggle_pause();
+            return;
+        }
+        if id == "record" {
+            self.toggle_recording(None);
             return;
         }
         if let Some(n) = id
@@ -789,6 +898,45 @@ impl AppCore {
                     },
                 )
             }
+            Request::StartRecording(src) => match self.start_recording(src) {
+                Ok(s) => Self::ok(d, &format!("recording {}", source_name(s))),
+                Err(e) => err(e),
+            },
+            Request::StopRecording => match self.stop_recording() {
+                Ok(name) => Self::ok(d, &format!("saved {name}")),
+                Err(e) => err(e),
+            },
+            Request::RecordingPosition => {
+                let ms = self.recording().map(|r| r.1).unwrap_or(0);
+                match d {
+                    Dialect::Soundpad => ms.to_string(),
+                    Dialect::Clipdeck => format!("OK {ms}"),
+                }
+            }
+            Request::Seek { ms, relative } => {
+                if self.engine.now_playing().is_empty() {
+                    return err("nothing is playing".into());
+                }
+                self.engine.seek(None, ms, relative);
+                Self::ok(d, "")
+            }
+            Request::PlaybackPosition | Request::PlaybackDuration => {
+                let np = self.engine.now_playing();
+                let v = np
+                    .last()
+                    .map(|n| {
+                        if matches!(req, Request::PlaybackPosition) {
+                            n.pos_ms
+                        } else {
+                            n.len_ms
+                        }
+                    })
+                    .unwrap_or(0);
+                match d {
+                    Dialect::Soundpad => v.to_string(),
+                    Dialect::Clipdeck => format!("OK {v}"),
+                }
+            }
             Request::ToggleMonitor => {
                 let on = !self.config.lock().audio.monitor_enabled;
                 self.update_config(|c| c.audio.monitor_enabled = on);
@@ -816,9 +964,20 @@ impl AppCore {
     /// Stop engine and save.
     pub fn shutdown(&self) {
         self.quitting.store(true, Ordering::Release);
+        if self.recorder.lock().is_some() {
+            let _ = self.stop_recording();
+        }
         self.engine.stop_all();
         self.flush();
         self.engine.shutdown();
+    }
+}
+
+/// "what you hear" / "the microphone".
+pub fn source_name(s: RecordSource) -> &'static str {
+    match s {
+        RecordSource::Speakers => "what you hear",
+        RecordSource::Microphone => "the microphone",
     }
 }
 

@@ -650,6 +650,97 @@ export component TonalButton inherits Rectangle {
     }
 }
 
+// Record button. Idle: a red dot that opens a source menu. Recording: a red pill with the
+// elapsed time and a stop square; a click stops and saves.
+export component RecordButton inherits Rectangle {
+    in property <bool> recording;
+    in property <string> time;
+    in property <float> level;
+    callback start-speakers();
+    callback start-mic();
+    callback stop();
+    height: 40px;
+    width: recording ? rt.preferred-width + 50px : 40px;
+    border-radius: ta.pressed ? 12px : 20px;
+    background: recording ? Theme.error : transparent;
+    animate width { duration: Motion.fast; easing: Springs.spatial; }
+    animate background { duration: Motion.effect; }
+    accessible-role: button;
+    accessible-label: recording ? "Stop recording" : "Record";
+    accessible-action-default => { if recording { stop(); } else { menu.show(); } }
+
+    Rectangle {
+        border-radius: parent.border-radius;
+        background: recording ? Theme.on-error : Theme.on-surface-variant;
+        opacity: ta.pressed ? 0.16 : ta.has-hover ? 0.08 : 0;
+    }
+    HorizontalLayout {
+        padding-left: recording ? 14px : 13px;
+        spacing: 10px;
+        Rectangle {
+            width: 14px;
+            height: 14px;
+            y: (parent.height - self.height) / 2;
+            border-radius: recording ? 3px : 7px;
+            background: recording ? Theme.on-error : Theme.error;
+            animate border-radius { duration: Motion.fast; easing: Springs.spatial; }
+            // Input level halo while recording.
+            Rectangle {
+                width: 14px + 10px * min(1, root.level * 1.6);
+                height: self.width;
+                border-radius: self.width / 2;
+                background: Theme.on-error;
+                opacity: root.recording ? 0.25 : 0;
+                animate width { duration: 90ms; }
+            }
+        }
+        rt := Text {
+            visible: root.recording;
+            text: root.time;
+            vertical-alignment: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: Theme.on-error;
+        }
+    }
+    ta := TouchArea {
+        mouse-cursor: pointer;
+        clicked => { if root.recording { root.stop(); } else { menu.show(); } }
+    }
+    menu := PopupWindow {
+        x: -96px;
+        y: -112px;
+        width: 232px;
+        Rectangle {
+            border-radius: 16px;
+            background: Theme.surface-container-highest;
+            drop-shadow-blur: 12px;
+            drop-shadow-color: #00000055;
+            VerticalLayout {
+                padding: 6px;
+                for item[i] in [
+                    { label: "Record what you hear", icon: Icons.headphones },
+                    { label: "Record your microphone", icon: Icons.mic },
+                ]: Rectangle {
+                    height: 44px;
+                    border-radius: 12px;
+                    background: it.has-hover ? Theme.secondary-container : transparent;
+                    HorizontalLayout {
+                        padding-left: 12px;
+                        spacing: 12px;
+                        Image { source: item.icon; width: 20px; height: 20px; y: (parent.height - self.height) / 2; colorize: Theme.on-surface-variant; }
+                        Text { text: item.label; vertical-alignment: center; font-size: 14px; color: Theme.on-surface; }
+                    }
+                    it := TouchArea {
+                        mouse-cursor: pointer;
+                        clicked => { if i == 0 { root.start-speakers(); } else { root.start-mic(); } }
+                    }
+                }
+            }
+        }
+    }
+}
+
 // Captures a key combination. Rust maps the key text to a canonical name.
 export component HotkeyField inherits Rectangle {
     in property <string> value;

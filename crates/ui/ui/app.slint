@@ -1,6 +1,6 @@
-import { ComboBox, Slider, Switch, ScrollView, ListView, Palette } from "std-widgets.slint";
+import { ComboBox, Slider, Switch, ScrollView, ListView, Palette, LineEdit } from "std-widgets.slint";
 import { Theme, Motion, Springs, Icons } from "theme.slint";
-import { SoundItem, CategoryItem, IconButton, ToggleButton, StopFab, NavItem, SearchBar, HotkeyChip, SoundCard, SoundRow, Snackbar, SectionTitle, TonalButton, HotkeyField, ProgressRing } from "components.slint";
+import { SoundItem, CategoryItem, IconButton, ToggleButton, StopFab, NavItem, SearchBar, HotkeyChip, SoundCard, SoundRow, Snackbar, SectionTitle, TonalButton, HotkeyField, ProgressRing, RecordButton } from "components.slint";
 
 export { Theme, Motion, SoundItem, CategoryItem, Palette }
 
@@ -44,6 +44,16 @@ export global Settings {
     in-out property <bool> hotkeys-enabled;
     in property <string> stop-hotkey;
     in property <string> pause-hotkey;
+    in property <string> record-hotkey;
+    in-out property <int> rec-source-index;
+    in property <string> rec-folder;
+    in-out property <bool> rec-add;
+    in-out property <string> rec-category;
+    in-out property <bool> rec-trim;
+    in-out property <bool> rec-normalize;
+    in-out property <float> rec-max;
+    callback pick-rec-folder();
+    callback open-rec-folder();
     in property <string> hotkey-note;
     in-out property <bool> dark: true;
     in-out property <int> seed-index;
@@ -329,6 +339,63 @@ component SettingsPage inherits ScrollView {
                     captured(t, c, a, s, m) => { Settings.capture-hotkey("pause", t, c, a, s, m); }
                     cleared => { Settings.clear-hotkey("pause"); }
                 }
+            }
+            Row {
+                label: "Start / stop recording";
+                hint: "Records " + (Settings.rec-source-index == 0 ? "what you hear" : "your microphone") + " (change it under Recorder).";
+                HotkeyField {
+                    width: 280px;
+                    value: Settings.record-hotkey;
+                    captured(t, c, a, s, m) => { Settings.capture-hotkey("record", t, c, a, s, m); }
+                    cleared => { Settings.clear-hotkey("record"); }
+                }
+            }
+        }
+
+        Card {
+            SectionTitle { text: "Recorder"; }
+            Text {
+                text: "The red button in the bottom bar records what you hear (a friend's voice line, a game moment) or your microphone, and adds it to your library.";
+                wrap: word-wrap;
+                font-size: 13px;
+            }
+            Row {
+                label: "Hotkey records";
+                ComboBox { width: 280px; model: ["What you hear", "Your microphone"]; current-index <=> Settings.rec-source-index; selected => { Settings.changed(); } }
+            }
+            Row {
+                label: "Save to";
+                hint: Settings.rec-folder;
+                HorizontalLayout {
+                    spacing: 8px;
+                    alignment: end;
+                    TonalButton { text: "Open"; y: (parent.height - self.height) / 2; clicked => { Settings.open-rec-folder(); } }
+                    TonalButton { text: "Change"; y: (parent.height - self.height) / 2; clicked => { Settings.pick-rec-folder(); } }
+                }
+            }
+            Row {
+                label: "Add to the library";
+                hint: Settings.rec-add ? "New recordings appear in this category (created if needed; empty = none)." : "Recordings are only saved as files.";
+                Switch { checked <=> Settings.rec-add; toggled => { Settings.changed(); } }
+            }
+            if Settings.rec-add: Row {
+                label: "Category";
+                LineEdit { width: 280px; text <=> Settings.rec-category; placeholder-text: "Recordings"; edited => { Settings.changed(); } }
+            }
+            Row {
+                label: "Trim silence";
+                hint: "Cuts the quiet part before and after the sound.";
+                Switch { checked <=> Settings.rec-trim; toggled => { Settings.changed(); } }
+            }
+            Row {
+                label: "Normalize";
+                hint: "Makes quiet recordings louder (peak at -1 dB, at most +30 dB).";
+                Switch { checked <=> Settings.rec-normalize; toggled => { Settings.changed(); } }
+            }
+            Row {
+                label: "Longest recording";
+                hint: "Stops by itself after " + (Settings.rec-max >= 60 ? floor(Settings.rec-max / 60) + " min " + (Math.mod(round(Settings.rec-max), 60) == 0 ? "" : Math.mod(round(Settings.rec-max), 60) + " s") : round(Settings.rec-max) + " s") + ".";
+                Slider { width: 280px; minimum: 10; maximum: 1200; step: 10; value <=> Settings.rec-max; changed => { Settings.changed(); } }
             }
         }
 
@@ -740,6 +807,14 @@ export component AppWindow inherits Window {
     callback random();
     callback step(int);
     callback after-end-changed(int);
+    in property <bool> paused;
+    callback toggle-pause();
+    callback seek(float);
+    in property <bool> recording;
+    in property <string> rec-time;
+    in property <float> rec-level;
+    callback record-start(int);   // 0 what you hear, 1 microphone
+    callback record-stop();
     callback new-category();
     callback edit-category(int);
 
@@ -1058,18 +1133,37 @@ export component AppWindow inherits Window {
                                 color: Theme.on-surface;
                                 overflow: elide;
                             }
-                            // Wavy expressive progress track.
-                            Rectangle {
+                            // Progress track; click or drag to seek.
+                            track := Rectangle {
                                 height: 8px;
                                 border-radius: 4px;
                                 background: Theme.surface-container-highest;
-                                clip: true;
                                 Rectangle {
                                     x: 0;
-                                    width: parent.width * clamp(root.np-progress, 0, 1);
+                                    width: parent.width * clamp(seek-ta.pressed ? seek-ta.mouse-x / parent.width : root.np-progress, 0, 1);
                                     height: 100%;
                                     border-radius: 4px;
                                     background: Theme.primary;
+                                }
+                                if root.np-active: Rectangle {
+                                    x: parent.width * clamp(seek-ta.pressed ? seek-ta.mouse-x / parent.width : root.np-progress, 0, 1) - self.width / 2;
+                                    width: seek-ta.has-hover || seek-ta.pressed ? 14px : 0px;
+                                    height: self.width;
+                                    y: (parent.height - self.height) / 2;
+                                    border-radius: self.width / 2;
+                                    background: Theme.primary;
+                                    animate width { duration: Motion.fast; easing: Springs.spatial; }
+                                }
+                                seek-ta := TouchArea {
+                                    y: -8px;
+                                    height: parent.height + 16px;
+                                    enabled: root.np-active;
+                                    mouse-cursor: root.np-active ? pointer : default;
+                                    pointer-event(e) => {
+                                        if e.kind == PointerEventKind.up && e.button == PointerEventButton.left {
+                                            root.seek(clamp(self.mouse-x / self.width, 0, 1));
+                                        }
+                                    }
                                 }
                             }
                             Text { text: root.np-time; font-size: 12px; color: Theme.on-surface-variant; }
@@ -1079,7 +1173,7 @@ export component AppWindow inherits Window {
                             alignment: center;
                             Image { source: Icons.volume; width: 20px; height: 20px; y: (parent.height - self.height) / 2; colorize: Theme.on-surface-variant; }
                             Slider {
-                                width: 140px;
+                                width: 110px;
                                 minimum: 0;
                                 maximum: 1;
                                 value <=> root.master-volume;
@@ -1091,6 +1185,15 @@ export component AppWindow inherits Window {
                             icon: Icons.skip-previous;
                             tooltip: "Previous sound";
                             clicked => { root.step(-1); }
+                        }
+                        IconButton {
+                            y: (parent.height - self.height) / 2;
+                            icon: root.paused ? Icons.play : Icons.pause;
+                            enabled: root.np-active || root.paused;
+                            tint: root.paused ? Theme.on-secondary-container : Theme.on-surface-variant;
+                            fill: root.paused ? Theme.secondary-container : transparent;
+                            tooltip: root.paused ? "Resume" : "Pause";
+                            clicked => { root.toggle-pause(); }
                         }
                         IconButton {
                             y: (parent.height - self.height) / 2;
@@ -1110,6 +1213,15 @@ export component AppWindow inherits Window {
                                 root.after-end = Math.mod(root.after-end + 1, 3);
                                 root.after-end-changed(root.after-end);
                             }
+                        }
+                        RecordButton {
+                            y: (parent.height - self.height) / 2;
+                            recording: root.recording;
+                            time: root.rec-time;
+                            level: root.rec-level;
+                            start-speakers => { root.record-start(0); }
+                            start-mic => { root.record-start(1); }
+                            stop => { root.record-stop(); }
                         }
                         ToggleButton {
                             y: (parent.height - self.height) / 2;

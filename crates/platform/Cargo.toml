@@ -14,6 +14,7 @@ clipdeck-core.workspace = true
 crossbeam-channel.workspace = true
 interprocess.workspace = true
 parking_lot.workspace = true
+rtrb.workspace = true
 thiserror.workspace = true
 tracing.workspace = true
 

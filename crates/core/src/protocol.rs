@@ -70,6 +70,23 @@ pub enum Request {
     ToggleMic,
     /// Toggle monitoring.
     ToggleMonitor,
+    /// Start recording (`None` = the configured source).
+    StartRecording(Option<crate::config::RecordSource>),
+    /// Stop recording and save.
+    StopRecording,
+    /// Recording position in ms (0 when not recording).
+    RecordingPosition,
+    /// Move the playing sound to `ms` (or by `ms` when `relative`).
+    Seek {
+        /// Milliseconds.
+        ms: i64,
+        /// Relative jump instead of an absolute position.
+        relative: bool,
+    },
+    /// Position of the playing sound in ms.
+    PlaybackPosition,
+    /// Length of the playing sound in ms.
+    PlaybackDuration,
 }
 
 /// Which grammar the request used, so the response can match it.
@@ -165,6 +182,36 @@ fn parse_clipdeck(line: &str) -> Result<Request, ProtocolError> {
         "version" => Request::Version,
         "mic" => Request::ToggleMic,
         "monitor" => Request::ToggleMonitor,
+        "record" | "rec" => match words.first().map(|w| w.to_ascii_lowercase()).as_deref() {
+            None => Request::StartRecording(None),
+            Some("stop") => Request::StopRecording,
+            Some("status" | "position") => Request::RecordingPosition,
+            Some("speakers" | "output" | "hear" | "loopback") => {
+                Request::StartRecording(Some(crate::config::RecordSource::Speakers))
+            }
+            Some("mic" | "microphone" | "input") => {
+                Request::StartRecording(Some(crate::config::RecordSource::Microphone))
+            }
+            Some(w) => {
+                return Err(ProtocolError::BadArgs(format!(
+                    "record what? `{w}` (use speakers, mic or stop)"
+                )));
+            }
+        },
+        "stop-recording" => Request::StopRecording,
+        "seek" => {
+            let w = words.first().ok_or_else(|| {
+                ProtocolError::BadArgs("seek <seconds> or seek +/-<seconds>".into())
+            })?;
+            let relative = w.starts_with('+') || w.starts_with('-');
+            let secs: f64 = w
+                .parse()
+                .map_err(|_| ProtocolError::BadArgs(format!("not a number of seconds: `{w}`")))?;
+            Request::Seek {
+                ms: (secs * 1000.0) as i64,
+                relative,
+            }
+        }
         "" => return Err(ProtocolError::Unknown(String::new())),
         other => return Err(ProtocolError::Unknown(other.into())),
     };
@@ -275,6 +322,25 @@ fn parse_soundpad(name: &str, args: &str) -> Result<Request, ProtocolError> {
         "IsAlive" => Request::Ping,
         "GetVersion" | "GetRemoteControlVersion" => Request::Version,
         "GetSoundlist" => Request::SoundlistXml,
+        "DoStartRecording" => Request::StartRecording(None),
+        "DoStartRecordingSpeakers" => {
+            Request::StartRecording(Some(crate::config::RecordSource::Speakers))
+        }
+        "DoStartRecordingMicrophone" => {
+            Request::StartRecording(Some(crate::config::RecordSource::Microphone))
+        }
+        "DoStopRecording" => Request::StopRecording,
+        "GetRecordingPositionInMs" => Request::RecordingPosition,
+        "DoSeekMs" => Request::Seek {
+            ms: num(0)?,
+            relative: false,
+        },
+        "DoJumpMs" => Request::Seek {
+            ms: num(0)?,
+            relative: true,
+        },
+        "GetPlaybackPositionInMs" => Request::PlaybackPosition,
+        "GetPlaybackDurationInMs" => Request::PlaybackDuration,
         other => return Err(ProtocolError::Unknown(other.into())),
     };
     Ok(req)
@@ -324,6 +390,47 @@ mod tests {
         assert_eq!(parse("prev").unwrap().0, Request::Step(-1));
         assert_eq!(parse("DoPlayNextSound()").unwrap().0, Request::Step(1));
         assert_eq!(parse("DoPlayPreviousSound()").unwrap().0, Request::Step(-1));
+    }
+
+    #[test]
+    fn recording_and_seek() {
+        use crate::config::RecordSource;
+        assert_eq!(parse("record").unwrap().0, Request::StartRecording(None));
+        assert_eq!(
+            parse("record mic").unwrap().0,
+            Request::StartRecording(Some(RecordSource::Microphone))
+        );
+        assert_eq!(parse("record stop").unwrap().0, Request::StopRecording);
+        assert_eq!(
+            parse("DoStartRecordingSpeakers()").unwrap().0,
+            Request::StartRecording(Some(RecordSource::Speakers))
+        );
+        assert_eq!(
+            parse("DoStopRecording()").unwrap().0,
+            Request::StopRecording
+        );
+        assert_eq!(
+            parse("seek 1.5").unwrap().0,
+            Request::Seek {
+                ms: 1500,
+                relative: false
+            }
+        );
+        assert_eq!(
+            parse("seek -5").unwrap().0,
+            Request::Seek {
+                ms: -5000,
+                relative: true
+            }
+        );
+        assert_eq!(
+            parse("DoJumpMs(-2000)").unwrap().0,
+            Request::Seek {
+                ms: -2000,
+                relative: true
+            }
+        );
+        assert!(parse("record banana").is_err());
     }
 
     #[test]

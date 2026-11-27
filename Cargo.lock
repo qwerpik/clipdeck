@@ -987,6 +987,7 @@ dependencies = [
  "interprocess",
  "parking_lot 0.13.0",
  "pipewire",
+ "rtrb",
  "thiserror 2.0.21",
  "tokio",
  "tracing",

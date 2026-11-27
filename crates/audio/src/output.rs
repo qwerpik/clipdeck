@@ -258,10 +258,30 @@ impl std::fmt::Debug for InputStream {
 /// Open the microphone; returns the stream and the consumer end of its stereo ring.
 pub fn open_input(device: Option<&str>, target_rate: u32) -> Result<(InputStream, Consumer<f32>)> {
     let dev = find_input(device)?;
-    let name = device_name(&dev);
     let supported = dev
         .default_input_config()
         .map_err(|e| AudioError::Device(e.to_string()))?;
+    open_capture(&dev, &supported, target_rate)
+}
+
+/// Record what plays on the default output device (WASAPI loopback). Windows only.
+#[cfg(windows)]
+pub fn open_loopback(target_rate: u32) -> Result<(InputStream, Consumer<f32>)> {
+    let dev = cpal::default_host()
+        .default_output_device()
+        .ok_or_else(|| AudioError::Device("no output device".into()))?;
+    let supported = dev
+        .default_output_config()
+        .map_err(|e| AudioError::Device(e.to_string()))?;
+    open_capture(&dev, &supported, target_rate)
+}
+
+fn open_capture(
+    dev: &cpal::Device,
+    supported: &cpal::SupportedStreamConfig,
+    target_rate: u32,
+) -> Result<(InputStream, Consumer<f32>)> {
+    let name = device_name(dev);
     let rate = supported.sample_rate();
     let channels = supported.channels() as usize;
     // ~0.5 s of stereo audio; the mixer trims latency on its side.

@@ -7,6 +7,7 @@ pub mod error;
 pub mod loudness;
 pub mod mixer;
 pub mod output;
+pub mod record;
 pub mod resample;
 pub mod waveform;
 

@@ -50,6 +50,25 @@ enum Cmd {
     Next,
     /// Play the previous sound in the list.
     Previous,
+    /// Seek the playing sound: seconds from its start, or +N / -N to jump.
+    Seek {
+        /// Position (`12.5`) or jump (`+5`, `-5`).
+        #[arg(allow_hyphen_values = true)]
+        to: String,
+    },
+    /// Record what you hear (`speakers`) or your microphone (`mic`); `stop` saves.
+    /// With the app running the recording goes into the library; without it, records for
+    /// `--seconds` into `--out`.
+    Record {
+        /// speakers, mic or stop (default: the source chosen in Settings).
+        what: Option<String>,
+        /// Without a running app: how long to record.
+        #[arg(long, default_value_t = 10)]
+        seconds: u64,
+        /// Without a running app: output .wav (default: the recordings folder).
+        #[arg(long)]
+        out: Option<std::path::PathBuf>,
+    },
     /// Get or set the master volume (0-100).
     Volume {
         /// New volume.
@@ -142,6 +161,83 @@ fn init_logging(
             .with(tracing_subscriber::fmt::layer().with_writer(std::io::stderr))
             .try_init();
         None
+    }
+}
+
+fn record(what: Option<&str>, seconds: u64, out: Option<std::path::PathBuf>) -> ExitCode {
+    use clipdeck_core::config::{Config, RecordSource};
+    if ipc::is_running() {
+        return remote(format!("record {}", what.unwrap_or("")).trim_end());
+    }
+    let paths = match clipdeck_core::paths::Paths::resolve() {
+        Ok(p) => p,
+        Err(e) => {
+            eprintln!("{}", e.user_message());
+            return ExitCode::FAILURE;
+        }
+    };
+    let cfg = Config::load(&paths.config_file()).unwrap_or_default();
+    let source = match what.map(str::to_ascii_lowercase).as_deref() {
+        None => cfg.recorder.source,
+        Some("speakers" | "output" | "hear" | "loopback") => RecordSource::Speakers,
+        Some("mic" | "microphone" | "input") => RecordSource::Microphone,
+        Some("stop") => {
+            eprintln!("Clipdeck is not running, so nothing is recording.");
+            return ExitCode::FAILURE;
+        }
+        Some(w) => {
+            eprintln!("record what? `{w}` (use speakers, mic or stop)");
+            return ExitCode::FAILURE;
+        }
+    };
+    let path = out.unwrap_or_else(|| {
+        let dir = cfg
+            .recorder
+            .folder
+            .clone()
+            .filter(|f| !f.trim().is_empty())
+            .map(std::path::PathBuf::from)
+            .unwrap_or_else(|| paths.recordings_dir());
+        clipdeck_audio::record::unique_path(&dir, &clipdeck_core::date::now_stamp())
+    });
+    let opts = clipdeck_audio::record::RecordOptions {
+        path,
+        trim_silence: cfg.recorder.trim_silence,
+        normalize: cfg.recorder.normalize,
+        max_seconds: seconds.clamp(1, 3600) as u32,
+    };
+    let open = clipdeck_platform::record_capture(source, cfg.audio.input_device.clone());
+    let rec = match clipdeck_audio::record::Recorder::start(open, opts) {
+        Ok(r) => r,
+        Err(e) => {
+            eprintln!("{e}");
+            return ExitCode::FAILURE;
+        }
+    };
+    println!(
+        "recording {} for {seconds} s…",
+        match source {
+            RecordSource::Speakers => "what you hear",
+            RecordSource::Microphone => "the microphone",
+        }
+    );
+    let end = std::time::Instant::now() + std::time::Duration::from_secs(seconds);
+    while std::time::Instant::now() < end && !rec.is_done() {
+        std::thread::sleep(std::time::Duration::from_millis(50));
+    }
+    match rec.stop() {
+        Ok(f) => {
+            println!(
+                "saved {} ({:.1} s)",
+                f.path.display(),
+                f.duration_ms as f64 / 1000.0
+            );
+            ExitCode::SUCCESS
+        }
+        Err(e) => {
+            eprintln!("{e}");
+            ExitCode::FAILURE
+        }
     }
 }
 
@@ -247,6 +343,8 @@ fn main() -> ExitCode {
         Some(Cmd::Random) => remote("random"),
         Some(Cmd::Next) => remote("next"),
         Some(Cmd::Previous) => remote("previous"),
+        Some(Cmd::Seek { to }) => remote(&format!("seek {to}")),
+        Some(Cmd::Record { what, seconds, out }) => record(what.as_deref(), seconds, out),
         Some(Cmd::Volume { value }) => remote(&match value {
             Some(v) => format!("volume {v}"),
             None => "volume".into(),

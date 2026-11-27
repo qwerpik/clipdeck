@@ -725,6 +725,28 @@ impl Engine {
         self.set_paused(false);
     }
 
+    /// Move playing sounds (`None` = all of them) to `ms`, or by `ms` when `relative`.
+    pub fn seek(&self, sound: Option<u64>, ms: i64, relative: bool) {
+        let sounds: Vec<u64> = match sound {
+            Some(s) => vec![s],
+            None => self.now_playing().iter().map(|n| n.sound).collect(),
+        };
+        let mut guard = self.inner.lock();
+        let inner = &mut *guard;
+        for out in [inner.monitor.as_mut(), inner.mic.as_mut()]
+            .into_iter()
+            .flatten()
+        {
+            for &s in &sounds {
+                let _ = out.handle.send(Command::Seek {
+                    sound: s,
+                    ms,
+                    relative,
+                });
+            }
+        }
+    }
+
     /// Change the gain of a playing sound.
     pub fn set_sound_volume(&self, sound: u64, volume: f32) {
         let mut guard = self.inner.lock();

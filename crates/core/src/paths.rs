@@ -55,6 +55,22 @@ impl Paths {
     pub fn log_dir(&self) -> PathBuf {
         self.data_dir.join("logs")
     }
+    /// Default folder for recordings: `~/Music/Clipdeck` (`Music\Clipdeck` on Windows), or
+    /// `<data dir>/recordings` in portable mode or when there is no music folder.
+    pub fn recordings_dir(&self) -> PathBuf {
+        let portable = std::env::var_os("CLIPDECK_HOME").is_some()
+            || std::env::current_exe()
+                .ok()
+                .and_then(|e| e.parent().map(|d| d.join("portable").exists()))
+                .unwrap_or(false);
+        if !portable
+            && let Some(music) =
+                directories::UserDirs::new().and_then(|u| u.audio_dir().map(Path::to_path_buf))
+        {
+            return music.join("Clipdeck");
+        }
+        self.data_dir.join("recordings")
+    }
     /// Backups of the library.
     pub fn backup_dir(&self) -> PathBuf {
         self.data_dir.join("backups")

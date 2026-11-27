@@ -12,6 +12,22 @@ pub fn today() -> String {
     format!("{y:04}-{m:02}-{d:02}")
 }
 
+/// Current time as `YYYY-MM-DD HH-MM-SS` (UTC), safe in file names.
+pub fn now_stamp() -> String {
+    let secs = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|d| d.as_secs() as i64)
+        .unwrap_or(0);
+    let (y, m, d) = civil_from_days(secs.div_euclid(86_400));
+    let t = secs.rem_euclid(86_400);
+    format!(
+        "{y:04}-{m:02}-{d:02} {:02}-{:02}-{:02}",
+        t / 3600,
+        t / 60 % 60,
+        t % 60
+    )
+}
+
 /// Days since 1970-01-01 → (year, month, day). Howard Hinnant's algorithm.
 pub fn civil_from_days(z: i64) -> (i64, u32, u32) {
     let z = z + 719_468;
