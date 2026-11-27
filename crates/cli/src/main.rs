@@ -204,7 +204,7 @@ fn record(what: Option<&str>, seconds: u64, out: Option<std::path::PathBuf>) -> 
         path,
         trim_silence: cfg.recorder.trim_silence,
         normalize: cfg.recorder.normalize,
-        max_seconds: seconds.clamp(1, 3600) as u32,
+        max_seconds: seconds.clamp(1, 1800) as u32,
     };
     let open = clipdeck_platform::record_capture(source, cfg.audio.input_device.clone());
     let rec = match clipdeck_audio::record::Recorder::start(open, opts) {

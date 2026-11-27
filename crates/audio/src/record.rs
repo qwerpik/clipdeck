@@ -30,7 +30,7 @@ pub struct RecordOptions {
     pub trim_silence: bool,
     /// Scale so the peak sits at -1 dBFS (at most +30 dB).
     pub normalize: bool,
-    /// Stop on its own after this many seconds (0 = 1 hour).
+    /// Stop on its own after this many seconds (0 = 30 minutes; about 11 MB of memory per minute).
     pub max_seconds: u32,
 }
 
@@ -162,9 +162,9 @@ fn run(
     shared.rate.store(rate, Ordering::Relaxed);
     let _ = ready.send(Ok(()));
     let max_s = if opts.max_seconds == 0 {
-        3600
+        1800
     } else {
-        opts.max_seconds
+        opts.max_seconds.min(1800)
     };
     let max_samples = u64::from(max_s) * u64::from(rate) * 2;
     let mut samples: Vec<f32> = Vec::with_capacity(rate as usize * 2 * 10);

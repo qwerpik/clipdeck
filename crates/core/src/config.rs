@@ -277,7 +277,7 @@ impl Config {
         a.mic_volume = a.mic_volume.clamp(0.0, 2.0);
         a.buffer_frames = a.buffer_frames.clamp(64, 4096);
         a.target_lufs = a.target_lufs.clamp(-40.0, -5.0);
-        self.recorder.max_seconds = self.recorder.max_seconds.min(3600);
+        self.recorder.max_seconds = self.recorder.max_seconds.clamp(10, 600);
         self.ui.window_width = self.ui.window_width.clamp(480, 7680);
         self.ui.window_height = self.ui.window_height.clamp(360, 4320);
     }
