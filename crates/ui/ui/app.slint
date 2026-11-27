@@ -394,7 +394,9 @@ component SettingsPage inherits ScrollView {
             }
             Row {
                 label: "Longest recording";
-                hint: "Stops by itself after " + (Settings.rec-max >= 60 ? floor(Settings.rec-max / 60) + " min " + (Math.mod(round(Settings.rec-max), 60) == 0 ? "" : Math.mod(round(Settings.rec-max), 60) + " s") : round(Settings.rec-max) + " s") + ".";
+                hint: "Stops by itself after " + (Settings.rec-max < 60 ? round(Settings.rec-max) + " s"
+                    : Math.mod(round(Settings.rec-max), 60) == 0 ? floor(Settings.rec-max / 60) + " min"
+                    : floor(Settings.rec-max / 60) + " min " + Math.mod(round(Settings.rec-max), 60) + " s") + ".";
                 Slider { width: 280px; minimum: 10; maximum: 1200; step: 10; value <=> Settings.rec-max; changed => { Settings.changed(); } }
             }
         }

@@ -2,6 +2,8 @@
 
 pub mod app;
 mod keys;
+#[doc(hidden)]
+pub mod snapshot;
 mod theme;
 
 use std::cell::RefCell;
