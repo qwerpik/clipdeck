@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SignPath artifact configuration "installer": Clipdeck-<version>-setup-x64.exe (Inno Setup),
+     uploaded by the release workflow as a GitHub artifact (a ZIP). Parameter: version. -->
+<artifact-configuration xmlns="http://signpath.io/artifact-configuration/v1">
+  <parameters>
+    <parameter name="version" required="true" />
+  </parameters>
+  <zip-file>
+    <pe-file path="Clipdeck-${version}-setup-x64.exe" product-name="Clipdeck" product-version="${version}">
+      <authenticode-sign />
+    </pe-file>
+  </zip-file>
+</artifact-configuration>

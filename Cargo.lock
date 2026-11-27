@@ -967,6 +967,7 @@ dependencies = [
  "clipdeck-micfx-proto",
  "windows",
  "windows-core",
+ "winresource",
 ]
 
 [[package]]

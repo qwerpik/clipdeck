@@ -55,8 +55,47 @@ jobs:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
+      - name: Version
+        id: ver
+        shell: bash
+        run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
       - name: Build
         run: cargo build --release --locked -p clipdeck -p clipdeck-micfx
+
+      # Code signing through SignPath (free for open source). Runs once the repository
+      # variables SIGNPATH_ORGANIZATION_ID and SIGNPATH_PROJECT_SLUG and the secret
+      # SIGNPATH_API_TOKEN exist; until then releases are unsigned. Each request waits for a
+      # manual approval in SignPath. Configurations: packaging/windows/signpath/*.xml.
+      - name: Upload binaries for signing
+        id: unsigned-bin
+        if: vars.SIGNPATH_PROJECT_SLUG != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: unsigned-binaries
+          path: |
+            target/release/clipdeck.exe
+            target/release/clipdeck_micfx.dll
+      - name: Sign binaries
+        if: vars.SIGNPATH_PROJECT_SLUG != ''
+        uses: signpath/github-action-submit-signing-request@v3
+        with:
+          connector-url: https://pipelineconnector.connectors.signpath.io/GitHub/GitHubCom
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: ${{ vars.SIGNPATH_PROJECT_SLUG }}
+          signing-policy-slug: ${{ vars.SIGNPATH_SIGNING_POLICY_SLUG || 'release-signing' }}
+          artifact-configuration-slug: binaries
+          github-artifact-id: ${{ steps.unsigned-bin.outputs.artifact-id }}
+          parameters: |
+            version: "${{ steps.ver.outputs.version }}"
+          wait-for-completion: true
+          wait-for-completion-timeout-in-seconds: 86400
+          output-artifact-directory: target/signed
+      - name: Use the signed binaries
+        if: vars.SIGNPATH_PROJECT_SLUG != ''
+        shell: pwsh
+        run: Copy-Item target/signed/clipdeck.exe, target/signed/clipdeck_micfx.dll -Destination target/release -Force
+
       - name: Portable zip
         shell: pwsh
         run: |
@@ -72,6 +111,33 @@ jobs:
           choco install innosetup -y --no-progress
           $v = "${{ github.ref_name }}".TrimStart("v")
           & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" "/DVersion=$v" packaging\windows\clipdeck.iss
+      - name: Upload installer for signing
+        id: unsigned-setup
+        if: vars.SIGNPATH_PROJECT_SLUG != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: unsigned-installer
+          path: dist/*setup*.exe
+      - name: Sign installer
+        if: vars.SIGNPATH_PROJECT_SLUG != ''
+        uses: signpath/github-action-submit-signing-request@v3
+        with:
+          connector-url: https://pipelineconnector.connectors.signpath.io/GitHub/GitHubCom
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: ${{ vars.SIGNPATH_PROJECT_SLUG }}
+          signing-policy-slug: ${{ vars.SIGNPATH_SIGNING_POLICY_SLUG || 'release-signing' }}
+          artifact-configuration-slug: installer
+          github-artifact-id: ${{ steps.unsigned-setup.outputs.artifact-id }}
+          parameters: |
+            version: "${{ steps.ver.outputs.version }}"
+          wait-for-completion: true
+          wait-for-completion-timeout-in-seconds: 86400
+          output-artifact-directory: dist-signed
+      - name: Use the signed installer
+        if: vars.SIGNPATH_PROJECT_SLUG != ''
+        shell: pwsh
+        run: Copy-Item dist-signed/*setup*.exe -Destination dist -Force
       - uses: actions/upload-artifact@v4
         with:
           name: windows
@@ -94,7 +160,11 @@ jobs:
         run: |
           v="${GITHUB_REF_NAME#v}"
           awk -v v="$v" '/^## /{p = index($0, "## " v " ") == 1; next} p' CHANGELOG.md > notes.md
-          printf '\n**Windows:** the builds are not code-signed yet; if SmartScreen warns, click *More info → Run anyway*.\n' >> notes.md
+          if [ -n "${{ vars.SIGNPATH_PROJECT_SLUG }}" ]; then
+            printf '\n[Code signing policy](https://github.com/qwerpik/clipdeck#code-signing-policy): free code signing provided by [SignPath.io](https://about.signpath.io/), certificate by [SignPath Foundation](https://signpath.org/).\n' >> notes.md
+          else
+            printf '\n**Windows:** this release is not code-signed yet ([code signing policy](https://github.com/qwerpik/clipdeck#code-signing-policy)); if SmartScreen warns, click *More info → Run anyway*.\n' >> notes.md
+          fi
           cat notes.md
       - uses: softprops/action-gh-release@v2
         with:

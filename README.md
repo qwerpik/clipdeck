@@ -154,6 +154,19 @@ cargo build --release -p clipdeck
 
 On Windows, a stable Rust toolchain is enough. CI runs fmt, clippy (`-D warnings`) and tests on Linux and Windows, and tagged releases build the AppImage, tarball, portable zip and installer.
 
+## Code signing policy
+
+Free code signing provided by [SignPath.io](https://about.signpath.io/), certificate by [SignPath Foundation](https://signpath.org/). *(Application in progress: until it is approved, Windows releases are unsigned.)*
+
+- **Committers and reviewers:** [qwerpik](https://github.com/qwerpik)
+- **Approvers:** [qwerpik](https://github.com/qwerpik)
+
+Only files built by this repository's [release workflow](.github/workflows/release.yml) from its own source, on GitHub-hosted runners, are signed, and every signing request is approved by hand. Clipdeck contains no third-party binaries; all dependencies are open source and compiled from source.
+
+**Privacy:** this program will not transfer any information to other networked systems unless specifically requested by the user or the person installing or operating it. Clipdeck has no telemetry, accounts or update checks; it only opens web pages (the project page) when you click them.
+
+**System changes:** the optional Windows in-microphone effect is only installed when you choose it (installer checkbox or *Settings → Microphones*). It asks for administrator rights, registers an audio effect for the microphones you pick and restarts Windows audio. `clipdeck micfx uninstall` or uninstalling Clipdeck removes it and restores the previous settings.
+
 ## License
 
 GPL-3.0-or-later. See [LICENSE](LICENSE). Icons and artwork are original to this project.
