@@ -80,6 +80,11 @@ pub struct AudioConfig {
     pub karaoke_delay_ms: u32,
     /// What to do when a sound ends by itself.
     pub after_end: AfterEnd,
+    /// Play [`AudioConfig::activation_sound`] on the microphone before every sound, so apps
+    /// with voice activation open the mic in time (Soundpad's "voice activation sound").
+    pub activation_enabled: bool,
+    /// File used for that, e.g. a short burst of noise.
+    pub activation_sound: Option<String>,
 }
 
 impl Default for AudioConfig {
@@ -102,6 +107,8 @@ impl Default for AudioConfig {
             ptt_delay_ms: 0,
             karaoke_delay_ms: 0,
             after_end: AfterEnd::Stop,
+            activation_enabled: false,
+            activation_sound: None,
         }
     }
 }

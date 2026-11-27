@@ -298,6 +298,13 @@ mod imp {
             Ok(v) => v,
             Err(e) => {
                 eprintln!("cannot record from {}: {}", target.name, e.user_message());
+                if e.user_message().contains("Access is denied") {
+                    eprintln!(
+                        "Windows blocks microphone access for desktop apps. Turn on Settings > \
+                         Privacy & security > Microphone > \"Let desktop apps access your \
+                         microphone\"."
+                    );
+                }
                 return ExitCode::FAILURE;
             }
         };

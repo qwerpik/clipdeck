@@ -119,6 +119,8 @@ pub struct PlayRequest {
     pub route: Route,
     /// Loudness if already known (skips measuring).
     pub lufs: Option<f32>,
+    /// Extra start delay on the microphone only, ms (room for a voice-activation sound).
+    pub mic_delay_ms: u32,
 }
 
 /// Events for the UI.
@@ -498,7 +500,7 @@ impl Engine {
                     looped: false,
                     mode: req.mode,
                     triggered: Some(triggered),
-                    delay: delay_frames(&inner.cfg, bit, out.rate),
+                    delay: delay_frames(&inner.cfg, bit, out.rate, req.mic_delay_ms),
                 }));
             }
             inner.live.insert(voice, (req.sound, targets));
@@ -572,7 +574,7 @@ impl Engine {
                 looped: req.looped,
                 mode: req.mode,
                 triggered: Some(triggered),
-                delay: delay_frames(&inner.cfg, bit, out.rate),
+                delay: delay_frames(&inner.cfg, bit, out.rate, req.mic_delay_ms),
             };
             if out.handle.send(Command::Play(spec)).is_err() {
                 tracing::warn!("mixer command queue full; dropped a play");
@@ -1116,9 +1118,14 @@ fn device_thread(
 
 /// Start delay for a voice on output `bit`: Soundpad's push-to-talk delay applies to every
 /// output (time to press the push-to-talk key), the karaoke delay only to the microphone.
-fn delay_frames(cfg: &EngineConfig, bit: u8, rate: u32) -> u32 {
-    let ms = cfg.ptt_delay_ms + if bit == MIC { cfg.karaoke_delay_ms } else { 0 };
-    (u64::from(ms.min(10_000)) * u64::from(rate) / 1000) as u32
+fn delay_frames(cfg: &EngineConfig, bit: u8, rate: u32, extra_mic_ms: u32) -> u32 {
+    let ms = cfg.ptt_delay_ms
+        + if bit == MIC {
+            cfg.karaoke_delay_ms + extra_mic_ms
+        } else {
+            0
+        };
+    (u64::from(ms.min(30_000)) * u64::from(rate) / 1000) as u32
 }
 
 /// Run a mixer offline (no device) — used by tests and the benchmark.
@@ -1137,4 +1144,22 @@ pub fn offline_render(clip: Arc<Clip>, frames: usize) -> Vec<f32> {
     let mut out = vec![0.0; frames * 2];
     m.render(&mut out, 2);
     out
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn start_delays_per_output() {
+        let cfg = EngineConfig {
+            ptt_delay_ms: 100,
+            karaoke_delay_ms: 50,
+            ..EngineConfig::default()
+        };
+        // Push-to-talk delay everywhere; karaoke and activation room on the mic only.
+        assert_eq!(delay_frames(&cfg, MON, 48_000, 200), 4_800);
+        assert_eq!(delay_frames(&cfg, MIC, 48_000, 200), 16_800);
+        assert_eq!(delay_frames(&EngineConfig::default(), MIC, 44_100, 0), 0);
+    }
 }

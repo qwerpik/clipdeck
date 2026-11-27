@@ -63,7 +63,12 @@ pub struct AppCore {
     pub quitting: AtomicBool,
     /// Last sound played from the library and the engine's stop epoch at that moment.
     last: Mutex<Option<(SoundId, u64)>>,
+    /// Voice-activation sound and its length, cached.
+    activation: Mutex<Option<(PathBuf, u32)>>,
 }
+
+/// Sound id used for the voice-activation sound (never a library id).
+const ACTIVATION_SOUND_ID: u64 = u64::MAX - 1;
 
 impl std::fmt::Debug for AppCore {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -106,6 +111,7 @@ impl AppCore {
             config_dirty: AtomicBool::new(false),
             quitting: AtomicBool::new(false),
             last: Mutex::new(None),
+            activation: Mutex::new(None),
         });
         for n in notices {
             core.notify(n);
@@ -333,6 +339,7 @@ impl AppCore {
                     mode: s.mode.unwrap_or(cfg.audio.playback_mode),
                     route: route.unwrap_or(cfg.audio.route),
                     lufs: s.loudness_lufs,
+                    mic_delay_ms: 0,
                 },
                 !s.file_exists(),
             )
@@ -341,8 +348,54 @@ impl AppCore {
             return Err(format!("File not found: {}", req.path.display()));
         }
         *self.last.lock() = Some((id, self.engine.stop_epoch()));
+        let mut req = req;
+        req.mic_delay_ms = self.play_activation(req.route);
         self.engine.play(req);
         Ok(())
+    }
+
+    /// Start the voice-activation sound on the microphone when enabled and the sound goes
+    /// there. Returns how long the real sound must wait on the microphone, ms.
+    fn play_activation(&self, route: Route) -> u32 {
+        if route == Route::MonitorOnly {
+            return 0;
+        }
+        let path = {
+            let cfg = self.config.lock();
+            match (&cfg.audio.activation_sound, cfg.audio.activation_enabled) {
+                (Some(p), true) => PathBuf::from(p),
+                _ => return 0,
+            }
+        };
+        if !path.exists() {
+            return 0;
+        }
+        let duration = {
+            let mut cache = self.activation.lock();
+            match cache.as_ref() {
+                Some((p, d)) if *p == path => *d,
+                _ => {
+                    let d = clipdeck_audio::decode::probe_duration_ms(&path).unwrap_or(0);
+                    *cache = Some((path.clone(), d));
+                    d
+                }
+            }
+        };
+        if duration == 0 {
+            return 0;
+        }
+        self.engine.play(PlayRequest {
+            sound: ACTIVATION_SOUND_ID,
+            path,
+            volume: 1.0,
+            trim: Default::default(),
+            looped: false,
+            mode: clipdeck_core::model::PlaybackMode::Overlap,
+            route: Route::MicOnly,
+            lufs: None,
+            mic_delay_ms: 0,
+        });
+        duration.min(5_000)
     }
 
     /// Play a file that is not in the library.
@@ -357,6 +410,7 @@ impl AppCore {
             mode: cfg.playback_mode,
             route: route.unwrap_or(cfg.route),
             lufs: None,
+            mic_delay_ms: 0,
         });
     }
 

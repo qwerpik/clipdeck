@@ -462,6 +462,19 @@ impl Ui {
         s.set_block_voice(cfg.audio.block_voice);
         s.set_ptt_delay(cfg.audio.ptt_delay_ms as f32);
         s.set_karaoke_delay(cfg.audio.karaoke_delay_ms as f32);
+        s.set_activation_enabled(cfg.audio.activation_enabled);
+        s.set_activation_name(
+            cfg.audio
+                .activation_sound
+                .as_deref()
+                .map(|p| {
+                    std::path::Path::new(p)
+                        .file_name()
+                        .map_or_else(|| p.to_string(), |n| n.to_string_lossy().into_owned())
+                })
+                .unwrap_or_default()
+                .into(),
+        );
         s.set_monitor_volume(cfg.audio.monitor_volume);
         s.set_mic_volume(cfg.audio.mic_volume);
         s.set_hotkeys_enabled(cfg.hotkeys.enabled);
@@ -636,6 +649,7 @@ impl Ui {
             c.audio.block_voice = s.get_block_voice();
             c.audio.ptt_delay_ms = s.get_ptt_delay().round().max(0.0) as u32;
             c.audio.karaoke_delay_ms = s.get_karaoke_delay().round().max(0.0) as u32;
+            c.audio.activation_enabled = s.get_activation_enabled();
             c.audio.monitor_volume = s.get_monitor_volume();
             c.audio.mic_volume = s.get_mic_volume();
             c.hotkeys.enabled = s.get_hotkeys_enabled();
@@ -925,6 +939,7 @@ impl Ui {
             mode: PlaybackMode::Restart,
             route: Route::MonitorOnly,
             lufs,
+            mic_delay_ms: 0,
         });
         self.start_ticking();
     }
@@ -1351,6 +1366,27 @@ fn wire(ui: &Rc<Ui>, app: &AppWindow) {
                 with_ui(|ui| match ui.core.export_spl(&f) {
                     Ok(()) => ui.snack(format!("Exported to {}", f.display())),
                     Err(e) => ui.snack(e),
+                })
+            });
+        });
+    });
+    s.on_pick_activation(|| {
+        std::thread::spawn(|| {
+            let Some(f) = rfd::FileDialog::new()
+                .set_title("Voice-activation sound")
+                .add_filter("Audio", clipdeck_core::model::AUDIO_EXTENSIONS)
+                .pick_file()
+            else {
+                return;
+            };
+            let _ = slint::invoke_from_event_loop(move || {
+                with_ui(|ui| {
+                    let f = f.display().to_string();
+                    ui.core.update_config(|c| {
+                        c.audio.activation_sound = Some(f.clone());
+                        c.audio.activation_enabled = true;
+                    });
+                    ui.load_settings();
                 })
             });
         });

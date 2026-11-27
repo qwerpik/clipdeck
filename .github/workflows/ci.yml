@@ -74,6 +74,16 @@ jobs:
           Start-Process -FilePath "$d\VBCABLE_Setup_x64.exe" -ArgumentList "-i","-h" -Wait
           Start-Sleep -Seconds 10
           Get-PnpDevice -Class AudioEndpoint -ErrorAction SilentlyContinue | Format-Table -AutoSize FriendlyName, Status
+      - name: Allow desktop apps to use the microphone (privacy switch)
+        shell: pwsh
+        run: |
+          foreach ($root in "HKLM:", "HKCU:") {
+            $k = "$root\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\microphone"
+            New-Item -Path $k -Force | Out-Null
+            Set-ItemProperty -Path $k -Name Value -Value Allow
+            New-Item -Path "$k\NonPackaged" -Force | Out-Null
+            Set-ItemProperty -Path "$k\NonPackaged" -Name Value -Value Allow
+          }
       - name: Install the effect on CABLE Output and test it
         shell: pwsh
         run: |
