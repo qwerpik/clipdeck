@@ -46,6 +46,10 @@ enum Cmd {
     Pause,
     /// Play a random sound.
     Random,
+    /// Play the next sound in the list.
+    Next,
+    /// Play the previous sound in the list.
+    Previous,
     /// Get or set the master volume (0-100).
     Volume {
         /// New volume.
@@ -241,6 +245,8 @@ fn main() -> ExitCode {
         }),
         Some(Cmd::Pause) => remote("pause"),
         Some(Cmd::Random) => remote("random"),
+        Some(Cmd::Next) => remote("next"),
+        Some(Cmd::Previous) => remote("previous"),
         Some(Cmd::Volume { value }) => remote(&match value {
             Some(v) => format!("volume {v}"),
             None => "volume".into(),

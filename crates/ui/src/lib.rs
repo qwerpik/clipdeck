@@ -495,6 +495,11 @@ impl Ui {
         if let Some(h) = self.hotkeys.borrow().as_ref() {
             s.set_hotkey_note(h.note().into());
         }
+        app.set_after_end(match cfg.audio.after_end {
+            clipdeck_core::config::AfterEnd::Stop => 0,
+            clipdeck_core::config::AfterEnd::Next => 1,
+            clipdeck_core::config::AfterEnd::Repeat => 2,
+        });
         app.set_master_volume(cfg.audio.master_volume);
         app.set_monitor_on(cfg.audio.monitor_enabled);
         app.set_mic_on(cfg.audio.mic_passthrough);
@@ -1164,6 +1169,24 @@ fn wire(ui: &Rc<Ui>, app: &AppWindow) {
                 clipdeck_core::config::ViewMode::List
             };
             ui.core.mark_config_dirty();
+        })
+    });
+    app.on_step(|dir| {
+        with_ui(|ui| {
+            if let Err(e) = ui.core.play_step(dir) {
+                ui.snack(e);
+            }
+        })
+    });
+    app.on_after_end_changed(|v| {
+        with_ui(|ui| {
+            ui.core.update_config(|c| {
+                c.audio.after_end = match v {
+                    1 => clipdeck_core::config::AfterEnd::Next,
+                    2 => clipdeck_core::config::AfterEnd::Repeat,
+                    _ => clipdeck_core::config::AfterEnd::Stop,
+                };
+            });
         })
     });
     app.on_random(|| {

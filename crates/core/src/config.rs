@@ -29,6 +29,19 @@ pub enum ViewMode {
     List,
 }
 
+/// What happens when a sound ends by itself (Soundpad's "continue playback" / "repeat").
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum AfterEnd {
+    /// Nothing.
+    #[default]
+    Stop,
+    /// Play the next sound in the list.
+    Next,
+    /// Play the same sound again.
+    Repeat,
+}
+
 /// Audio settings.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(default)]
@@ -65,6 +78,8 @@ pub struct AudioConfig {
     pub ptt_delay_ms: u32,
     /// Extra delay on the microphone only, ms ("karaoke": you hear the sound first).
     pub karaoke_delay_ms: u32,
+    /// What to do when a sound ends by itself.
+    pub after_end: AfterEnd,
 }
 
 impl Default for AudioConfig {
@@ -86,6 +101,7 @@ impl Default for AudioConfig {
             block_voice: false,
             ptt_delay_ms: 0,
             karaoke_delay_ms: 0,
+            after_end: AfterEnd::Stop,
         }
     }
 }

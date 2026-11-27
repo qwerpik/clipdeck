@@ -80,7 +80,7 @@ jobs:
           function cd-run([string[]]$a) {
             $p = Start-Process -FilePath target\release\clipdeck.exe -ArgumentList $a -Wait -NoNewWindow -PassThru `
               -RedirectStandardOutput out.txt -RedirectStandardError err.txt
-            Get-Content out.txt, err.txt
+            Get-Content out.txt, err.txt | ForEach-Object { Write-Host $_ }
             return $p.ExitCode
           }
           cd-run @("micfx", "status") | Out-Host

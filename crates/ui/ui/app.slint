@@ -703,6 +703,8 @@ export component AppWindow inherits Window {
     in property <float> level;
     in property <bool> mic-ok;
     in property <string> mic-label;
+    /// After a sound ends: 0 stop, 1 play the next one, 2 repeat it.
+    in-out property <int> after-end;
 
     in property <string> snack-text;
     in property <bool> snack-shown;
@@ -723,6 +725,8 @@ export component AppWindow inherits Window {
     callback dismiss-snack();
     callback view-changed(bool);
     callback random();
+    callback step(int);
+    callback after-end-changed(int);
     callback new-category();
     callback edit-category(int);
 
@@ -1067,6 +1071,31 @@ export component AppWindow inherits Window {
                                 maximum: 1;
                                 value <=> root.master-volume;
                                 changed(v) => { root.master-volume-changed(v); }
+                            }
+                        }
+                        IconButton {
+                            y: (parent.height - self.height) / 2;
+                            icon: Icons.skip-previous;
+                            tooltip: "Previous sound";
+                            clicked => { root.step(-1); }
+                        }
+                        IconButton {
+                            y: (parent.height - self.height) / 2;
+                            icon: Icons.skip-next;
+                            tooltip: "Next sound";
+                            clicked => { root.step(1); }
+                        }
+                        IconButton {
+                            y: (parent.height - self.height) / 2;
+                            icon: root.after-end == 2 ? Icons.loop : Icons.play-next;
+                            tint: root.after-end == 0 ? Theme.on-surface-variant : Theme.on-secondary-container;
+                            fill: root.after-end == 0 ? transparent : Theme.secondary-container;
+                            tooltip: root.after-end == 0 ? "When a sound ends: stop (click: play the next one)"
+                                : root.after-end == 1 ? "When a sound ends: play the next one (click: repeat it)"
+                                : "When a sound ends: repeat it (click: stop)";
+                            clicked => {
+                                root.after-end = Math.mod(root.after-end + 1, 3);
+                                root.after-end-changed(root.after-end);
                             }
                         }
                         ToggleButton {

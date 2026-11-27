@@ -233,6 +233,7 @@ pub struct Engine {
     status: Arc<Mutex<DeviceStatus>>,
     stats: Arc<EngineStats>,
     next_voice: Arc<AtomicU64>,
+    stop_epoch: Arc<AtomicU64>,
     paused: Arc<AtomicBool>,
     threads: Arc<Mutex<Vec<JoinHandle<()>>>>,
     shutdown: Arc<AtomicBool>,
@@ -303,6 +304,7 @@ impl Engine {
             status: Arc::new(Mutex::new(DeviceStatus::default())),
             stats: Arc::new(EngineStats::default()),
             next_voice: Arc::new(AtomicU64::new(1)),
+            stop_epoch: Arc::new(AtomicU64::new(0)),
             paused: Arc::new(AtomicBool::new(false)),
             threads: Arc::new(Mutex::new(Vec::new())),
             shutdown: Arc::new(AtomicBool::new(false)),
@@ -684,8 +686,15 @@ impl Engine {
         }
     }
 
+    /// Increases on every user stop; lets "play next when a sound ends" tell a natural end
+    /// from a stop.
+    pub fn stop_epoch(&self) -> u64 {
+        self.stop_epoch.load(Ordering::Acquire)
+    }
+
     /// Stop every voice of a sound.
     pub fn stop_sound(&self, sound: u64) {
+        self.stop_epoch.fetch_add(1, Ordering::AcqRel);
         let mut guard = self.inner.lock();
         let inner = &mut *guard;
         inner.live.retain(|_, (s, _)| *s != sound);
@@ -699,6 +708,7 @@ impl Engine {
 
     /// Stop everything.
     pub fn stop_all(&self) {
+        self.stop_epoch.fetch_add(1, Ordering::AcqRel);
         {
             let mut guard = self.inner.lock();
             let inner = &mut *guard;

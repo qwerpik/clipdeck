@@ -61,6 +61,8 @@ pub struct AppCore {
     config_dirty: AtomicBool,
     /// Set when shutting down.
     pub quitting: AtomicBool,
+    /// Last sound played from the library and the engine's stop epoch at that moment.
+    last: Mutex<Option<(SoundId, u64)>>,
 }
 
 impl std::fmt::Debug for AppCore {
@@ -103,6 +105,7 @@ impl AppCore {
             library_dirty: AtomicBool::new(false),
             config_dirty: AtomicBool::new(false),
             quitting: AtomicBool::new(false),
+            last: Mutex::new(None),
         });
         for n in notices {
             core.notify(n);
@@ -157,7 +160,10 @@ impl AppCore {
                 self.mark_library_dirty();
                 self.signal(UiSignal::Playback);
             }
-            EngineEvent::Finished { .. } => self.signal(UiSignal::Playback),
+            EngineEvent::Finished { sound, .. } => {
+                self.signal(UiSignal::Playback);
+                self.after_end(SoundId(sound));
+            }
             EngineEvent::Analyzed {
                 sound,
                 lufs,
@@ -266,6 +272,51 @@ impl AppCore {
         self.signal(UiSignal::ConfigChanged);
     }
 
+    /// Continue after `sound` ended by itself, per the "after a sound ends" setting.
+    fn after_end(&self, sound: SoundId) {
+        let mode = self.config.lock().audio.after_end;
+        if mode == clipdeck_core::config::AfterEnd::Stop {
+            return;
+        }
+        let Some((last, epoch)) = *self.last.lock() else {
+            return;
+        };
+        // Only when the last sound ended on its own and nothing else is playing.
+        if last != sound
+            || epoch != self.engine.stop_epoch()
+            || !self.engine.now_playing().is_empty()
+        {
+            return;
+        }
+        let _ = match mode {
+            clipdeck_core::config::AfterEnd::Next => self.play_step(1),
+            _ => self.play(last, None),
+        };
+    }
+
+    /// Play the sound `dir` places after the last one (wrapping), skipping missing files.
+    pub fn play_step(&self, dir: i32) -> Result<(), String> {
+        let ids: Vec<SoundId> = {
+            let lib = self.library.lock();
+            lib.sounds
+                .iter()
+                .filter(|s| s.file_exists())
+                .map(|s| s.id)
+                .collect()
+        };
+        if ids.is_empty() {
+            return Err("The library is empty".into());
+        }
+        let last = self.last.lock().map(|(id, _)| id);
+        let n = ids.len() as i64;
+        let next = match last.and_then(|l| ids.iter().position(|i| *i == l)) {
+            Some(i) => (i as i64 + i64::from(dir)).rem_euclid(n) as usize,
+            None if dir < 0 => ids.len() - 1,
+            None => 0,
+        };
+        self.play(ids[next], None)
+    }
+
     /// Play a library sound.
     pub fn play(&self, id: SoundId, route: Option<Route>) -> Result<(), String> {
         let (req, missing) = {
@@ -289,6 +340,7 @@ impl AppCore {
         if missing {
             return Err(format!("File not found: {}", req.path.display()));
         }
+        *self.last.lock() = Some((id, self.engine.stop_epoch()));
         self.engine.play(req);
         Ok(())
     }
@@ -520,6 +572,10 @@ impl AppCore {
                     },
                 }
             }
+            Request::Step(dir) => match self.play_step(dir) {
+                Ok(()) => Self::ok(d, ""),
+                Err(e) => err(e),
+            },
             Request::PlayRandom => match self.play_random(None) {
                 Ok(()) => Self::ok(d, ""),
                 Err(e) => err(e),

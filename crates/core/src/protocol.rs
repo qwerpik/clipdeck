@@ -33,6 +33,8 @@ pub enum Request {
     },
     /// Play a random sound.
     PlayRandom,
+    /// Play the next (+1) or previous (-1) sound in the list.
+    Step(i32),
     /// Stop one sound, or everything when `None`.
     Stop(Option<String>),
     /// Toggle pause of everything.
@@ -142,6 +144,8 @@ fn parse_clipdeck(line: &str) -> Result<Request, ProtocolError> {
             Request::Play { target, route }
         }
         "random" => Request::PlayRandom,
+        "next" => Request::Step(1),
+        "previous" | "prev" => Request::Step(-1),
         "stop" => Request::Stop((!words.is_empty()).then(|| words.join(" "))),
         "stop-all" | "stopall" => Request::Stop(None),
         "pause" | "resume" | "toggle-pause" => Request::TogglePause,
@@ -252,6 +256,8 @@ fn parse_soundpad(name: &str, args: &str) -> Result<Request, ProtocolError> {
             }
         }
         "DoPlayRandomSound" => Request::PlayRandom,
+        "DoPlayNextSound" => Request::Step(1),
+        "DoPlayPreviousSound" => Request::Step(-1),
         "DoStopSound" => Request::Stop(None),
         "DoTogglePause" => Request::TogglePause,
         "SetVolume" => {
@@ -310,6 +316,14 @@ mod tests {
         assert!(parse("volume 400").is_err());
         assert!(parse("play").is_err());
         assert!(matches!(parse("explode"), Err(ProtocolError::Unknown(_))));
+    }
+
+    #[test]
+    fn next_and_previous() {
+        assert_eq!(parse("next").unwrap().0, Request::Step(1));
+        assert_eq!(parse("prev").unwrap().0, Request::Step(-1));
+        assert_eq!(parse("DoPlayNextSound()").unwrap().0, Request::Step(1));
+        assert_eq!(parse("DoPlayPreviousSound()").unwrap().0, Request::Step(-1));
     }
 
     #[test]
