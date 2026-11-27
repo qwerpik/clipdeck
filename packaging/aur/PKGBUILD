@@ -1,6 +1,6 @@
 # Maintainer: qwerpik <https://github.com/qwerpik>
 pkgname=clipdeck
-pkgver=0.1.0
+pkgver=0.2.0
 pkgrel=1
 pkgdesc="Fast soundboard that plays clips into your microphone (PipeWire virtual mic, Soundpad .spl import)"
 arch=('x86_64' 'aarch64')

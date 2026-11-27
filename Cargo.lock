@@ -916,7 +916,7 @@ dependencies = [
 
 [[package]]
 name = "clipdeck"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "clap",
@@ -933,7 +933,7 @@ dependencies = [
 
 [[package]]
 name = "clipdeck-audio"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "clipdeck-core",
  "cpal",
@@ -949,7 +949,7 @@ dependencies = [
 
 [[package]]
 name = "clipdeck-core"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "directories",
  "nucleo-matcher",
@@ -962,7 +962,7 @@ dependencies = [
 
 [[package]]
 name = "clipdeck-micfx"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "clipdeck-micfx-proto",
  "windows",
@@ -971,11 +971,11 @@ dependencies = [
 
 [[package]]
 name = "clipdeck-micfx-proto"
-version = "0.1.0"
+version = "0.2.0"
 
 [[package]]
 name = "clipdeck-platform"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "ashpd",
  "clipdeck-audio",
@@ -996,7 +996,7 @@ dependencies = [
 
 [[package]]
 name = "clipdeck-ui"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "clipdeck-audio",

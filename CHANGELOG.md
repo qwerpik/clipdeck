@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.0 — 2026-11-27
+
+- **Recorder.** The red button in the bottom bar records what you hear (WASAPI loopback on Windows, the default output's monitor on PipeWire) or your microphone. Silence is trimmed, the level is normalized, and the WAV lands in your library under "Recordings". Settings → Recorder sets the folder, category, length limit and what the hotkey records. Also `clipdeck record [speakers|mic|stop]`.
+- **Player controls:** pause/resume button, click-to-seek progress bar, previous/next, and "when a sound ends": stop, play the next one, or repeat.
+- **Push-to-talk delay** and **karaoke delay** (mic only), and a **voice-activation sound** that opens Discord's voice activation before each sound.
+- **Windows: in-microphone effect (beta).** Settings → Microphones puts Clipdeck's sounds straight into your real microphone, like Soundpad, without VB-CABLE. Opt-in; asks for administrator rights. VB-CABLE stays the default.
+- Remote control: `seek`, `next`, `previous`, `record`; Soundpad `DoPlayNextSound`, `DoPlayPreviousSound`, `DoSeekMs`, `DoJumpMs`, `DoStartRecording[Speakers|Microphone]`, `DoStopRecording`, `GetRecordingPositionInMs`, `GetPlaybackPositionInMs`, `GetPlaybackDurationInMs`.
+- Windows builds link the C runtime statically (no Visual C++ redistributable needed).
+
 ## 0.1.0 — 2026-11-21
 
 First release.

@@ -16,10 +16,14 @@
 ## What it does
 
 - **Virtual microphone.** Linux: a native PipeWire source called **Clipdeck Mic**. Windows: the free [VB-CABLE](https://vb-audio.com/Cable/) driver (pick **CABLE Output** as your mic). Your real microphone is mixed in, so you keep talking while sounds play.
+- **Windows without a cable (beta).** *Settings → Microphones* can put the sounds straight into your real microphone, the way Soundpad does, so nothing changes in Discord. It's opt-in and asks for administrator rights once.
+- **Recorder.** Record what you hear (a friend's line, a game moment) or your microphone with one click; silence is trimmed, the level is normalized and the clip lands in your library.
 - **Hear it yourself.** A separate monitor output with its own volume, or "only me" playback.
 - **Instant triggering.** Global hotkeys, clicks, the keyboard, or the command line. Trigger to render is about 3 ms. Clips are decoded once and kept in memory; long files stream from disk.
 - **Loudness normalization** (EBU R128, default −16 LUFS), so the air horn is not 20 dB louder than everything else.
 - **Playback modes:** overlap, restart the same sound, or stop others first. Also loop, per-sound volume, and trim with a waveform view.
+- **Player:** pause, seek, previous/next, and "when a sound ends: stop / play the next / repeat".
+- **Push-to-talk and karaoke delays**, and a **voice-activation sound** that opens Discord's voice activation before each sound.
 - **Library:** drag and drop, file picker or watched folders. Categories, favorites, recently played, colors, and instant fuzzy search (just start typing).
 - **Soundpad migration:** imports and exports Soundpad `.spl` sound lists byte-for-byte (hotkeys, categories, colors and play counts carry over). The CLI also understands Soundpad's remote-control commands (`DoPlaySound(3)`), so existing scripts keep working.
 - Tray icon, start minimized, close to tray, and everything saves automatically.
@@ -47,6 +51,10 @@ Requirements: PipeWire (with `pipewire-pulse` for Discord and browsers). Works o
 
 Clipdeck finds VB-CABLE automatically. If it's missing, the app tells you where to get it.
 
+**No cable (beta):** skip step 1 and turn on your microphone in *Settings → Microphones* instead (or tick "Put Clipdeck's sounds into my microphone" in the installer). Discord keeps using your normal mic. If it doesn't work on your PC, run `clipdeck micfx uninstall` and use VB-CABLE.
+
+**"Windows protected your PC":** the builds aren't code-signed yet, so SmartScreen warns on first launch. Click **More info → Run anyway**. Checksums are in `SHA256SUMS.txt` on the release page.
+
 ## Use it in Discord (and everything else)
 
 | | Linux | Windows |
@@ -60,7 +68,7 @@ Play a sound: click its card, press its hotkey, or run `clipdeck play "air horn"
 ## Hotkeys
 
 - **Per sound:** open a sound's editor (pencil icon, right-click or `F2`), click **Hotkey** and press a combination.
-- **Stop all / pause:** in *Settings → Hotkeys* (default stop-all: `Ctrl+Alt+S`).
+- **Stop all / pause / record:** in *Settings → Hotkeys* (default stop-all: `Ctrl+Alt+S`).
 - **Random from a category:** in the category's editor.
 - **Windows and X11:** system-wide hotkeys via `RegisterHotKey` / XGrabKey.
 - **Wayland:** through the desktop's *GlobalShortcuts* portal (KDE, GNOME 48+, Hyprland). Some compositors only allow it for installed apps, and some let you bind keys yourself. The simplest setup, and the most reliable on every compositor, is to bind keys to the CLI:
@@ -83,7 +91,9 @@ Keyboard inside the window: type to search, arrows to move, `Enter` to play, `Sp
 ```text
 clipdeck play <name|id|#pos|file> [--mic|--monitor]   play (standalone if the app isn't running)
 clipdeck stop [<name>]          stop one sound or everything
-clipdeck pause | random | mic | monitor
+clipdeck pause | next | previous | random | mic | monitor
+clipdeck seek <s|+s|-s>         jump in the playing sound
+clipdeck record [speakers|mic|stop]   record into the library (standalone: --seconds N --out f.wav)
 clipdeck volume [0-100]
 clipdeck list | status | devices | paths
 clipdeck show [library|favorites|recent|categories|settings] | hide | toggle | quit
@@ -91,6 +101,7 @@ clipdeck add <files or folders>…
 clipdeck import <list.spl>      Soundpad list (+ stats.spl next to it)
 clipdeck export <list.spl>
 clipdeck rc 'DoPlaySound(3)'    raw command, Clipdeck or Soundpad syntax
+clipdeck micfx status|install|uninstall|test   Windows: the in-microphone effect
 clipdeck serve                  run without a window (engine + hotkeys + IPC)
 clipdeck bench                  measure latency, startup, idle CPU and RAM
 ```
