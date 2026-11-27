@@ -48,6 +48,13 @@ jobs:
       - uses: Swatinem/rust-cache@v2
       - name: Build
         run: cargo build --release --locked -p clipdeck -p clipdeck-micfx
+      - name: Test build for a real PC
+        uses: actions/upload-artifact@v4
+        with:
+          name: clipdeck-windows-micfx-test
+          path: |
+            target/release/clipdeck.exe
+            target/release/clipdeck_micfx.dll
       - name: Enable Windows Audio
         shell: pwsh
         run: |

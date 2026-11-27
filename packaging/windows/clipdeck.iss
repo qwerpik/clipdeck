@@ -27,7 +27,7 @@ WizardStyle=modern
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
-Name: "micfx"; Description: "Put Clipdeck's sounds into my microphone (no virtual cable; asks for administrator rights)"; GroupDescription: "Microphone:"
+Name: "micfx"; Description: "Put Clipdeck's sounds into my microphone (no virtual cable; asks for administrator rights)"; GroupDescription: "Microphone:"; Flags: unchecked
 Name: "autostart"; Description: "Start Clipdeck when I sign in"; GroupDescription: "Startup:"; Flags: unchecked
 
 [Files]
