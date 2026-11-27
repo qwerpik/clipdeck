@@ -33,16 +33,16 @@ Status: `todo` / `wip` / `done` / `intentional delta`. Evidence refs point into 
 
 | Soundpad behavior | Evidence | Clipdeck | Status |
 |---|---|---|---|
-| Mic injection into the **real** mic via user-mode APO + shared memory | Q5 | `platform::windows::VirtualMic` | **intentional delta** for M5: VB-CABLE. APO backend = open question 1 |
+| Mic injection into the **real** mic via user-mode APO + shared memory | Q5 | `crates/micfx` (APO DLL) + `platform::windows::micfx` | **done**: own in-mic APO (chains the device's effect), VB-CABLE as fallback; CI e2e on VB-CABLE's mic |
 | Linux equivalent | — | `platform::linux::pwmic` (PipeWire `Audio/Source/Virtual`) | todo (M2) |
 | Play modes default / speakers / mic per trigger; hotkey cycles modes | Q4, prefs | `audio::engine` routing flags | todo |
 | Allow resume in another play mode | prefs | `audio::engine` | todo |
 | Auto stop for hotkey-played sounds | Q3 | `audio::engine` | todo |
-| Continue playback / repeat file / repeat list | registry keys | `audio::engine` | todo |
+| Continue playback / repeat file / repeat list | registry keys | `ui::app::AppCore::after_end`, bottom-bar toggle | **done** (stop / next / repeat; repeat list = next with wrap) |
 | Normalization: dB target (59–107 dB), dynamic or fixed (−30…+30 dB) | Q4 | `audio::loudness` | **intentional delta**: LUFS (EBU R128), migration maps dB target (open question 2) |
-| Block voice while playing on mic | Q4 | `platform::*::VirtualMic` (mute passthrough) | todo |
-| Voice-activation sound before playback | Q4 | `audio::engine` | todo (phase 2) |
-| PTT delay ms / karaoke mic delay ms | Q4 | `audio::engine` | todo |
+| Block voice while playing on mic | Q4 | mixer mic duck; APO `FLAG_DUCK_MIC` | **done** |
+| Voice-activation sound before playback | Q4 | `AppCore::play_activation` + per-request mic delay | **done** |
+| PTT delay ms / karaoke mic delay ms | Q4 | `VoiceSpec::delay`, `engine::delay_frames` | **done** |
 | Duck other apps (mute / −80% / −50%) | Q4 | `platform` | todo (phase 2, Windows only first) |
 | Decoders: MF + FLAC/Opus/Vorbis | Q4/Q8 | `audio::decode` (symphonia + opus) | wip (existing `crates/audio/src/decode.rs`) |
 | Metadata refresh on play | Q1 | `audio::decode::probe` | todo |

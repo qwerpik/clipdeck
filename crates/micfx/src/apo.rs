@@ -56,10 +56,34 @@ fn tick() -> u64 {
     unsafe { GetTickCount64() }
 }
 
+/// Log a configuration-time event (never called from `APOProcess`): to the debugger and to
+/// `%SystemRoot%\Temp\clipdeck_micfx.log` (kept under 256 KB), which `clipdeck micfx status`
+/// and bug reports can show.
 fn debug(msg: &str) {
-    let w = HSTRING::from(format!("clipdeck_micfx: {msg}\n"));
+    let line = format!(
+        "[{}] pid {} clipdeck_micfx: {msg}\n",
+        tick(),
+        std::process::id()
+    );
+    let w = HSTRING::from(line.as_str());
     // SAFETY: valid NUL-terminated string.
     unsafe { windows::Win32::System::Diagnostics::Debug::OutputDebugStringW(&w) };
+    let dir = std::env::var_os("SystemRoot").map_or_else(
+        || std::path::PathBuf::from(r"C:\Windows"),
+        std::path::PathBuf::from,
+    );
+    let path = dir.join("Temp").join("clipdeck_micfx.log");
+    if std::fs::metadata(&path).is_ok_and(|m| m.len() > 256 * 1024) {
+        let _ = std::fs::remove_file(&path);
+    }
+    if let Ok(mut f) = std::fs::OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(&path)
+    {
+        use std::io::Write;
+        let _ = f.write_all(line.as_bytes());
+    }
 }
 
 /// The endpoint's original effect, run before ours.
@@ -374,6 +398,11 @@ impl IAudioProcessingObject_Impl for MicFx_Impl {
             false
         };
         let mut cfg = self.cfg();
+        debug(&format!(
+            "Initialize: {size} bytes (effects2 {}, effects3 {}), discovery {discovery}",
+            std::mem::size_of::<APOInitSystemEffects2>(),
+            std::mem::size_of::<APOInitSystemEffects3>()
+        ));
         if size >= props_off + std::mem::size_of::<*mut c_void>() {
             // SAFETY: every APOInitSystemEffects* variant has the endpoint property store right
             // after the base struct, and `size` covers it.
@@ -384,6 +413,7 @@ impl IAudioProcessingObject_Impl for MicFx_Impl {
                 cfg.endpoint = prop_string(store, &PKEY_AudioEndpoint_GUID).unwrap_or_default();
             }
         }
+        debug(&format!("endpoint {} {}", cfg.name, cfg.endpoint));
         if discovery {
             return Ok(());
         }
@@ -421,7 +451,18 @@ impl IAudioProcessingObject_Impl for MicFx_Impl {
         prequestedinputformat: Ref<IAudioMediaType>,
     ) -> Result<IAudioMediaType> {
         let req = prequestedinputformat.ok()?;
-        check_format(req, poppositeformat.as_ref())?;
+        if let Err(e) = check_format(req, poppositeformat.as_ref()) {
+            if let Ok(f) = format_of(req) {
+                debug(&format!(
+                    "input format refused: {:?} {} ch {} Hz {} bytes",
+                    f.guidFormatType,
+                    f.dwSamplesPerFrame,
+                    f.fFramesPerSecond,
+                    f.dwBytesPerSampleContainer
+                ));
+            }
+            return Err(e);
+        }
         if let Some(o) = &self.cfg().original {
             // SAFETY: plain COM call with the caller's arguments.
             return unsafe { o.apo.IsInputFormatSupported(poppositeformat.as_ref(), req) };
@@ -500,6 +541,12 @@ impl IAudioProcessingObjectConfiguration_Impl for MicFx_Impl {
             endpoint: cfg.endpoint.clone(),
         };
         let slot = (0..proto::SLOTS).find_map(|n| Slot::claim(n, &info));
+        debug(&format!(
+            "LockForProcess {} ({}) {rate} Hz {channels} ch, slot {}",
+            info.name,
+            info.endpoint,
+            if slot.is_some() { "claimed" } else { "none" }
+        ));
         if let Some(s) = &slot {
             s.view().effect_status(cfg.status, cfg.original_hr);
         } else {
@@ -657,6 +704,7 @@ pub unsafe extern "system" fn DllGetClassObject(
     // SAFETY: checked non-null; COM passes valid pointers.
     unsafe {
         *ppv = std::ptr::null_mut();
+        debug(&format!("DllGetClassObject {:?}", *rclsid));
         if *rclsid != CLSID_MICFX {
             return CLASS_E_CLASSNOTAVAILABLE;
         }
